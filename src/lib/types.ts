@@ -13,3 +13,8 @@ export type Entry = {
   path: string;
   isDir: boolean;
 };
+
+export type FileContent = {
+  text: string;
+  hasBom: boolean;
+};

@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
-import type { Entry, Environment, Folder } from "./types";
+import type { Entry, Environment, FileContent, Folder } from "./types";
 
 export function getEnvironment(): Promise<Environment> {
   return invoke<Environment>("get_environment");
@@ -16,4 +16,8 @@ export function listDir(path: string): Promise<Entry[]> {
 
 export function onFsChange(handler: (dirs: string[]) => void): Promise<() => void> {
   return listen<string[]>("fs-changed", (event) => handler(event.payload));
+}
+
+export function readFile(path: string): Promise<FileContent> {
+  return invoke<FileContent>("read_file", { path });
 }

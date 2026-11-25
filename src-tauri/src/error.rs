@@ -10,6 +10,10 @@ pub enum Error {
     NoWorkspace,
     #[error("the path is outside the open folder")]
     OutsideWorkspace,
+    #[error("the file is not valid UTF-8 text")]
+    NotUtf8,
+    #[error("the file is too large to open")]
+    TooLarge,
     #[error(transparent)]
     Io(#[from] std::io::Error),
     #[error("could not watch the folder for changes: {0}")]

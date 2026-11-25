@@ -8,6 +8,7 @@ use tauri_plugin_dialog::DialogExt;
 
 use crate::error::{Error, Result};
 
+mod file;
 mod tree;
 mod watcher;
 
@@ -34,6 +35,12 @@ impl Workspace {
             eprintln!("could not watch {}: {error}", dir.display());
         }
         Ok(tree::list_dir(dir))
+    }
+
+    fn check(&self, path: &Path) -> Result<()> {
+        let guard = self.lock();
+        let session = guard.as_ref().ok_or(Error::NoWorkspace)?;
+        ensure_inside(&session.root, path)
     }
 
     fn lock(&self) -> std::sync::MutexGuard<'_, Option<Session>> {
@@ -91,6 +98,13 @@ pub async fn open_folder(
 #[tauri::command]
 pub async fn list_dir(path: String, workspace: State<'_, Workspace>) -> Result<Vec<tree::Entry>> {
     workspace.list_and_watch(Path::new(&path))
+}
+
+#[tauri::command]
+pub async fn read_file(path: String, workspace: State<'_, Workspace>) -> Result<file::FileContent> {
+    let path = Path::new(&path);
+    workspace.check(path)?;
+    file::decode(std::fs::read(path)?)
 }
 
 #[cfg(test)]

@@ -1,4 +1,4 @@
-import type { Entry, Environment, Folder } from "./types";
+import type { Entry, Environment, FileContent, Folder } from "./types";
 
 const root = "/home/user/sample-project";
 
@@ -19,6 +19,18 @@ const tree: Record<string, Entry[]> = {
   ],
 };
 
+const files: Record<string, string> = {
+  [`${root}/README.md`]: "# Sample project\n\nA small project used by the web mode.\n",
+  [`${root}/index.php`]: '<?php\n\necho "Hello from PHP";\n',
+  [`${root}/package.json`]: '{\n  "name": "sample-project",\n  "private": true\n}\n',
+  [`${root}/query.sql`]: "SELECT id, name\nFROM users\nWHERE active = 1;\n",
+  [`${root}/public/index.html`]: "<!doctype html>\n<html>\n  <body></body>\n</html>\n",
+  [`${root}/src/App.tsx`]:
+    'export function App() {\n  const greeting = "Hello";\n  return <h1>{greeting}</h1>;\n}\n',
+  [`${root}/src/main.ts`]: 'import "./styles.css";\n\nconsole.log("ready");\n',
+  [`${root}/src/styles.css`]: "body {\n  margin: 0;\n}\n",
+};
+
 export function getEnvironment(): Promise<Environment> {
   return Promise.resolve({ kind: "linux" });
 }
@@ -29,6 +41,14 @@ export function openFolder(): Promise<Folder | null> {
 
 export function listDir(path: string): Promise<Entry[]> {
   return Promise.resolve(tree[path] ?? []);
+}
+
+export function readFile(path: string): Promise<FileContent> {
+  const text = files[path];
+  if (text === undefined) {
+    return Promise.reject(new Error(`file not found: ${path}`));
+  }
+  return Promise.resolve({ text, hasBom: false });
 }
 
 const fsChangeHandlers = new Set<(dirs: string[]) => void>();
