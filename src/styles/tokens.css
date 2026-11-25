@@ -1,0 +1,32 @@
+:root {
+  --color-bg: #120f1a;
+  --color-panel: #1b1726;
+  --color-accent: #b6f24a;
+  --color-accent-2: #ff7ac6;
+  --color-text: #e9e4f5;
+  --syntax-keyword: #ff7ac6;
+  --syntax-string: #b6f24a;
+  --syntax-function: #ffc857;
+  --syntax-comment: #6d6485;
+  --syntax-variable: #c9b8ff;
+  --syntax-type: #7ad7ff;
+  --syntax-number: #ffa36c;
+  --glass-opacity: 78%;
+  --glass-blur: 12px;
+  --backdrop-color: var(--color-bg);
+  --backdrop-image: none;
+  --backdrop-dim: 0%;
+  --backdrop-blur: 0px;
+
+  --color-muted: color-mix(in srgb, var(--color-text) 55%, var(--color-bg));
+  --color-faint: color-mix(in srgb, var(--color-text) 35%, var(--color-bg));
+  --color-border: color-mix(in srgb, var(--color-text) 12%, var(--color-panel));
+  --color-hover: color-mix(in srgb, var(--color-text) 7%, var(--color-panel));
+  --color-selected: color-mix(in srgb, var(--color-accent-2) 18%, var(--color-panel));
+  --color-selection: color-mix(in srgb, var(--color-accent-2) 30%, transparent);
+  --color-warning: var(--syntax-function);
+  --color-error: var(--color-accent-2);
+
+  --font-ui: system-ui, sans-serif;
+  --font-code: "Maple Mono", "Cascadia Code", "JetBrains Mono", ui-monospace, monospace;
+}

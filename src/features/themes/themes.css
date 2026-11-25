@@ -1,0 +1,25 @@
+.theme-warnings {
+  position: fixed;
+  right: 16px;
+  bottom: 40px;
+  max-width: 360px;
+  padding: 10px 14px;
+  border: 1px solid var(--color-warning);
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--color-text);
+}
+
+.theme-warnings ul {
+  margin: 0 0 8px;
+  padding-left: 16px;
+}
+
+.theme-warnings button {
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background: var(--color-hover);
+  color: var(--color-text);
+  font: inherit;
+  cursor: pointer;
+}

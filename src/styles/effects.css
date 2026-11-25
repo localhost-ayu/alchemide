@@ -1,0 +1,59 @@
+:root {
+  --panel-bg: var(--color-panel);
+  --panel-blur: none;
+  --editor-bg: var(--color-bg);
+  --motion: 160ms;
+}
+
+[data-surface="glass"] {
+  --panel-bg: color-mix(in srgb, var(--color-panel) var(--glass-opacity), transparent);
+  --panel-blur: blur(var(--glass-blur));
+}
+
+[data-background="true"] {
+  --editor-bg: color-mix(in srgb, var(--color-bg) var(--backdrop-dim), transparent);
+}
+
+[data-background="true"][data-surface="glass"] {
+  --editor-bg: color-mix(
+    in srgb,
+    var(--color-bg) max(var(--backdrop-dim), calc(var(--glass-opacity) - 25%)),
+    transparent
+  );
+}
+
+.panel {
+  background: var(--panel-bg);
+  backdrop-filter: var(--panel-blur);
+}
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  background-color: var(--backdrop-color);
+}
+
+.backdrop__layer {
+  position: absolute;
+  inset: calc(var(--backdrop-blur) * -2);
+  background-image: var(--backdrop-image);
+  background-size: cover;
+  background-position: center;
+  filter: blur(var(--backdrop-blur));
+}
+
+[data-background="false"] .backdrop__layer {
+  display: none;
+}
+
+[data-animations="false"] {
+  --motion: 0ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion: 0ms;
+  }
+}

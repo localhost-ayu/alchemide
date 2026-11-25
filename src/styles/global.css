@@ -1,3 +1,6 @@
+@import "./tokens.css";
+@import "./effects.css";
+
 *,
 *::before,
 *::after {
@@ -12,8 +15,8 @@ body,
 }
 
 body {
-  font-family: system-ui, sans-serif;
-  background: #120f1a;
-  color: #e9e4f5;
+  font-family: var(--font-ui);
+  background: var(--color-bg);
+  color: var(--color-text);
   overflow: hidden;
 }
