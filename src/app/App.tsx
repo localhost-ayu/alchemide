@@ -3,6 +3,7 @@ import { Editor } from "../features/editor/Editor";
 import { Explorer } from "../features/explorer/Explorer";
 import { StatusBar } from "../features/statusbar/StatusBar";
 import { Backdrop } from "../features/themes/Backdrop";
+import { MoodPicker } from "../features/themes/MoodPicker";
 import { ThemeWarnings } from "../features/themes/ThemeWarnings";
 import "./App.css";
 
@@ -34,6 +35,7 @@ export function App() {
           <StatusBar />
         </footer>
       </div>
+      <MoodPicker />
       <ThemeWarnings />
     </>
   );

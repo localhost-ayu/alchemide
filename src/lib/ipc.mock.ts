@@ -1,4 +1,4 @@
-import type { Entry, Environment, FileContent, Folder } from "./types";
+import type { Entry, Environment, FileContent, Folder, Settings } from "./types";
 
 const root = "/home/user/sample-project";
 
@@ -79,4 +79,15 @@ export function emitMockFsChange(dirs: string[]): void {
 
 export function setMockDir(path: string, entries: Entry[]): void {
   tree[path] = entries;
+}
+
+let settings: Settings = {};
+
+export function loadSettings(): Promise<Settings> {
+  return Promise.resolve(structuredClone(settings));
+}
+
+export function saveSettings(next: Settings): Promise<void> {
+  settings = structuredClone(next);
+  return Promise.resolve();
 }
