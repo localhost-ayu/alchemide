@@ -1,3 +1,4 @@
+import { Explorer } from "../features/explorer/Explorer";
 import { EnvironmentBadge } from "../features/statusbar/EnvironmentBadge";
 import "./App.css";
 
@@ -5,7 +6,7 @@ export function App() {
   return (
     <div className="app">
       <aside className="app__explorer" aria-label="Explorer">
-        Explorer
+        <Explorer />
       </aside>
       <main className="app__editor" aria-label="Editor">
         Editor
