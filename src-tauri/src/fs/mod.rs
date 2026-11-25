@@ -53,29 +53,6 @@ pub fn ensure_inside(root: &Path, path: &Path) -> Result<()> {
     }
 }
 
-impl Workspace {
-    fn resolve(&self, path: &Path) -> Result<PathBuf> {
-        let root = self
-            .root
-            .lock()
-            .unwrap_or_else(|poisoned| poisoned.into_inner())
-            .clone()
-            .ok_or(Error::NoWorkspace)?;
-        ensure_inside(&root, path)?;
-        Ok(path.to_path_buf())
-    }
-}
-
-pub fn ensure_inside(root: &Path, path: &Path) -> Result<()> {
-    let root = root.canonicalize()?;
-    let path = path.canonicalize()?;
-    if path.starts_with(&root) {
-        Ok(())
-    } else {
-        Err(Error::OutsideWorkspace)
-    }
-}
-
 #[derive(Debug, PartialEq, Serialize)]
 pub struct Folder {
     pub name: String,
