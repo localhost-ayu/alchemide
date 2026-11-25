@@ -60,6 +60,20 @@ test("keeps unsaved edits when switching between tabs", async () => {
   expect(screen.getByRole("img", { name: "unsaved" })).toBeTruthy();
 });
 
+test("does not reset the editor when a tab becomes unsaved or is saved", async () => {
+  const setState = vi.spyOn(EditorView.prototype, "setState");
+  render(<Editor />);
+  await open(`${root}/query.sql`);
+  expect(setState).toHaveBeenCalledOnce();
+
+  type("query.sql", "x");
+  await act(async () => {
+    fireEvent.keyDown(window, { key: "s", ctrlKey: true });
+  });
+
+  expect(setState).toHaveBeenCalledOnce();
+});
+
 test("clears the unsaved mark when an edit is undone back to the saved text", async () => {
   render(<Editor />);
   await open(`${root}/query.sql`);
