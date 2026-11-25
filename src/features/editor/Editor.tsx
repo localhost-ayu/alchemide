@@ -25,7 +25,7 @@ function reportCursor(state: EditorState): void {
 }
 
 export function Editor() {
-  const active = useEditorStore(selectActiveTab);
+  const activePath = useEditorStore((state) => state.activePath);
   const tabs = useEditorStore((state) => state.tabs);
   const error = useEditorStore((state) => state.error);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -46,13 +46,14 @@ export function Editor() {
 
   useEffect(() => {
     const view = viewRef.current;
-    if (!view || !active) {
+    const active = selectActiveTab(useEditorStore.getState());
+    if (!view || !activePath || !active) {
       return;
     }
     const sessions = sessionsRef.current;
-    let session = sessions.get(active.path);
+    let session = sessions.get(activePath);
     if (!session) {
-      const path = active.path;
+      const path = activePath;
       const onUpdate = EditorView.updateListener.of((update) => {
         const current = sessions.get(path);
         if (!current) {
@@ -72,7 +73,7 @@ export function Editor() {
     }
     view.setState(session.state);
     reportCursor(session.state);
-  }, [active]);
+  }, [activePath]);
 
   useEffect(() => {
     const open = new Set(tabs.map((tab) => tab.path));
@@ -132,8 +133,8 @@ export function Editor() {
           {error}
         </p>
       )}
-      {!active && <p className="editor__empty">Open a file from the explorer</p>}
-      <div ref={containerRef} className="editor__view" hidden={!active} />
+      {!activePath && <p className="editor__empty">Open a file from the explorer</p>}
+      <div ref={containerRef} className="editor__view" hidden={!activePath} />
     </div>
   );
 }
