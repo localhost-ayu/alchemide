@@ -51,6 +51,19 @@ export function readFile(path: string): Promise<FileContent> {
   return Promise.resolve({ text, hasBom: false });
 }
 
+export function writeFile(path: string, text: string, _hasBom: boolean): Promise<void> {
+  files[path] = text;
+  return Promise.resolve();
+}
+
+export function onCloseRequested(_canClose: () => boolean): Promise<() => void> {
+  return Promise.resolve(() => {});
+}
+
+export function readMockFile(path: string): string | undefined {
+  return files[path];
+}
+
 const fsChangeHandlers = new Set<(dirs: string[]) => void>();
 
 export function onFsChange(handler: (dirs: string[]) => void): Promise<() => void> {

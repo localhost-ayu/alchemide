@@ -11,7 +11,8 @@ pub fn run() {
             env::get_environment,
             fs::open_folder,
             fs::list_dir,
-            fs::read_file
+            fs::read_file,
+            fs::write_file
         ])
         .run(tauri::generate_context!());
     if let Err(error) = result {

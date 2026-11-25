@@ -6,7 +6,7 @@ import {
   indentOnInput,
   syntaxHighlighting,
 } from "@codemirror/language";
-import { EditorState } from "@codemirror/state";
+import { EditorState, type Extension } from "@codemirror/state";
 import {
   drawSelection,
   EditorView,
@@ -16,12 +16,12 @@ import {
   keymap,
   lineNumbers,
 } from "@codemirror/view";
-import type { OpenFile } from "../../lib/editorStore";
+import type { Tab } from "../../lib/editorStore";
 import { editorTheme } from "./editorTheme";
 import { highlightStyle } from "./highlightStyle";
 import { languageSupport } from "./languageSupport";
 
-export function createEditorState(file: OpenFile): EditorState {
+export function createEditorState(file: Tab, onUpdate: Extension): EditorState {
   return EditorState.create({
     doc: file.text,
     extensions: [
@@ -40,6 +40,7 @@ export function createEditorState(file: OpenFile): EditorState {
       languageSupport(file.language),
       editorTheme,
       EditorView.contentAttributes.of({ "aria-label": `Editing ${file.name}` }),
+      onUpdate,
     ],
   });
 }

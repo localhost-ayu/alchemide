@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import type { Entry, Environment, FileContent, Folder } from "./types";
 
 export function getEnvironment(): Promise<Environment> {
@@ -20,4 +21,16 @@ export function onFsChange(handler: (dirs: string[]) => void): Promise<() => voi
 
 export function readFile(path: string): Promise<FileContent> {
   return invoke<FileContent>("read_file", { path });
+}
+
+export function writeFile(path: string, text: string, hasBom: boolean): Promise<void> {
+  return invoke<void>("write_file", { path, text, hasBom });
+}
+
+export function onCloseRequested(canClose: () => boolean): Promise<() => void> {
+  return getCurrentWindow().onCloseRequested((event) => {
+    if (!canClose()) {
+      event.preventDefault();
+    }
+  });
 }

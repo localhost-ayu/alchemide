@@ -26,9 +26,27 @@ pub fn decode(bytes: Vec<u8>) -> Result<FileContent> {
     Ok(FileContent { text, has_bom })
 }
 
+pub fn encode(text: &str, has_bom: bool) -> Vec<u8> {
+    let prefix: &[u8] = if has_bom { BOM } else { &[] };
+    [prefix, text.as_bytes()].concat()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn encodes_text_and_restores_the_bom() {
+        assert_eq!(encode("hi", false), b"hi");
+        assert_eq!(encode("hi", true), b"\xEF\xBB\xBFhi");
+    }
+
+    #[test]
+    fn round_trips_through_decode() {
+        let content = decode(encode("a\r\nb", true)).expect("round trip");
+        assert_eq!(content.text, "a\r\nb");
+        assert!(content.has_bom);
+    }
 
     #[test]
     fn decodes_plain_utf8() {
