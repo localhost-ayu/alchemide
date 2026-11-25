@@ -46,6 +46,9 @@ regular browser without compiling Rust, and the end-to-end tests run against tha
   `fs::Workspace` state. The frontend never sends the root path, and the webview gets no
   dialog permission.
 - Long-running work (file watching, terminal output) pushes data to the UI with Tauri events.
+- File watching is non-recursive and limited to the folders the explorer has loaded. Watching
+  the whole project recursively would also cover `node_modules` and `target`, generating
+  noise and exhausting inotify watches. The `fs-changed` event carries the folders to reload.
 - Permissions in `capabilities/` are kept to the minimum each feature needs. Broad disk
   access is never granted for convenience.
 

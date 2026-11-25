@@ -30,3 +30,20 @@ export function openFolder(): Promise<Folder | null> {
 export function listDir(path: string): Promise<Entry[]> {
   return Promise.resolve(tree[path] ?? []);
 }
+
+const fsChangeHandlers = new Set<(dirs: string[]) => void>();
+
+export function onFsChange(handler: (dirs: string[]) => void): Promise<() => void> {
+  fsChangeHandlers.add(handler);
+  return Promise.resolve(() => fsChangeHandlers.delete(handler));
+}
+
+export function emitMockFsChange(dirs: string[]): void {
+  for (const handler of fsChangeHandlers) {
+    handler(dirs);
+  }
+}
+
+export function setMockDir(path: string, entries: Entry[]): void {
+  tree[path] = entries;
+}

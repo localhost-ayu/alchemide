@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, expect, test } from "vitest";
+import { emitMockFsChange, setMockDir } from "../../lib/ipc.mock";
 import { Explorer } from "./Explorer";
 import { useWorkspaceStore } from "./useWorkspaceStore";
 
@@ -38,4 +39,16 @@ test("loads a folder's children only when it is expanded", async () => {
 
   fireEvent.click(src);
   expect(screen.queryByRole("button", { name: "App.tsx" })).toBeNull();
+});
+
+test("reloads an open folder when the disk changes", async () => {
+  await openSampleFolder();
+  const root = "/home/user/sample-project";
+  await screen.findByRole("button", { name: "README.md" });
+
+  setMockDir(root, [{ name: "NOTES.md", path: `${root}/NOTES.md`, isDir: false }]);
+  emitMockFsChange([root, `${root}/not-loaded`]);
+
+  expect(await screen.findByRole("button", { name: "NOTES.md" })).toBeTruthy();
+  expect(screen.queryByRole("button", { name: "README.md" })).toBeNull();
 });
