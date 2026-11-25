@@ -107,6 +107,19 @@ pub async fn read_file(path: String, workspace: State<'_, Workspace>) -> Result<
     file::decode(std::fs::read(path)?)
 }
 
+#[tauri::command]
+pub async fn write_file(
+    path: String,
+    text: String,
+    has_bom: bool,
+    workspace: State<'_, Workspace>,
+) -> Result<()> {
+    let path = Path::new(&path);
+    workspace.check(path)?;
+    std::fs::write(path, file::encode(&text, has_bom))?;
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

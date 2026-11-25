@@ -51,7 +51,9 @@ regular browser without compiling Rust, and the end-to-end tests run against tha
   the whole project recursively would also cover `node_modules` and `target`, generating
   noise and exhausting inotify watches. The `fs-changed` event carries the folders to reload.
 - Permissions in `capabilities/` are kept to the minimum each feature needs. Broad disk
-  access is never granted for convenience.
+  access is never granted for convenience. Today the window has `core:default` plus
+  `core:window:allow-destroy`, needed to close the window after the unsaved-changes check.
+  File access goes through app commands that reject paths outside the open folder.
 
 ## User content
 

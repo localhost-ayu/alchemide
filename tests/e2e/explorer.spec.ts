@@ -24,3 +24,24 @@ test("opens a file in the editor with syntax highlighting", async ({ page }) => 
     "rgb(182, 242, 74)",
   );
 });
+
+test("edits and saves a file", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Open folder" }).click();
+  await page.getByRole("button", { name: "README.md" }).click();
+
+  const editor = page.getByRole("textbox", { name: "Editing README.md" });
+  await editor.click();
+  await page.keyboard.press("Control+End");
+  await page.keyboard.type("Edited in the browser.");
+  await expect(page.getByRole("img", { name: "unsaved" })).toBeVisible();
+
+  await page.keyboard.press("Control+s");
+  await expect(page.getByRole("img", { name: "unsaved" })).toBeHidden();
+
+  await page.getByRole("button", { name: "Close README.md" }).click();
+  await page.getByRole("button", { name: "README.md" }).click();
+  await expect(page.getByRole("textbox", { name: "Editing README.md" })).toContainText(
+    "Edited in the browser.",
+  );
+});
