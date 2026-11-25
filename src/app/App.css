@@ -8,6 +8,14 @@
   height: 100vh;
 }
 
+.app[data-explorer="closed"] {
+  grid-template-columns: 0 1fr;
+}
+
+.app__explorer[hidden] {
+  display: none;
+}
+
 .app__explorer,
 .app__editor,
 .app__statusbar {

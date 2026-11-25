@@ -1,4 +1,5 @@
 import "./Explorer.css";
+import { Tree } from "./Tree";
 import { useWorkspaceStore } from "./useWorkspaceStore";
 
 export function Explorer() {
@@ -9,9 +10,12 @@ export function Explorer() {
   return (
     <div className="explorer">
       {folder ? (
-        <h2 className="explorer__title" title={folder.path}>
-          {folder.name}
-        </h2>
+        <>
+          <h2 className="explorer__title" title={folder.path}>
+            {folder.name}
+          </h2>
+          <Tree root={folder.path} />
+        </>
       ) : (
         <button type="button" className="explorer__open" onClick={pickFolder}>
           Open folder

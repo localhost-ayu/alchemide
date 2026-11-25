@@ -38,3 +38,44 @@
   font-size: 12px;
   color: #ff7ac6;
 }
+
+.tree {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.explorer > .tree {
+  overflow: auto;
+  margin: 0 -12px;
+}
+
+.tree__item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  padding: 2px 8px;
+  border: 0;
+  background: none;
+  color: #e9e4f5;
+  font: inherit;
+  font-size: 13px;
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.tree__item:hover {
+  background: #241f33;
+}
+
+.tree__item[data-selected="true"] {
+  background: #2e2742;
+}
+
+.tree__icon {
+  display: inline-block;
+  width: 12px;
+  color: #8a8199;
+}
