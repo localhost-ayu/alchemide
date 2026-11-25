@@ -28,8 +28,11 @@ webview (WebView2 on Windows, WebKitGTK on Linux).
 Only `src/lib/ipc.ts` calls `invoke()` or listens to backend events. Components and
 stores call the typed functions it exports.
 
+Types shared by both sides of the IPC boundary live in `src/lib/types.ts`, mirroring the
+serialized Rust types (enums use a `kind` tag, for example `{ "kind": "wsl", "distro": "Ubuntu" }`).
+
 Every function in `ipc.ts` has a twin in `src/lib/ipc.mock.ts` that returns sample data.
-`pnpm dev:web` swaps one module for the other with a Vite alias, so the whole UI runs in a
+`pnpm dev:web` swaps one module for the other with a Vite alias (any import ending in `lib/ipc`), so the whole UI runs in a
 regular browser without compiling Rust, and the end-to-end tests run against that mode.
 
 ## Backend (`src-tauri/`)

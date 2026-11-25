@@ -1,3 +1,4 @@
+import { EnvironmentBadge } from "../features/statusbar/EnvironmentBadge";
 import "./App.css";
 
 export function App() {
@@ -9,8 +10,9 @@ export function App() {
       <main className="app__editor" aria-label="Editor">
         Editor
       </main>
-      <footer className="app__statusbar" aria-label="Status bar">
-        Status bar
+      <footer className="app__statusbar">
+        <span>Status bar</span>
+        <EnvironmentBadge />
       </footer>
     </div>
   );
