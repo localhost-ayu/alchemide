@@ -1,0 +1,3 @@
+#!/bin/sh
+pnpm exec biome check --staged --no-errors-on-unmatched || exit 1
+cargo fmt --manifest-path src-tauri/Cargo.toml --check || exit 1

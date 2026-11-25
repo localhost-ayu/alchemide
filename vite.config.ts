@@ -1,16 +1,17 @@
-import { fileURLToPath } from "node:url";
 import process from "node:process";
+import { fileURLToPath } from "node:url";
 import react from "@vitejs/plugin-react";
-import { defineConfig } from "vite";
+import { defineConfig } from "vitest/config";
 
 const host = process.env.TAURI_DEV_HOST;
 const ipcMock = fileURLToPath(new URL("./src/lib/ipc.mock.ts", import.meta.url));
+const usesMockIpc = (mode: string) => mode === "mock" || mode === "test";
 
 export default defineConfig(({ mode }) => ({
   plugins: [react()],
   clearScreen: false,
   resolve: {
-    alias: mode === "mock" ? [{ find: /^.*\/lib\/ipc$/, replacement: ipcMock }] : [],
+    alias: usesMockIpc(mode) ? [{ find: /^.*\/lib\/ipc$/, replacement: ipcMock }] : [],
   },
   server: {
     port: 1420,
@@ -20,5 +21,9 @@ export default defineConfig(({ mode }) => ({
     watch: {
       ignored: ["**/src-tauri/**"],
     },
+  },
+  test: {
+    environment: "jsdom",
+    include: ["src/**/*.test.{ts,tsx}"],
   },
 }));
