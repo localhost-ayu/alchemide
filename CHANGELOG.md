@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Environment badge in the status bar: Windows, Linux or WSL with the distro name
 - Status bar with cursor position, line count, encoding, line endings and language of the active file
 - Theme engine: JSON themes become CSS variables, invalid themes fall back to a reserve theme with a warning
+- Built-in themes by mood: Catalisador (default), Férreas (Ferrugem, Cobre, Aço), Calmas (Maré, Musgo) and Pastéis (Lavanda, Menta, Pêssego), all with WCAG AA contrast for code
 - Open a project folder from the explorer with the native dialog
 - Collapsible file tree (`Ctrl+B`) that loads folders on demand and respects `.gitignore`
 - The file tree updates when files change on disk

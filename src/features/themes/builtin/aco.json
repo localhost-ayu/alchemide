@@ -1,0 +1,34 @@
+{
+  "name": "Aço",
+  "mood": "ferreas",
+  "ui": {
+    "bg": "#11151a",
+    "panel": "#192029",
+    "accent": "#8db8e0",
+    "accent2": "#c3ccd8",
+    "text": "#e2e8ef"
+  },
+  "syntax": {
+    "keyword": "#8db8e0",
+    "string": "#a8c79a",
+    "function": "#d9c38c",
+    "comment": "#7a879b",
+    "variable": "#c3ccd8",
+    "type": "#7fd0d6",
+    "number": "#e0a3a3"
+  },
+  "background": {
+    "type": "gradient",
+    "css": "linear-gradient(180deg, #1b2430 0%, #11151a 70%)"
+  },
+  "glass": {
+    "panelOpacity": 0.8,
+    "blur": 12
+  },
+  "effects": {
+    "surface": "glass",
+    "background": true,
+    "mascot": true,
+    "animations": true
+  }
+}
