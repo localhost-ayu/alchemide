@@ -9,7 +9,8 @@ pub fn run() {
         .manage(fs::Workspace::default())
         .invoke_handler(tauri::generate_handler![
             env::get_environment,
-            fs::open_folder
+            fs::open_folder,
+            fs::list_dir
         ])
         .run(tauri::generate_context!());
     if let Err(error) = result {

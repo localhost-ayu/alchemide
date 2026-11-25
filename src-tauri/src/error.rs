@@ -6,6 +6,12 @@ pub enum Error {
     Dialog,
     #[error("the selected location is not a local folder")]
     NotLocalFolder,
+    #[error("no folder is open")]
+    NoWorkspace,
+    #[error("the path is outside the open folder")]
+    OutsideWorkspace,
+    #[error(transparent)]
+    Io(#[from] std::io::Error),
 }
 
 impl Serialize for Error {

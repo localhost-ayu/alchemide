@@ -7,9 +7,34 @@ use tauri_plugin_dialog::DialogExt;
 
 use crate::error::{Error, Result};
 
+mod tree;
+
 #[derive(Default)]
 pub struct Workspace {
     root: Mutex<Option<PathBuf>>,
+}
+
+impl Workspace {
+    fn resolve(&self, path: &Path) -> Result<PathBuf> {
+        let root = self
+            .root
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .clone()
+            .ok_or(Error::NoWorkspace)?;
+        ensure_inside(&root, path)?;
+        Ok(path.to_path_buf())
+    }
+}
+
+pub fn ensure_inside(root: &Path, path: &Path) -> Result<()> {
+    let root = root.canonicalize()?;
+    let path = path.canonicalize()?;
+    if path.starts_with(&root) {
+        Ok(())
+    } else {
+        Err(Error::OutsideWorkspace)
+    }
 }
 
 #[derive(Debug, PartialEq, Serialize)]
@@ -48,9 +73,46 @@ pub async fn open_folder(
     Ok(Some(folder))
 }
 
+#[tauri::command]
+pub async fn list_dir(path: String, workspace: State<'_, Workspace>) -> Result<Vec<tree::Entry>> {
+    let dir = workspace.resolve(Path::new(&path))?;
+    Ok(tree::list_dir(&dir))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    use tempfile::TempDir;
+
+    #[test]
+    fn accepts_paths_inside_the_root() {
+        let root = TempDir::new().expect("temp dir");
+        std::fs::create_dir(root.path().join("src")).expect("src");
+        assert!(ensure_inside(root.path(), &root.path().join("src")).is_ok());
+        assert!(ensure_inside(root.path(), root.path()).is_ok());
+    }
+
+    #[test]
+    fn rejects_paths_that_escape_the_root() {
+        let parent = TempDir::new().expect("temp dir");
+        let root = parent.path().join("project");
+        std::fs::create_dir(&root).expect("project");
+        std::fs::create_dir(parent.path().join("secrets")).expect("secrets");
+        let escaped = root.join("..").join("secrets");
+        assert!(matches!(
+            ensure_inside(&root, &escaped),
+            Err(Error::OutsideWorkspace)
+        ));
+    }
+
+    #[test]
+    fn rejects_paths_that_do_not_exist() {
+        let root = TempDir::new().expect("temp dir");
+        assert!(matches!(
+            ensure_inside(root.path(), &root.path().join("missing")),
+            Err(Error::Io(_))
+        ));
+    }
 
     #[test]
     fn names_a_folder_after_its_last_component() {

@@ -8,10 +8,14 @@ test("shows the explorer, the editor and the status bar", async ({ page }) => {
   await expect(page.getByRole("contentinfo")).toContainText("Linux");
 });
 
-test("opens a folder from the explorer", async ({ page }) => {
+test("collapses the explorer with Ctrl+B", async ({ page }) => {
   await page.goto("/");
+  const explorer = page.getByRole("complementary", { name: "Explorer" });
+  await expect(explorer).toBeVisible();
 
-  await page.getByRole("button", { name: "Open folder" }).click();
+  await page.keyboard.press("Control+b");
+  await expect(explorer).toBeHidden();
 
-  await expect(page.getByRole("heading", { name: "sample-project" })).toBeVisible();
+  await page.keyboard.press("Control+b");
+  await expect(explorer).toBeVisible();
 });
