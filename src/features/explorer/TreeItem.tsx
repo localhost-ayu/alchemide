@@ -1,3 +1,4 @@
+import { useEditorStore } from "../../lib/editorStore";
 import type { Entry } from "../../lib/types";
 import { useWorkspaceStore } from "./useWorkspaceStore";
 
@@ -12,11 +13,14 @@ export function TreeItem({ entry, depth }: TreeItemProps) {
   const children = useWorkspaceStore((state) => state.children[entry.path]);
   const toggleDir = useWorkspaceStore((state) => state.toggleDir);
   const select = useWorkspaceStore((state) => state.select);
+  const openFile = useEditorStore((state) => state.openFile);
 
   const handleClick = () => {
     select(entry.path);
     if (entry.isDir) {
       toggleDir(entry.path);
+    } else {
+      openFile(entry.path);
     }
   };
 

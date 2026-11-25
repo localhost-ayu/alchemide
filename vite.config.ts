@@ -11,7 +11,7 @@ export default defineConfig(({ mode }) => ({
   plugins: [react()],
   clearScreen: false,
   resolve: {
-    alias: usesMockIpc(mode) ? [{ find: /^.*\/lib\/ipc$/, replacement: ipcMock }] : [],
+    alias: usesMockIpc(mode) ? [{ find: /^(?:\.|.*\/lib)\/ipc$/, replacement: ipcMock }] : [],
   },
   server: {
     port: 1420,

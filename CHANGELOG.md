@@ -14,4 +14,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Open a project folder from the explorer with the native dialog
 - Collapsible file tree (`Ctrl+B`) that loads folders on demand and respects `.gitignore`
 - The file tree updates when files change on disk
+- CodeMirror editor with syntax highlighting chosen by file extension: PHP, JavaScript, TypeScript, JSX/TSX, SQL, Markdown, HTML, CSS and JSON; other files open as plain text
 - Browser mode with a mocked backend (`pnpm dev:web`) and a Linux dev container

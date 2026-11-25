@@ -10,7 +10,8 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             env::get_environment,
             fs::open_folder,
-            fs::list_dir
+            fs::list_dir,
+            fs::read_file
         ])
         .run(tauri::generate_context!());
     if let Err(error) = result {
