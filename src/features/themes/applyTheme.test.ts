@@ -59,3 +59,18 @@ test("applyEffects changes only the requested effect", () => {
   expect(root.dataset.mascot).toBe("true");
   expect(root.dataset.animations).toBe("true");
 });
+
+test("each effect works on its own: solid surface keeps the background", () => {
+  const root = document.createElement("html");
+  applyEffects({ surface: "glass", background: true, mascot: false, animations: false }, root);
+
+  applyEffects({ background: false }, root);
+  applyEffects({ surface: "solid" }, root);
+
+  expect(root.dataset).toMatchObject({
+    surface: "solid",
+    background: "false",
+    mascot: "false",
+    animations: "false",
+  });
+});

@@ -31,3 +31,15 @@ test("applies the default theme and its effects", async ({ page }) => {
     "blur(12px)",
   );
 });
+
+test("solid surface removes the glass blur without reloading", async ({ page }) => {
+  await page.goto("/");
+  const explorer = page.getByRole("complementary", { name: "Explorer" });
+  await expect(explorer).toHaveCSS("backdrop-filter", "blur(12px)");
+
+  await page.evaluate(() => {
+    document.documentElement.dataset.surface = "solid";
+  });
+
+  await expect(explorer).toHaveCSS("backdrop-filter", "none");
+});
