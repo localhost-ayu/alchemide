@@ -1,0 +1,5 @@
+#!/bin/sh
+if grep -qiE '^co-authored-by:|generated with|claude|copilot|chatgpt' "$1"; then
+  echo "Commit bloqueado: remova a atribuição de ferramenta da mensagem."
+  exit 1
+fi
