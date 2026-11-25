@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Desktop app scaffold with an empty layout: explorer, editor and status bar
 - Environment badge in the status bar: Windows, Linux or WSL with the distro name
+- Status bar with cursor position, line count, encoding, line endings and language of the active file
 - Open a project folder from the explorer with the native dialog
 - Collapsible file tree (`Ctrl+B`) that loads folders on demand and respects `.gitignore`
 - The file tree updates when files change on disk

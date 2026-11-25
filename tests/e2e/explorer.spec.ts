@@ -45,3 +45,18 @@ test("edits and saves a file", async ({ page }) => {
     "Edited in the browser.",
   );
 });
+
+test("describes the open file in the status bar", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Open folder" }).click();
+  await page.getByRole("button", { name: "query.sql" }).click();
+
+  const statusBar = page.getByRole("contentinfo");
+  await expect(statusBar).toContainText("Ln 1, Col 1");
+  await expect(statusBar).toContainText("4 lines");
+  await expect(statusBar).toContainText("SQL");
+
+  await page.getByRole("textbox", { name: "Editing query.sql" }).click();
+  await page.keyboard.press("Control+End");
+  await expect(statusBar).toContainText("Ln 4, Col 1");
+});
