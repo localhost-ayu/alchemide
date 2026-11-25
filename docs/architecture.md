@@ -40,7 +40,11 @@ regular browser without compiling Rust, and the end-to-end tests run against tha
 - Commands are thin: a `#[tauri::command]` reads what it needs from the system, calls a
   pure function from its module and returns the result. The logic stays testable with
   `cargo test`, without a window.
-- Errors go through a single type in `src/error.rs` (`thiserror`), serialized for the frontend.
+- Errors go through a single type in `src/error.rs` (`thiserror`), serialized for the frontend
+  as a plain message string.
+- The open folder is chosen by Rust through the dialog plugin's Rust API and kept in the
+  `fs::Workspace` state. The frontend never sends the root path, and the webview gets no
+  dialog permission.
 - Long-running work (file watching, terminal output) pushes data to the UI with Tauri events.
 - Permissions in `capabilities/` are kept to the minimum each feature needs. Broad disk
   access is never granted for convenience.
