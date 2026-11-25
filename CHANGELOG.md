@@ -10,3 +10,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Desktop app scaffold with an empty layout: explorer, editor and status bar
+- Environment badge in the status bar: Windows, Linux or WSL with the distro name
+- Browser mode with a mocked backend (`pnpm dev:web`) and a Linux dev container

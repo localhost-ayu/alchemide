@@ -30,7 +30,7 @@
 
 .app__statusbar {
   grid-area: statusbar;
-  justify-content: flex-start;
+  justify-content: space-between;
   padding: 0 12px;
   font-size: 12px;
   background: #1b1726;

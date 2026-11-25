@@ -15,6 +15,18 @@ pnpm dev:web    # UI only, in the browser, with a mocked backend
 pnpm check      # lint, typecheck and tests
 ```
 
+There are three ways to run the app:
+
+| Mode | Runs on | Use it for |
+| --- | --- | --- |
+| `pnpm dev:web` | Browser, mocked backend | UI and theme work without compiling Rust |
+| Dev container | Docker in WSL2, window through WSLg | Linux builds identical to CI (`.deb`, `.AppImage`) |
+| `pnpm tauri dev` | Native Windows | Windows-specific behavior: WSL, ConPTY, WebView2 |
+
+To use the dev container, open the project inside WSL in VS Code and run
+"Dev Containers: Reopen in Container". The Rust build output lives in the
+`alchemide-cargo-target` volume, so it survives container rebuilds.
+
 Enable the repository hooks once after cloning:
 
 ```bash

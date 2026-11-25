@@ -6,3 +6,4 @@ src-tauri/gen/schemas
 coverage
 test-results
 playwright-report
+.pnpm-store
