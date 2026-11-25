@@ -1,6 +1,7 @@
 use std::path::{Path, PathBuf};
 use std::sync::Mutex;
 
+use notify::{RecommendedWatcher, RecursiveMode, Watcher};
 use serde::Serialize;
 use tauri::{AppHandle, State};
 use tauri_plugin_dialog::DialogExt;
@@ -8,22 +9,37 @@ use tauri_plugin_dialog::DialogExt;
 use crate::error::{Error, Result};
 
 mod tree;
+mod watcher;
+
+struct Session {
+    root: PathBuf,
+    watcher: RecommendedWatcher,
+}
 
 #[derive(Default)]
 pub struct Workspace {
-    root: Mutex<Option<PathBuf>>,
+    session: Mutex<Option<Session>>,
 }
 
 impl Workspace {
-    fn resolve(&self, path: &Path) -> Result<PathBuf> {
-        let root = self
-            .root
+    fn start(&self, session: Session) {
+        *self.lock() = Some(session);
+    }
+
+    fn list_and_watch(&self, dir: &Path) -> Result<Vec<tree::Entry>> {
+        let mut guard = self.lock();
+        let session = guard.as_mut().ok_or(Error::NoWorkspace)?;
+        ensure_inside(&session.root, dir)?;
+        if let Err(error) = session.watcher.watch(dir, RecursiveMode::NonRecursive) {
+            eprintln!("could not watch {}: {error}", dir.display());
+        }
+        Ok(tree::list_dir(dir))
+    }
+
+    fn lock(&self) -> std::sync::MutexGuard<'_, Option<Session>> {
+        self.session
             .lock()
             .unwrap_or_else(|poisoned| poisoned.into_inner())
-            .clone()
-            .ok_or(Error::NoWorkspace)?;
-        ensure_inside(&root, path)?;
-        Ok(path.to_path_buf())
     }
 }
 
@@ -57,6 +73,7 @@ pub async fn open_folder(
     app: AppHandle,
     workspace: State<'_, Workspace>,
 ) -> Result<Option<Folder>> {
+    let app_handle = app.clone();
     let picked =
         tauri::async_runtime::spawn_blocking(move || app.dialog().file().blocking_pick_folder())
             .await
@@ -66,17 +83,14 @@ pub async fn open_folder(
     };
     let root = picked.into_path().map_err(|_| Error::NotLocalFolder)?;
     let folder = describe_folder(&root);
-    *workspace
-        .root
-        .lock()
-        .unwrap_or_else(|poisoned| poisoned.into_inner()) = Some(root);
+    let watcher = watcher::create(app_handle)?;
+    workspace.start(Session { root, watcher });
     Ok(Some(folder))
 }
 
 #[tauri::command]
 pub async fn list_dir(path: String, workspace: State<'_, Workspace>) -> Result<Vec<tree::Entry>> {
-    let dir = workspace.resolve(Path::new(&path))?;
-    Ok(tree::list_dir(&dir))
+    workspace.list_and_watch(Path::new(&path))
 }
 
 #[cfg(test)]

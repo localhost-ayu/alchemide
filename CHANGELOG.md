@@ -13,4 +13,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Environment badge in the status bar: Windows, Linux or WSL with the distro name
 - Open a project folder from the explorer with the native dialog
 - Collapsible file tree (`Ctrl+B`) that loads folders on demand and respects `.gitignore`
+- The file tree updates when files change on disk
 - Browser mode with a mocked backend (`pnpm dev:web`) and a Linux dev container

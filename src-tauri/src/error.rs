@@ -12,6 +12,8 @@ pub enum Error {
     OutsideWorkspace,
     #[error(transparent)]
     Io(#[from] std::io::Error),
+    #[error("could not watch the folder for changes: {0}")]
+    Watch(#[from] notify::Error),
 }
 
 impl Serialize for Error {

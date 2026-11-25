@@ -12,6 +12,7 @@ type WorkspaceState = {
   loadDir: (path: string) => Promise<void>;
   toggleDir: (path: string) => Promise<void>;
   select: (path: string) => void;
+  refreshDirs: (dirs: string[]) => Promise<void>;
 };
 
 export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
@@ -48,4 +49,20 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
     }
   },
   select: (path) => set({ selected: path }),
+  refreshDirs: async (dirs) => {
+    const loaded = dirs.filter((dir) => get().children[dir]);
+    await Promise.all(loaded.map(refreshDir));
+  },
 }));
+
+async function refreshDir(path: string): Promise<void> {
+  try {
+    const entries = await listDir(path);
+    useWorkspaceStore.setState((state) => ({ children: { ...state.children, [path]: entries } }));
+  } catch {
+    useWorkspaceStore.setState((state) => {
+      const { [path]: _removed, ...children } = state.children;
+      return { children };
+    });
+  }
+}
