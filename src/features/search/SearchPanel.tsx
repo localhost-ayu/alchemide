@@ -40,13 +40,7 @@ export function SearchPanel() {
   return (
     <div className="search">
       <h2 className="search__title">Search</h2>
-      <form
-        className="search__form"
-        onSubmit={(event) => {
-          event.preventDefault();
-          run();
-        }}
-      >
+      <div className="search__form">
         <div className="search__row">
           <input
             className="search__input"
@@ -54,6 +48,12 @@ export function SearchPanel() {
             placeholder="Search"
             value={query.text}
             onChange={(event) => setQuery({ text: event.target.value })}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                event.preventDefault();
+                run();
+              }
+            }}
           />
           <button
             type="button"
@@ -97,7 +97,7 @@ export function SearchPanel() {
             Replace
           </button>
         </div>
-      </form>
+      </div>
       <p className="search__status" role="status">
         {error ??
           (status === "searching"

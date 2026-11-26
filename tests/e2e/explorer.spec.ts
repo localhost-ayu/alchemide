@@ -107,7 +107,8 @@ test("finds and replaces across the project", async ({ page }) => {
   await expect(search).toBeFocused();
   await search.fill("Hello");
   await search.press("Enter");
-  await expect(page.getByRole("status").first()).toContainText("1 result in 1 file");
+  const panel = page.getByRole("complementary", { name: "Search" });
+  await expect(panel.getByRole("status")).toHaveText("2 results in 2 files");
 
   await page.getByRole("textbox", { name: "Replace with" }).fill("Olá");
   page.once("dialog", (dialog) => dialog.accept());
@@ -115,5 +116,5 @@ test("finds and replaces across the project", async ({ page }) => {
 
   await expect(editor).toContainText('"Olá"');
   await page.keyboard.press("Control+Shift+E");
-  await expect(page.getByRole("button", { name: "App.tsx" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "App.tsx", exact: true })).toBeVisible();
 });

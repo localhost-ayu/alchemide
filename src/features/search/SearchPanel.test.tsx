@@ -23,7 +23,7 @@ async function search(text: string) {
     target: { value: text },
   });
   await act(async () => {
-    fireEvent.submit(screen.getByRole("textbox", { name: "Search in files" }));
+    fireEvent.keyDown(screen.getByRole("textbox", { name: "Search in files" }), { key: "Enter" });
     await new Promise((resolve) => setTimeout(resolve, 0));
   });
 }
