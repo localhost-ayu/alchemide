@@ -4,7 +4,14 @@ import { useEditorStore } from "../../lib/editorStore";
 import { StatusBar } from "./StatusBar";
 
 beforeEach(() => {
-  useEditorStore.setState({ tabs: [], activePath: null, cursor: null, error: null });
+  useEditorStore.setState({
+    tabs: [],
+    activePath: null,
+    cursor: null,
+    drafts: {},
+    scroll: 0,
+    error: null,
+  });
 });
 
 test("shows only the environment while no file is open", async () => {

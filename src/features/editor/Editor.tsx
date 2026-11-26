@@ -42,7 +42,14 @@ export function Editor() {
     }
     const view = new EditorView({ parent: containerRef.current });
     viewRef.current = view;
+    const reportScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = view.scrollDOM;
+      const room = scrollHeight - clientHeight;
+      useEditorStore.getState().setScroll(room > 0 ? scrollTop / room : 0);
+    };
+    view.scrollDOM.addEventListener("scroll", reportScroll, { passive: true });
     return () => {
+      view.scrollDOM.removeEventListener("scroll", reportScroll);
       view.destroy();
       viewRef.current = null;
     };
@@ -58,6 +65,7 @@ export function Editor() {
     let session = sessions.get(activePath);
     if (!session) {
       const path = activePath;
+      const tracksDraft = active.language === "markdown";
       const onUpdate = EditorView.updateListener.of((update) => {
         const current = sessions.get(path);
         if (!current) {
@@ -66,6 +74,9 @@ export function Editor() {
         current.state = update.state;
         if (update.docChanged) {
           useEditorStore.getState().setDirty(path, !update.state.doc.eq(current.saved));
+          if (tracksDraft) {
+            useEditorStore.getState().setDraft(path, update.state.doc.toString());
+          }
         }
         if (update.docChanged || update.selectionSet) {
           reportCursor(update.state);

@@ -57,3 +57,14 @@
   grid-area: terminal;
   min-width: 0;
 }
+
+.app__workspace {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+.app__workspace > .editor {
+  flex: 1;
+}
