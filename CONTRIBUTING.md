@@ -45,4 +45,13 @@ for example `feat(editor): add PHP syntax highlighting` or `fix(explorer): keep 
 3. Make sure `pnpm check` passes and add an entry under "Unreleased" in `CHANGELOG.md` for user-visible changes.
 4. Open the PR using the template. Pull requests are merged by squash.
 
+## Releases
+
+Versions follow [Semantic Versioning](https://semver.org/); in `0.x` any release may break
+compatibility. The version lives in `package.json` (Tauri reads it from there) and
+`src-tauri/Cargo.toml`. A release is a pull request named `chore(release): vX.Y.Z` that bumps
+both and moves the "Unreleased" changelog entries under the new version. After it is merged,
+the maintainer pushes the `vX.Y.Z` tag, and `.github/workflows/release.yml` builds draft
+installers for Windows (`.msi`, `.exe`) and Linux (`.deb`, `.AppImage`).
+
 By contributing, you agree that your work is licensed under GPL-3.0-only.
