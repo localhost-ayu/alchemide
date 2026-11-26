@@ -73,6 +73,8 @@ test("previews Markdown side by side and follows edits", async ({ page }) => {
   const preview = page.getByRole("region", { name: "Markdown preview" });
   await expect(preview.getByRole("heading", { name: "Sample project" })).toBeVisible();
   await expect(preview.getByRole("table")).toBeVisible();
+  const string = preview.locator("code[data-highlighted]").getByText('"ready"', { exact: true });
+  await expect(string).toHaveCSS("color", "rgb(182, 242, 74)");
 
   await page.keyboard.press("Control+Home");
   await page.keyboard.type("# Lab notes\n\n");

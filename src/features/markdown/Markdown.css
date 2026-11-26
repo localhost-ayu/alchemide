@@ -13,6 +13,20 @@
 }
 
 .markdown-body {
+  --shiki-foreground: var(--color-text);
+  --shiki-background: transparent;
+  --shiki-token-keyword: var(--syntax-keyword);
+  --shiki-token-string: var(--syntax-string);
+  --shiki-token-string-expression: var(--syntax-string);
+  --shiki-token-function: var(--syntax-function);
+  --shiki-token-comment: var(--syntax-comment);
+  --shiki-token-constant: var(--syntax-number);
+  --shiki-token-parameter: var(--syntax-variable);
+  --shiki-token-punctuation: var(--color-muted);
+  --shiki-token-link: var(--syntax-type);
+  --shiki-token-inserted: var(--syntax-string);
+  --shiki-token-deleted: var(--color-error);
+  --shiki-token-changed: var(--syntax-function);
   max-width: 860px;
   margin: 0 auto;
   color: var(--color-text);

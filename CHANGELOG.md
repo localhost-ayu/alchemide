@@ -27,3 +27,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Built-in terminal panel (`` Ctrl+` ``) with tabs, resizing with the window; PowerShell on Windows, your `$SHELL` on Linux, and WSL profiles (projects inside WSL open straight in their distro)
 - Terminal colors follow the theme, with a reagent-green cursor while animations are on
 - Markdown preview side by side (`Ctrl+Shift+V`) with GFM tables and task lists, following unsaved edits and the editor's scroll
+- Code blocks in the Markdown preview highlighted with shiki in the current theme's colors
