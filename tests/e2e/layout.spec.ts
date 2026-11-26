@@ -19,3 +19,15 @@ test("collapses the explorer with Ctrl+B", async ({ page }) => {
   await page.keyboard.press("Control+b");
   await expect(explorer).toBeVisible();
 });
+
+test("applies the default theme and its effects", async ({ page }) => {
+  await page.goto("/");
+  const html = page.locator("html");
+
+  await expect(html).toHaveAttribute("data-theme", "Catalisador");
+  await expect(html).toHaveAttribute("data-surface", "glass");
+  await expect(page.getByRole("complementary", { name: "Explorer" })).toHaveCSS(
+    "backdrop-filter",
+    "blur(12px)",
+  );
+});

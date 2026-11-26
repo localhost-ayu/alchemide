@@ -13,7 +13,7 @@
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #8a8199;
+  color: var(--color-muted);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -21,22 +21,22 @@
 
 .explorer__open {
   padding: 6px 12px;
-  border: 1px solid #2a2438;
+  border: 1px solid var(--color-border);
   border-radius: 4px;
-  background: #241f33;
-  color: #e9e4f5;
+  background: var(--color-hover);
+  color: var(--color-text);
   font: inherit;
   cursor: pointer;
 }
 
 .explorer__open:hover {
-  border-color: #b6f24a;
+  border-color: var(--color-accent);
 }
 
 .explorer__error {
   margin: 0;
   font-size: 12px;
-  color: #ff7ac6;
+  color: var(--color-error);
 }
 
 .tree {
@@ -58,7 +58,7 @@
   padding: 2px 8px;
   border: 0;
   background: none;
-  color: #e9e4f5;
+  color: var(--color-text);
   font: inherit;
   font-size: 13px;
   text-align: left;
@@ -67,15 +67,15 @@
 }
 
 .tree__item:hover {
-  background: #241f33;
+  background: var(--color-hover);
 }
 
 .tree__item[data-selected="true"] {
-  background: #2e2742;
+  background: var(--color-selected);
 }
 
 .tree__icon {
   display: inline-block;
   width: 12px;
-  color: #8a8199;
+  color: var(--color-muted);
 }

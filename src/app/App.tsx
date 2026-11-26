@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Editor } from "../features/editor/Editor";
 import { Explorer } from "../features/explorer/Explorer";
 import { StatusBar } from "../features/statusbar/StatusBar";
+import { Backdrop } from "../features/themes/Backdrop";
+import { ThemeWarnings } from "../features/themes/ThemeWarnings";
 import "./App.css";
 
 export function App() {
@@ -19,16 +21,20 @@ export function App() {
   }, []);
 
   return (
-    <div className="app" data-explorer={isExplorerOpen ? "open" : "closed"}>
-      <aside className="app__explorer" aria-label="Explorer" hidden={!isExplorerOpen}>
-        <Explorer />
-      </aside>
-      <main className="app__editor" aria-label="Editor">
-        <Editor />
-      </main>
-      <footer className="app__statusbar">
-        <StatusBar />
-      </footer>
-    </div>
+    <>
+      <Backdrop />
+      <div className="app" data-explorer={isExplorerOpen ? "open" : "closed"}>
+        <aside className="app__explorer" aria-label="Explorer" hidden={!isExplorerOpen}>
+          <Explorer />
+        </aside>
+        <main className="app__editor" aria-label="Editor">
+          <Editor />
+        </main>
+        <footer className="app__statusbar">
+          <StatusBar />
+        </footer>
+      </div>
+      <ThemeWarnings />
+    </>
   );
 }

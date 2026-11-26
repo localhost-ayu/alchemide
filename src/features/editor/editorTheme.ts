@@ -4,23 +4,24 @@ export const editorTheme = EditorView.theme(
   {
     "&": {
       height: "100%",
-      color: "#e9e4f5",
+      color: "var(--color-text)",
       backgroundColor: "transparent",
       fontSize: "14px",
     },
-    ".cm-scroller": {
-      fontFamily: '"Maple Mono", "Cascadia Code", "JetBrains Mono", ui-monospace, monospace',
-      lineHeight: "1.6",
+    ".cm-scroller": { fontFamily: "var(--font-code)", lineHeight: "1.6" },
+    ".cm-content": { caretColor: "var(--color-accent)" },
+    ".cm-cursor, .cm-dropCursor": { borderLeftColor: "var(--color-accent)" },
+    "&.cm-focused > .cm-scroller > .cm-selectionLayer .cm-selectionBackground, .cm-selectionBackground":
+      { backgroundColor: "var(--color-selection)" },
+    ".cm-activeLine": {
+      backgroundColor: "color-mix(in srgb, var(--color-panel) 50%, transparent)",
     },
-    ".cm-content": { caretColor: "#b6f24a" },
-    ".cm-cursor, .cm-dropCursor": { borderLeftColor: "#b6f24a" },
-    "&.cm-focused .cm-selectionBackground, .cm-selectionBackground": {
-      backgroundColor: "#3a3150",
+    ".cm-gutters": { backgroundColor: "transparent", color: "var(--color-faint)", border: "none" },
+    ".cm-activeLineGutter": { backgroundColor: "transparent", color: "var(--syntax-variable)" },
+    "&.cm-focused .cm-matchingBracket": {
+      backgroundColor: "color-mix(in srgb, var(--color-accent) 20%, transparent)",
+      outline: "none",
     },
-    ".cm-activeLine": { backgroundColor: "#1b172680" },
-    ".cm-gutters": { backgroundColor: "transparent", color: "#5a5270", border: "none" },
-    ".cm-activeLineGutter": { backgroundColor: "transparent", color: "#c9b8ff" },
-    "&.cm-focused .cm-matchingBracket": { backgroundColor: "#b6f24a33", outline: "none" },
   },
   { dark: true },
 );

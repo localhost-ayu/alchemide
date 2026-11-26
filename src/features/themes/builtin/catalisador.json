@@ -1,0 +1,26 @@
+{
+  "name": "Catalisador",
+  "mood": "laboratorio",
+  "ui": {
+    "bg": "#120f1a",
+    "panel": "#1b1726",
+    "accent": "#b6f24a",
+    "accent2": "#ff7ac6",
+    "text": "#e9e4f5"
+  },
+  "syntax": {
+    "keyword": "#ff7ac6",
+    "string": "#b6f24a",
+    "function": "#ffc857",
+    "comment": "#6d6485",
+    "variable": "#c9b8ff",
+    "type": "#7ad7ff",
+    "number": "#ffa36c"
+  },
+  "background": {
+    "type": "gradient",
+    "css": "radial-gradient(circle at 80% 110%, #2b1f45 0%, #120f1a 55%)"
+  },
+  "glass": { "panelOpacity": 0.78, "blur": 12 },
+  "effects": { "surface": "glass", "background": true, "mascot": true, "animations": true }
+}

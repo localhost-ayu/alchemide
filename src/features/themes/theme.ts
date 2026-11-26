@@ -1,0 +1,51 @@
+export type ThemeUi = {
+  bg: string;
+  panel: string;
+  accent: string;
+  accent2: string;
+  text: string;
+};
+
+export type ThemeSyntax = {
+  keyword: string;
+  string: string;
+  function: string;
+  comment: string;
+  variable: string;
+  type: string;
+  number: string;
+};
+
+export type Fit = "cover" | "contain";
+
+export type ThemeBackground =
+  | { type: "solid"; color: string }
+  | { type: "gradient"; css: string }
+  | { type: "image" | "video"; path: string; fit: Fit; blur: number; dim: number };
+
+export type Corner = "top-left" | "top-right" | "bottom-left" | "bottom-right";
+
+export type ThemeMascot = {
+  path: string;
+  corner: Corner;
+  opacity: number;
+  size: number;
+};
+
+export type Effects = {
+  surface: "glass" | "solid";
+  background: boolean;
+  mascot: boolean;
+  animations: boolean;
+};
+
+export type Theme = {
+  name: string;
+  mood: string;
+  ui: ThemeUi;
+  syntax: ThemeSyntax;
+  background: ThemeBackground;
+  glass: { panelOpacity: number; blur: number };
+  mascot: ThemeMascot | null;
+  effects: Effects;
+};
