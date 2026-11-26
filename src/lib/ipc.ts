@@ -7,6 +7,7 @@ import type {
   Environment,
   FileContent,
   Folder,
+  ProjectFile,
   Settings,
   TerminalOutput,
   TerminalProfile,
@@ -26,6 +27,10 @@ export function listDir(path: string): Promise<Entry[]> {
 
 export function onFsChange(handler: (dirs: string[]) => void): Promise<() => void> {
   return listen<string[]>("fs-changed", (event) => handler(event.payload));
+}
+
+export function listFiles(): Promise<ProjectFile[]> {
+  return invoke<ProjectFile[]>("list_files");
 }
 
 export function readFile(path: string): Promise<FileContent> {

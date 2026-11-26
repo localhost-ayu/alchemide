@@ -32,6 +32,41 @@ pub fn list_dir(dir: &Path) -> Vec<Entry> {
     entries
 }
 
+pub const PROJECT_FILE_LIMIT: usize = 20_000;
+
+#[derive(Debug, PartialEq, Serialize)]
+pub struct ProjectFile {
+    pub path: String,
+    pub relative: String,
+}
+
+pub fn project_files(root: &Path, limit: usize) -> Vec<ProjectFile> {
+    let walker = WalkBuilder::new(root)
+        .hidden(false)
+        .require_git(false)
+        .filter_entry(|entry| entry.file_name() != ".git")
+        .build();
+    let mut files: Vec<ProjectFile> = walker
+        .filter_map(|result| result.ok())
+        .filter(|entry| entry.file_type().is_some_and(|kind| kind.is_file()))
+        .filter_map(|entry| {
+            let relative = entry.path().strip_prefix(root).ok()?;
+            let relative = relative
+                .components()
+                .map(|part| part.as_os_str().to_string_lossy())
+                .collect::<Vec<_>>()
+                .join("/");
+            Some(ProjectFile {
+                path: entry.path().to_string_lossy().into_owned(),
+                relative,
+            })
+        })
+        .take(limit)
+        .collect();
+    files.sort_by(|a, b| a.relative.cmp(&b.relative));
+    files
+}
+
 fn compare_entries(a: &Entry, b: &Entry) -> Ordering {
     b.is_dir
         .cmp(&a.is_dir)
@@ -89,6 +124,22 @@ mod tests {
             names(&list_dir(&dir.path().join("src"))),
             ["nested", "main.ts"]
         );
+    }
+
+    #[test]
+    fn lists_project_files_recursively_with_relative_paths() {
+        let dir = project();
+        let relative: Vec<String> = project_files(dir.path(), 100)
+            .into_iter()
+            .map(|file| file.relative)
+            .collect();
+        assert_eq!(relative, [".gitignore", "README.md", "b.ts", "src/main.ts"]);
+    }
+
+    #[test]
+    fn stops_at_the_file_limit() {
+        let dir = project();
+        assert_eq!(project_files(dir.path(), 2).len(), 2);
     }
 
     #[test]

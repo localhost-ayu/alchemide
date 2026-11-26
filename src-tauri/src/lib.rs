@@ -20,6 +20,7 @@ pub fn run() {
             env::get_environment,
             fs::open_folder,
             fs::list_dir,
+            fs::list_files,
             fs::read_file,
             fs::write_file,
             links::open_external,

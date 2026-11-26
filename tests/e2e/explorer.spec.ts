@@ -80,3 +80,16 @@ test("previews Markdown side by side and follows edits", async ({ page }) => {
   await page.keyboard.type("# Lab notes\n\n");
   await expect(preview.getByRole("heading", { name: "Lab notes" })).toBeVisible();
 });
+
+test("opens a file with quick open", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Open folder" }).click();
+  await expect(page.getByRole("button", { name: "README.md" })).toBeVisible();
+
+  await page.keyboard.press("Control+p");
+  const search = page.getByRole("combobox", { name: "Go to file" });
+  await search.fill("apptsx");
+  await search.press("Enter");
+
+  await expect(page.getByRole("textbox", { name: "Editing App.tsx" })).toBeVisible();
+});

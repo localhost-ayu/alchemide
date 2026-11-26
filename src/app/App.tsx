@@ -3,6 +3,7 @@ import { Editor } from "../features/editor/Editor";
 import { Explorer } from "../features/explorer/Explorer";
 import { MarkdownPane } from "../features/markdown/MarkdownPane";
 import { CommandPalette } from "../features/palette/CommandPalette";
+import { QuickOpen } from "../features/palette/QuickOpen";
 import { StatusBar } from "../features/statusbar/StatusBar";
 import { TerminalPanel } from "../features/terminal/TerminalPanel";
 import { Backdrop } from "../features/themes/Backdrop";
@@ -51,6 +52,7 @@ export function App() {
       </div>
       <MoodPicker />
       <CommandPalette />
+      <QuickOpen />
       <ThemeWarnings />
     </>
   );

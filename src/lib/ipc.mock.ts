@@ -4,6 +4,7 @@ import type {
   Environment,
   FileContent,
   Folder,
+  ProjectFile,
   Settings,
   TerminalOutput,
   TerminalProfile,
@@ -82,6 +83,21 @@ export function onWorkspaceChange(handler: (folder: Folder) => void): Promise<()
 
 export function listDir(path: string): Promise<Entry[]> {
   return Promise.resolve(tree[path] ?? []);
+}
+
+export function listFiles(): Promise<ProjectFile[]> {
+  const files: ProjectFile[] = [];
+  const visit = (dir: string) => {
+    for (const entry of tree[dir] ?? []) {
+      if (entry.isDir) {
+        visit(entry.path);
+      } else {
+        files.push({ path: entry.path, relative: entry.path.slice(root.length + 1) });
+      }
+    }
+  };
+  visit(root);
+  return Promise.resolve(files.sort((a, b) => a.relative.localeCompare(b.relative)));
 }
 
 export function readFile(path: string): Promise<FileContent> {
