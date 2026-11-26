@@ -9,6 +9,7 @@ import type {
   Folder,
   Settings,
   TerminalOutput,
+  TerminalProfile,
 } from "./types";
 
 export function getEnvironment(): Promise<Environment> {
@@ -59,8 +60,12 @@ export async function assetUrl(relative: string): Promise<string> {
   return convertFileSrc(await invoke<string>("asset_path", { relative }));
 }
 
-export function terminalOpen(cols: number, rows: number): Promise<number> {
-  return invoke<number>("terminal_open", { cols, rows });
+export function terminalProfiles(): Promise<TerminalProfile[]> {
+  return invoke<TerminalProfile[]>("terminal_profiles");
+}
+
+export function terminalOpen(profile: string | null, cols: number, rows: number): Promise<number> {
+  return invoke<number>("terminal_open", { profile, cols, rows });
 }
 
 export function terminalWrite(id: number, data: string): Promise<void> {
