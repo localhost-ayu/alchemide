@@ -217,3 +217,17 @@ export function onTerminalExit(handler: (id: number) => void): Promise<() => voi
   exitHandlers.add(handler);
   return Promise.resolve(() => exitHandlers.delete(handler));
 }
+
+const openedLinks: string[] = [];
+
+export function openExternal(url: string): Promise<void> {
+  if (!/^(?:https?:\/\/|mailto:)./i.test(url.trim())) {
+    return Promise.reject(new Error("only web and mail links can be opened"));
+  }
+  openedLinks.push(url);
+  return Promise.resolve();
+}
+
+export function mockOpenedLinks(): string[] {
+  return [...openedLinks];
+}

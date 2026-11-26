@@ -122,3 +122,18 @@
 .markdown-body img {
   max-width: 100%;
 }
+
+.preview-image__load {
+  padding: 6px 10px;
+  border: 1px dashed var(--color-border);
+  border-radius: 4px;
+  background: none;
+  color: var(--color-muted);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.preview-image__placeholder {
+  color: var(--color-muted);
+}

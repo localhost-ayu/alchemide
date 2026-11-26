@@ -28,3 +28,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Terminal colors follow the theme, with a reagent-green cursor while animations are on
 - Markdown preview side by side (`Ctrl+Shift+V`) with GFM tables and task lists, following unsaved edits and the editor's scroll
 - Code blocks in the Markdown preview highlighted with shiki in the current theme's colors
+- The Markdown preview never runs scripts or raw HTML, loads remote images only when asked and opens links in the system browser
