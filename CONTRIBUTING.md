@@ -52,6 +52,10 @@ compatibility. The version lives in `package.json` (Tauri reads it from there) a
 `src-tauri/Cargo.toml`. A release is a pull request named `chore(release): vX.Y.Z` that bumps
 both and moves the "Unreleased" changelog entries under the new version. After it is merged,
 the maintainer pushes the `vX.Y.Z` tag, and `.github/workflows/release.yml` builds draft
-installers for Windows (`.msi`, `.exe`) and Linux (`.deb`, `.AppImage`).
+installers for Windows (`.msi`, `.exe`) and Linux (`.deb`, `.AppImage`), signed for the updater
+with the `TAURI_SIGNING_PRIVATE_KEY` and `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` secrets, plus the
+`latest.json` the app reads to find updates. The app checks
+`releases/latest/download/latest.json`, so releases are published as the latest release, not as
+pre-releases.
 
 By contributing, you agree that your work is licensed under GPL-3.0-only.

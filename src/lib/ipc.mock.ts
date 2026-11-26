@@ -13,6 +13,7 @@ import type {
   Settings,
   TerminalOutput,
   TerminalProfile,
+  UpdateInfo,
 } from "./types";
 
 const root = "/home/user/sample-project";
@@ -352,4 +353,27 @@ export function replaceMatches(
     }
   }
   return Promise.resolve({ files: filesChanged, replacements });
+}
+
+let availableUpdate: UpdateInfo | null = null;
+let installedUpdates = 0;
+
+export function setMockUpdate(update: UpdateInfo | null): void {
+  availableUpdate = update;
+}
+
+export function mockInstalledUpdates(): number {
+  return installedUpdates;
+}
+
+export function checkUpdate(): Promise<UpdateInfo | null> {
+  return Promise.resolve(availableUpdate);
+}
+
+export function installUpdate(): Promise<void> {
+  if (!availableUpdate) {
+    return Promise.reject(new Error("there is no update to install"));
+  }
+  installedUpdates += 1;
+  return Promise.resolve();
 }

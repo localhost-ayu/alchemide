@@ -36,6 +36,10 @@ pub enum Error {
     EmptySearch,
     #[error("invalid search pattern: {0}")]
     InvalidPattern(String),
+    #[error("could not update: {0}")]
+    Update(String),
+    #[error("there is no update to install")]
+    NoUpdate,
     #[error(transparent)]
     Io(#[from] std::io::Error),
     #[error("could not watch the folder for changes: {0}")]

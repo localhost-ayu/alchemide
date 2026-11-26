@@ -16,6 +16,7 @@ import type {
   Settings,
   TerminalOutput,
   TerminalProfile,
+  UpdateInfo,
 } from "./types";
 
 export function getEnvironment(): Promise<Environment> {
@@ -124,4 +125,12 @@ export function replaceMatches(
   targets: ReplaceTarget[],
 ): Promise<ReplaceSummary> {
   return invoke<ReplaceSummary>("replace_matches", { query, replacement, targets });
+}
+
+export function checkUpdate(): Promise<UpdateInfo | null> {
+  return invoke<UpdateInfo | null>("check_update");
+}
+
+export function installUpdate(): Promise<void> {
+  return invoke<void>("install_update");
 }
