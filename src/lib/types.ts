@@ -22,3 +22,8 @@ export type FileContent = {
 export type Settings = Record<string, unknown>;
 
 export type AssetKind = "background" | "mascot";
+
+export type TerminalOutput = {
+  id: number;
+  data: string;
+};

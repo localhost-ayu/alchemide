@@ -47,6 +47,10 @@ regular browser without compiling Rust, and the end-to-end tests run against tha
   `fs::Workspace` state. The frontend never sends the root path, and the webview gets no
   dialog permission.
 - Long-running work (file watching, terminal output) pushes data to the UI with Tauri events.
+- Terminals run in a PTY from `portable-pty` (ConPTY on Windows). A reader thread per session
+  sends output as `terminal-output` events, holding back an incomplete UTF-8 sequence until the
+  next read; `terminal-exit` reports the end. Input, resize and close arrive as commands, and the
+  webview never chooses which program runs.
 - File watching is non-recursive and limited to the folders the explorer has loaded. Watching
   the whole project recursively would also cover `node_modules` and `target`, generating
   noise and exhausting inotify watches. The `fs-changed` event carries the folders to reload.
