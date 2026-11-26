@@ -235,16 +235,24 @@ mod tests {
         let mut child = pair.slave.spawn_command(command).expect("spawn");
         drop(pair.slave);
         let mut reader = pair.master.try_clone_reader().expect("reader");
+        let mut writer = pair.master.take_writer().expect("writer");
         let (sender, receiver) = std::sync::mpsc::channel();
         std::thread::spawn(move || {
             let mut output = Vec::new();
             let mut buffer = [0u8; 1024];
+            let mut answered_cursor_query = false;
             while let Ok(read) = reader.read(&mut buffer) {
                 if read == 0 {
                     break;
                 }
                 output.extend_from_slice(&buffer[..read]);
-                if String::from_utf8_lossy(&output).contains("alchemide") {
+                let text = String::from_utf8_lossy(&output);
+                if !answered_cursor_query && text.contains("\x1b[6n") {
+                    let _ = writer.write_all(b"\x1b[1;1R");
+                    let _ = writer.flush();
+                    answered_cursor_query = true;
+                }
+                if text.contains("alchemide") {
                     break;
                 }
             }
