@@ -29,7 +29,23 @@ const tree: Record<string, Entry[]> = {
 };
 
 const files: Record<string, string> = {
-  [`${root}/README.md`]: "# Sample project\n\nA small project used by the web mode.\n",
+  [`${root}/README.md`]: [
+    "# Sample project",
+    "",
+    "A small project used by the web mode.",
+    "",
+    "| Reagent | Amount |",
+    "| --- | --- |",
+    "| Acid | 2 ml |",
+    "",
+    "- [x] Mix",
+    "- [ ] Heat",
+    "",
+    "```ts",
+    'const flask = "ready";',
+    "```",
+    "",
+  ].join("\n"),
   [`${root}/index.php`]: '<?php\n\necho "Hello from PHP";\n',
   [`${root}/package.json`]: '{\n  "name": "sample-project",\n  "private": true\n}\n',
   [`${root}/query.sql`]: "SELECT id, name\nFROM users\nWHERE active = 1;\n",

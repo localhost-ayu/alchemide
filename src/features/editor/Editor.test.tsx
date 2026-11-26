@@ -9,7 +9,14 @@ import { Editor } from "./Editor";
 const root = "/home/user/sample-project";
 
 beforeEach(() => {
-  useEditorStore.setState({ tabs: [], activePath: null, cursor: null, error: null });
+  useEditorStore.setState({
+    tabs: [],
+    activePath: null,
+    cursor: null,
+    drafts: {},
+    scroll: 0,
+    error: null,
+  });
 });
 
 afterEach(() => {

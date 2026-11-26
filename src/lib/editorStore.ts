@@ -23,12 +23,16 @@ type EditorState = {
   tabs: Tab[];
   activePath: string | null;
   cursor: Cursor | null;
+  drafts: Record<string, string>;
+  scroll: number;
   error: string | null;
   openFile: (path: string) => Promise<void>;
   activate: (path: string) => void;
   closeTab: (path: string) => void;
   setDirty: (path: string, dirty: boolean) => void;
   setCursor: (cursor: Cursor) => void;
+  setDraft: (path: string, text: string) => void;
+  setScroll: (fraction: number) => void;
   saveFile: (path: string, text: string) => Promise<void>;
 };
 
@@ -36,6 +40,8 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   tabs: [],
   activePath: null,
   cursor: null,
+  drafts: {},
+  scroll: 0,
   error: null,
   openFile: async (path) => {
     if (get().tabs.some((tab) => tab.path === path)) {
@@ -63,11 +69,12 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     set((state) => {
       const index = state.tabs.findIndex((tab) => tab.path === path);
       const tabs = state.tabs.filter((tab) => tab.path !== path);
+      const { [path]: _closed, ...drafts } = state.drafts;
       if (state.activePath !== path) {
-        return { tabs };
+        return { tabs, drafts };
       }
       const next = tabs[Math.min(index, tabs.length - 1)];
-      return { tabs, activePath: next?.path ?? null, cursor: next ? state.cursor : null };
+      return { tabs, drafts, activePath: next?.path ?? null, cursor: next ? state.cursor : null };
     }),
   setDirty: (path, dirty) =>
     set((state) => ({
@@ -76,6 +83,8 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       ),
     })),
   setCursor: (cursor) => set({ cursor }),
+  setDraft: (path, text) => set((state) => ({ drafts: { ...state.drafts, [path]: text } })),
+  setScroll: (fraction) => set({ scroll: Math.min(Math.max(fraction, 0), 1) }),
   saveFile: async (path, text) => {
     const tab = get().tabs.find((candidate) => candidate.path === path);
     if (!tab) {
@@ -101,4 +110,9 @@ export function selectActiveTab(state: EditorState): Tab | null {
 
 export function hasUnsavedTabs(): boolean {
   return useEditorStore.getState().tabs.some((tab) => tab.dirty);
+}
+
+export function selectActiveText(state: EditorState): string | null {
+  const tab = selectActiveTab(state);
+  return tab ? (state.drafts[tab.path] ?? tab.text) : null;
 }

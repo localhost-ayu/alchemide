@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Editor } from "../features/editor/Editor";
 import { Explorer } from "../features/explorer/Explorer";
+import { MarkdownPane } from "../features/markdown/MarkdownPane";
 import { StatusBar } from "../features/statusbar/StatusBar";
 import { TerminalPanel } from "../features/terminal/TerminalPanel";
 import { Backdrop } from "../features/themes/Backdrop";
@@ -31,7 +32,10 @@ export function App() {
           <Explorer />
         </aside>
         <main className="app__editor" aria-label="Editor">
-          <Editor />
+          <div className="app__workspace">
+            <Editor />
+            <MarkdownPane />
+          </div>
           <Mascot />
         </main>
         <div className="app__terminal">
