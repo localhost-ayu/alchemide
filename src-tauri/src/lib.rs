@@ -1,3 +1,4 @@
+mod config;
 mod env;
 mod error;
 mod fs;
@@ -8,6 +9,8 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .manage(fs::Workspace::default())
         .invoke_handler(tauri::generate_handler![
+            config::load_settings,
+            config::save_settings,
             env::get_environment,
             fs::open_folder,
             fs::list_dir,

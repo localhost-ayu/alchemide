@@ -1,0 +1,146 @@
+import {
+  type KeyboardEvent as ReactKeyboardEvent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { filterOptions, type MoodOption, moodOptions } from "./moodOptions";
+import type { Effects, Theme } from "./theme";
+import { useThemeStore } from "./useThemeStore";
+
+const CHORD_TIMEOUT_MS = 1500;
+
+type Choice = { theme: Theme; effects: Effects };
+
+function choiceFor(option: MoodOption, base: Choice): Choice {
+  return option.kind === "theme"
+    ? { theme: option.theme, effects: base.effects }
+    : { theme: base.theme, effects: option.preset.effects };
+}
+
+export function MoodPicker() {
+  const [isOpen, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [index, setIndex] = useState(0);
+  const originalRef = useRef<Choice | null>(null);
+  const options = useMemo(() => filterOptions(moodOptions(), query), [query]);
+  const highlighted = options[Math.min(index, options.length - 1)];
+
+  useEffect(() => {
+    let chordStartedAt = 0;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const withModifier = event.ctrlKey || event.metaKey;
+      if (withModifier && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        chordStartedAt = Date.now();
+        return;
+      }
+      const inChord = Date.now() - chordStartedAt < CHORD_TIMEOUT_MS;
+      chordStartedAt = 0;
+      if (inChord && event.key.toLowerCase() === "m") {
+        event.preventDefault();
+        const { theme, effects } = useThemeStore.getState();
+        originalRef.current = { theme, effects };
+        setQuery("");
+        setIndex(0);
+        setOpen(true);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  useEffect(() => {
+    const original = originalRef.current;
+    if (!isOpen || !original || !highlighted) {
+      return;
+    }
+    const { theme, effects } = choiceFor(highlighted, original);
+    useThemeStore.getState().preview(theme, effects);
+  }, [isOpen, highlighted]);
+
+  if (!isOpen) {
+    return null;
+  }
+
+  const close = () => {
+    const original = originalRef.current;
+    if (original) {
+      useThemeStore.getState().preview(original.theme, original.effects);
+    }
+    setOpen(false);
+  };
+
+  const choose = (option: MoodOption | undefined) => {
+    const original = originalRef.current;
+    if (!option || !original) {
+      return;
+    }
+    const { theme, effects } = choiceFor(option, original);
+    useThemeStore.getState().commit(theme, effects);
+    setOpen(false);
+  };
+
+  const handleKeyDown = (event: ReactKeyboardEvent) => {
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      setIndex((current) => (current + 1) % Math.max(options.length, 1));
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      setIndex((current) => (current - 1 + options.length) % Math.max(options.length, 1));
+    } else if (event.key === "Enter") {
+      event.preventDefault();
+      choose(highlighted);
+    } else if (event.key === "Escape") {
+      event.preventDefault();
+      close();
+    }
+  };
+
+  return (
+    <div className="mood-picker__overlay">
+      <div className="mood-picker panel" role="dialog" aria-label="Choose a mood">
+        <input
+          className="mood-picker__search"
+          role="combobox"
+          aria-expanded="true"
+          aria-controls="mood-options"
+          aria-activedescendant={highlighted?.id}
+          aria-label="Search themes and effects"
+          placeholder="Theme or effects preset"
+          value={query}
+          onChange={(event) => {
+            setQuery(event.target.value);
+            setIndex(0);
+          }}
+          onKeyDown={handleKeyDown}
+          onBlur={close}
+          // biome-ignore lint/a11y/noAutofocus: the picker opens from a shortcut and must take focus
+          autoFocus
+        />
+        <div id="mood-options" className="mood-picker__list" role="listbox">
+          {options.map((option, position) => (
+            <div
+              key={option.id}
+              id={option.id}
+              role="option"
+              tabIndex={-1}
+              aria-selected={option === highlighted}
+              className="mood-picker__option"
+              onMouseEnter={() => setIndex(position)}
+              onMouseDown={(event) => {
+                event.preventDefault();
+                choose(option);
+              }}
+            >
+              <span>{option.label}</span>
+              <span className="mood-picker__group">{option.group}</span>
+            </div>
+          ))}
+          {options.length === 0 && <p className="mood-picker__empty">No match</p>}
+        </div>
+      </div>
+    </div>
+  );
+}

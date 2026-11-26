@@ -18,3 +18,5 @@ export type FileContent = {
   text: string;
   hasBom: boolean;
 };
+
+export type Settings = Record<string, unknown>;

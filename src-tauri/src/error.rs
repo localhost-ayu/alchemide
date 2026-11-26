@@ -14,6 +14,10 @@ pub enum Error {
     NotUtf8,
     #[error("the file is too large to open")]
     TooLarge,
+    #[error("the system config folder could not be found")]
+    NoConfigDir,
+    #[error("settings must be a JSON object")]
+    InvalidSettings,
     #[error(transparent)]
     Io(#[from] std::io::Error),
     #[error("could not watch the folder for changes: {0}")]

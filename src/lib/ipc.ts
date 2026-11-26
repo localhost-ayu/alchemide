@@ -1,7 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import type { Entry, Environment, FileContent, Folder } from "./types";
+import type { Entry, Environment, FileContent, Folder, Settings } from "./types";
 
 export function getEnvironment(): Promise<Environment> {
   return invoke<Environment>("get_environment");
@@ -33,4 +33,12 @@ export function onCloseRequested(canClose: () => boolean): Promise<() => void> {
       event.preventDefault();
     }
   });
+}
+
+export function loadSettings(): Promise<Settings> {
+  return invoke<Settings>("load_settings");
+}
+
+export function saveSettings(settings: Settings): Promise<void> {
+  return invoke<void>("save_settings", { settings });
 }

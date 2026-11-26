@@ -125,7 +125,7 @@ function readMascot(value: unknown, warnings: string[]): ThemeMascot | null {
   };
 }
 
-function readEffects(value: unknown): Effects {
+export function readEffects(value: unknown): Effects {
   if (!isFields(value)) {
     return DEFAULT_EFFECTS;
   }

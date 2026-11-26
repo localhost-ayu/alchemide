@@ -61,4 +61,8 @@ Wallpapers, mascots and settings live in the user's config folder (`%APPDATA%` o
 `~/.config` on Linux). The app stores only paths relative to that folder; none of that
 content ships with the app or enters the repository.
 
+Settings live in `settings.json` in the same folder (`config.rs`). Rust treats the file as an
+opaque JSON object, written atomically, and falls back to `{}` when it is missing or broken; the
+frontend validates each field it reads.
+
 Decisions and their reasons are recorded in [`decisions/`](decisions/).
