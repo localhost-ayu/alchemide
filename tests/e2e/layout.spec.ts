@@ -83,3 +83,21 @@ test("picks a mascot and toggles it with Ctrl+Alt+M", async ({ page }) => {
   await page.keyboard.press("Control+Alt+m");
   await expect(mascot).toBeVisible();
 });
+
+test("runs a command in the terminal panel", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("complementary", { name: "Explorer" })).toBeVisible();
+
+  await page.keyboard.press("Control+Backquote");
+  const panel = page.getByRole("region", { name: "Terminal" });
+  await expect(panel).toBeVisible();
+  await expect(panel).toContainText("Mock shell");
+
+  await panel.locator(".xterm").click();
+  await page.keyboard.type("git status");
+  await page.keyboard.press("Enter");
+  await expect(panel).toContainText("ran: git status");
+
+  await page.keyboard.press("Control+Backquote");
+  await expect(panel).toBeHidden();
+});
