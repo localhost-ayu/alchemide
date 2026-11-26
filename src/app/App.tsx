@@ -3,6 +3,7 @@ import { Editor } from "../features/editor/Editor";
 import { Explorer } from "../features/explorer/Explorer";
 import { StatusBar } from "../features/statusbar/StatusBar";
 import { Backdrop } from "../features/themes/Backdrop";
+import { Mascot } from "../features/themes/Mascot";
 import { MoodPicker } from "../features/themes/MoodPicker";
 import { ThemeWarnings } from "../features/themes/ThemeWarnings";
 import "./App.css";
@@ -30,6 +31,7 @@ export function App() {
         </aside>
         <main className="app__editor" aria-label="Editor">
           <Editor />
+          <Mascot />
         </main>
         <footer className="app__statusbar">
           <StatusBar />

@@ -1,8 +1,12 @@
 import { BUILTIN_THEMES } from "./builtinThemes";
+import type { CustomLook } from "./customLook";
 import { PRESETS, type Preset } from "./presets";
 import type { Theme } from "./theme";
 
+export type LookAction = "pick-background" | "pick-mascot" | "clear-background" | "clear-mascot";
+
 export type MoodOption =
+  | { kind: "action"; id: string; label: string; group: string; action: LookAction }
   | { kind: "theme"; id: string; label: string; group: string; theme: Theme }
   | { kind: "preset"; id: string; label: string; group: string; preset: Preset };
 
@@ -13,7 +17,34 @@ const GROUPS: Record<string, string> = {
   pasteis: "Pastéis",
 };
 
-export function moodOptions(themes: Theme[] = BUILTIN_THEMES): MoodOption[] {
+const ACTION_LABELS: Record<LookAction, string> = {
+  "pick-background": "Choose background image or video…",
+  "pick-mascot": "Choose mascot image…",
+  "clear-background": "Remove custom background",
+  "clear-mascot": "Remove mascot",
+};
+
+function actionOptions(custom: CustomLook): MoodOption[] {
+  const actions: LookAction[] = ["pick-background", "pick-mascot"];
+  if (custom.background) {
+    actions.push("clear-background");
+  }
+  if (custom.mascot) {
+    actions.push("clear-mascot");
+  }
+  return actions.map((action) => ({
+    kind: "action",
+    id: `action:${action}`,
+    label: ACTION_LABELS[action],
+    group: "Personalizar",
+    action,
+  }));
+}
+
+export function moodOptions(
+  themes: Theme[] = BUILTIN_THEMES,
+  custom: CustomLook = { background: null, mascot: null },
+): MoodOption[] {
   const themeOptions: MoodOption[] = themes.map((theme) => ({
     kind: "theme",
     id: `theme:${theme.name}`,
@@ -28,7 +59,7 @@ export function moodOptions(themes: Theme[] = BUILTIN_THEMES): MoodOption[] {
     group: "Efeitos",
     preset,
   }));
-  return [...themeOptions, ...presetOptions];
+  return [...themeOptions, ...presetOptions, ...actionOptions(custom)];
 }
 
 export function filterOptions(options: MoodOption[], query: string): MoodOption[] {

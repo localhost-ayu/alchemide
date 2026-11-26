@@ -85,3 +85,18 @@ Each effect is an attribute on `<html>`, switched independently:
 | `data-background` | `true`, `false`  | Shows or hides the background; with `solid`, it shows only behind the editor, dimmed |
 | `data-mascot`     | `true`, `false`  | Shows the mascot in a corner of the editor                                           |
 | `data-animations` | `true`, `false`  | Transitions and micro-animations; `prefers-reduced-motion` also turns them off       |
+
+## Your own background and mascot
+
+The mood picker (`Ctrl+K M`) has actions to choose a background image or video and a mascot
+image, and to remove them. The chosen file is copied into `backgrounds/` or `mascots/` in the
+config folder with a sanitized name, and the settings keep only that relative path. A custom
+background or mascot overrides the one of the current theme and stays when you switch themes.
+
+| Kind       | Formats                                       | Limit  |
+| ---------- | --------------------------------------------- | ------ |
+| Background | PNG, JPEG, WebP, GIF, MP4, WebM               | 100 MB |
+| Mascot     | PNG, WebP, GIF (transparent images work best) | 100 MB |
+
+Videos play muted in a loop and pause while animations are off. `Ctrl+Alt+M` shows or hides the
+mascot.

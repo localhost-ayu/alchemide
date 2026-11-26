@@ -2,56 +2,81 @@ import { create } from "zustand";
 import { loadSettings, saveSettings } from "../../lib/ipc";
 import { applyEffects, applyTheme } from "./applyTheme";
 import { BUILTIN_THEMES, DEFAULT_THEME } from "./builtinThemes";
+import { type CustomLook, NO_CUSTOM_LOOK, readCustomLook, withCustomLook } from "./customLook";
 import { readEffects } from "./parseTheme";
 import type { Effects, Theme } from "./theme";
 
 type ThemeState = {
   theme: Theme;
   effects: Effects;
+  custom: CustomLook;
   warnings: string[];
   preview: (theme: Theme, effects?: Effects) => void;
   commit: (theme: Theme, effects: Effects) => Promise<void>;
+  setCustom: (custom: Partial<CustomLook>) => Promise<void>;
   dismissWarnings: () => void;
 };
 
-export const useThemeStore = create<ThemeState>((set) => ({
-  theme: DEFAULT_THEME,
-  effects: DEFAULT_THEME.effects,
-  warnings: [],
-  preview: (theme, effects = theme.effects) => {
-    applyTheme(theme);
-    applyEffects(effects);
-  },
-  commit: async (theme, effects) => {
-    applyTheme(theme);
-    applyEffects(effects);
-    set({ theme, effects });
+function show(theme: Theme, effects: Effects, custom: CustomLook): void {
+  applyTheme(withCustomLook(theme, custom));
+  applyEffects(effects);
+}
+
+async function persist(state: Pick<ThemeState, "theme" | "effects" | "custom">): Promise<void> {
+  const settings = await loadSettings();
+  await saveSettings({
+    ...settings,
+    theme: state.theme.name,
+    effects: state.effects,
+    background: state.custom.background,
+    mascot: state.custom.mascot,
+  });
+}
+
+export const useThemeStore = create<ThemeState>((set, get) => {
+  const save = async () => {
     try {
-      const settings = await loadSettings();
-      await saveSettings({ ...settings, theme: theme.name, effects });
+      await persist(get());
     } catch (error) {
-      set({ warnings: [`could not save the theme: ${String(error)}`] });
+      set({ warnings: [`could not save the look: ${String(error)}`] });
     }
-  },
-  dismissWarnings: () => set({ warnings: [] }),
-}));
+  };
+  return {
+    theme: DEFAULT_THEME,
+    effects: DEFAULT_THEME.effects,
+    custom: NO_CUSTOM_LOOK,
+    warnings: [],
+    preview: (theme, effects = theme.effects) => show(theme, effects, get().custom),
+    commit: async (theme, effects) => {
+      show(theme, effects, get().custom);
+      set({ theme, effects });
+      await save();
+    },
+    setCustom: async (changes) => {
+      const custom = { ...get().custom, ...changes };
+      show(get().theme, get().effects, custom);
+      set({ custom });
+      await save();
+    },
+    dismissWarnings: () => set({ warnings: [] }),
+  };
+});
 
 export function findTheme(name: unknown): Theme | null {
   return BUILTIN_THEMES.find((theme) => theme.name === name) ?? null;
 }
 
 export async function initThemes(): Promise<void> {
-  const apply = (theme: Theme, effects: Effects) => {
-    applyTheme(theme);
-    applyEffects(effects);
-    useThemeStore.setState({ theme, effects });
+  const apply = (theme: Theme, effects: Effects, custom: CustomLook) => {
+    show(theme, effects, custom);
+    useThemeStore.setState({ theme, effects, custom });
   };
-  apply(DEFAULT_THEME, DEFAULT_THEME.effects);
+  apply(DEFAULT_THEME, DEFAULT_THEME.effects, NO_CUSTOM_LOOK);
   try {
     const settings = await loadSettings();
     const theme = findTheme(settings.theme) ?? DEFAULT_THEME;
     const effects = settings.effects === undefined ? theme.effects : readEffects(settings.effects);
-    apply(theme, effects);
+    apply(theme, effects, readCustomLook(settings, theme));
   } catch {
     return;
   }

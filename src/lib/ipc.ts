@@ -1,7 +1,7 @@
-import { invoke } from "@tauri-apps/api/core";
+import { convertFileSrc, invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import type { Entry, Environment, FileContent, Folder, Settings } from "./types";
+import type { AssetKind, Entry, Environment, FileContent, Folder, Settings } from "./types";
 
 export function getEnvironment(): Promise<Environment> {
   return invoke<Environment>("get_environment");
@@ -41,4 +41,12 @@ export function loadSettings(): Promise<Settings> {
 
 export function saveSettings(settings: Settings): Promise<void> {
   return invoke<void>("save_settings", { settings });
+}
+
+export function importAsset(kind: AssetKind): Promise<string | null> {
+  return invoke<string | null>("import_asset", { kind });
+}
+
+export async function assetUrl(relative: string): Promise<string> {
+  return convertFileSrc(await invoke<string>("asset_path", { relative }));
 }
