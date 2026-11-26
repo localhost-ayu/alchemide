@@ -3,6 +3,7 @@ mod config;
 mod env;
 mod error;
 mod fs;
+mod links;
 mod terminal;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -21,6 +22,7 @@ pub fn run() {
             fs::list_dir,
             fs::read_file,
             fs::write_file,
+            links::open_external,
             terminal::terminal_open,
             terminal::terminal_profiles,
             terminal::terminal_write,

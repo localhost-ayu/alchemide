@@ -28,6 +28,10 @@ pub enum Error {
     NoTerminal,
     #[error("this terminal profile is not available")]
     NoProfile,
+    #[error("only web and mail links can be opened")]
+    UnsupportedLink,
+    #[error("could not open the link: {0}")]
+    OpenLink(String),
     #[error(transparent)]
     Io(#[from] std::io::Error),
     #[error("could not watch the folder for changes: {0}")]

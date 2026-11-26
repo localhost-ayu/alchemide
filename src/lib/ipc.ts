@@ -87,3 +87,7 @@ export function onTerminalOutput(handler: (output: TerminalOutput) => void): Pro
 export function onTerminalExit(handler: (id: number) => void): Promise<() => void> {
   return listen<number>("terminal-exit", (event) => handler(event.payload));
 }
+
+export function openExternal(url: string): Promise<void> {
+  return invoke<void>("open_external", { url });
+}

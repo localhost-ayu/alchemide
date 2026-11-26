@@ -2,10 +2,36 @@ import { useEffect, useRef } from "react";
 import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useEditorStore } from "../../lib/editorStore";
+import { openExternal } from "../../lib/ipc";
 import { CodeBlock } from "./CodeBlock";
 import { codeLanguage } from "./codeLanguage";
+import { linkKind } from "./linkKind";
+import { PreviewImage } from "./PreviewImage";
 
 const components: Components = {
+  a({ href, children }) {
+    const kind = linkKind(href);
+    if (kind === "anchor") {
+      return <a href={href}>{children}</a>;
+    }
+    return (
+      <a
+        href={href}
+        title={href}
+        onClick={(event) => {
+          event.preventDefault();
+          if (kind === "external" && href) {
+            openExternal(href).catch(() => {});
+          }
+        }}
+      >
+        {children}
+      </a>
+    );
+  },
+  img({ src, alt }) {
+    return <PreviewImage src={typeof src === "string" ? src : undefined} alt={alt} />;
+  },
   code({ className, children }) {
     const language = codeLanguage(className);
     const code = String(children ?? "").replace(/\n$/, "");
