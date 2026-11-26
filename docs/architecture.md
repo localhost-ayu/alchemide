@@ -73,6 +73,10 @@ regular browser without compiling Rust, and the end-to-end tests run against tha
 - The asset protocol is enabled only for `backgrounds/*` and `mascots/*` inside the app config
   folder, so the webview can show the user's background and mascot and nothing else on disk.
   `asset_path` also rejects any path outside those two folders.
+- Updates are checked and installed from Rust (`check_update`, `install_update`) with the
+  updater plugin's Rust API, against `latest.json` in the latest GitHub release, and only
+  installed when the signature matches the public key in `tauri.conf.json`. The webview has no
+  updater permission. The check can be turned off in the settings.
 - Links from the Markdown preview go through `open_external`, which accepts only `http`,
   `https` and `mailto` and calls the opener crate from Rust; the opener plugin is not registered,
   so the webview has no way to open arbitrary files or programs.

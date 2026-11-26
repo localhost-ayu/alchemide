@@ -72,3 +72,8 @@ export type ReplaceSummary = {
   files: number;
   replacements: number;
 };
+
+export type UpdateInfo = {
+  version: string;
+  notes: string | null;
+};

@@ -37,6 +37,18 @@
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
-    ]
+    ],
+    "createUpdaterArtifacts": true
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDRBQTI2MDgzRDdDQjdCREIKUldUYmU4dlhnMkNpU2w5N0duNW1xUnFZWG1rL1NWUHN5Nzl4VndUbWFjWjlqcHE3RHRGVDR6Z20K",
+      "endpoints": [
+        "https://github.com/localhost-ayu/alchemide/releases/latest/download/latest.json"
+      ],
+      "windows": {
+        "installMode": "passive"
+      }
+    }
   }
 }

@@ -13,6 +13,8 @@ import { Mascot } from "../features/themes/Mascot";
 import { MoodPicker } from "../features/themes/MoodPicker";
 import { ThemeSettings } from "../features/themes/ThemeSettings";
 import { ThemeWarnings } from "../features/themes/ThemeWarnings";
+import { UpdateNotice } from "../features/updater/UpdateNotice";
+import { UpdateSettings } from "../features/updater/UpdateSettings";
 import { registerCommands } from "../lib/commands";
 import "./App.css";
 
@@ -89,7 +91,9 @@ export function App() {
       <QuickOpen />
       <SettingsScreen>
         <ThemeSettings />
+        <UpdateSettings />
       </SettingsScreen>
+      <UpdateNotice />
       <ThemeWarnings />
     </>
   );
