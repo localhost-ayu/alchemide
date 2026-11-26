@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Editor } from "../features/editor/Editor";
 import { Explorer } from "../features/explorer/Explorer";
-import { EnvironmentBadge } from "../features/statusbar/EnvironmentBadge";
+import { StatusBar } from "../features/statusbar/StatusBar";
 import "./App.css";
 
 export function App() {
@@ -27,8 +27,7 @@ export function App() {
         <Editor />
       </main>
       <footer className="app__statusbar">
-        <span>Status bar</span>
-        <EnvironmentBadge />
+        <StatusBar />
       </footer>
     </div>
   );

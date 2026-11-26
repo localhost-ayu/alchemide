@@ -1,0 +1,19 @@
+.statusbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+}
+
+.statusbar__file {
+  display: flex;
+  gap: 16px;
+}
+
+.environment-badge {
+  padding: 0 6px;
+  border-radius: 3px;
+  background: #2e2742;
+  color: #b6f24a;
+}

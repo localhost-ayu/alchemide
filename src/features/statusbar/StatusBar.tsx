@@ -1,0 +1,25 @@
+import { selectActiveTab, useEditorStore } from "../../lib/editorStore";
+import { languageLabel } from "../../lib/languages";
+import { EnvironmentBadge } from "./EnvironmentBadge";
+import { formatEncoding, formatLineCount, formatPosition } from "./formatStatus";
+import "./StatusBar.css";
+
+export function StatusBar() {
+  const tab = useEditorStore(selectActiveTab);
+  const cursor = useEditorStore((state) => state.cursor);
+
+  return (
+    <div className="statusbar">
+      <EnvironmentBadge />
+      {tab && cursor && (
+        <div className="statusbar__file">
+          <span>{formatPosition(cursor)}</span>
+          <span>{formatLineCount(cursor.lineCount)}</span>
+          <span>{formatEncoding(tab.hasBom)}</span>
+          <span>{tab.lineEnding}</span>
+          <span>{languageLabel(tab.language)}</span>
+        </div>
+      )}
+    </div>
+  );
+}
