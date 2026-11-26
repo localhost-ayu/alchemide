@@ -91,3 +91,7 @@ export function onTerminalExit(handler: (id: number) => void): Promise<() => voi
 export function openExternal(url: string): Promise<void> {
   return invoke<void>("open_external", { url });
 }
+
+export function onWorkspaceChange(handler: (folder: Folder) => void): Promise<() => void> {
+  return listen<Folder>("workspace-changed", (event) => handler(event.payload));
+}

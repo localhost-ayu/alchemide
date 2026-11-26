@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- The environment badge shows `WSL · <distro>` when the Windows app opens a folder inside WSL
+
 ## [0.1.0] - 2026-11-26
 
 First release: a lightweight editor for Windows and Linux (including WSL) with mood themes.

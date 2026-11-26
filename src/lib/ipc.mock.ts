@@ -56,12 +56,28 @@ const files: Record<string, string> = {
   [`${root}/src/styles.css`]: "body {\n  margin: 0;\n}\n",
 };
 
+let environment: Environment = { kind: "linux" };
+const workspaceHandlers = new Set<(folder: Folder) => void>();
+
 export function getEnvironment(): Promise<Environment> {
-  return Promise.resolve({ kind: "linux" });
+  return Promise.resolve(environment);
+}
+
+export function setMockEnvironment(next: Environment): void {
+  environment = next;
 }
 
 export function openFolder(): Promise<Folder | null> {
-  return Promise.resolve({ name: "sample-project", path: root });
+  const folder = { name: "sample-project", path: root };
+  for (const handler of workspaceHandlers) {
+    handler(folder);
+  }
+  return Promise.resolve(folder);
+}
+
+export function onWorkspaceChange(handler: (folder: Folder) => void): Promise<() => void> {
+  workspaceHandlers.add(handler);
+  return Promise.resolve(() => workspaceHandlers.delete(handler));
 }
 
 export function listDir(path: string): Promise<Entry[]> {

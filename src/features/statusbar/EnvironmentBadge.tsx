@@ -1,14 +1,23 @@
 import { useEffect, useState } from "react";
-import { getEnvironment } from "../../lib/ipc";
+import { getEnvironment, onWorkspaceChange } from "../../lib/ipc";
 import { formatEnvironment } from "./formatEnvironment";
 
 export function EnvironmentBadge() {
   const [label, setLabel] = useState<string | null>(null);
 
   useEffect(() => {
-    getEnvironment()
-      .then((environment) => setLabel(formatEnvironment(environment)))
-      .catch(() => setLabel(null));
+    let current = true;
+    const refresh = () => {
+      getEnvironment()
+        .then((environment) => current && setLabel(formatEnvironment(environment)))
+        .catch(() => current && setLabel(null));
+    };
+    refresh();
+    const subscription = onWorkspaceChange(refresh);
+    return () => {
+      current = false;
+      subscription.then((unsubscribe) => unsubscribe());
+    };
   }, []);
 
   if (!label) {
