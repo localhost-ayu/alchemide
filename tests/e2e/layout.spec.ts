@@ -101,3 +101,25 @@ test("runs a command in the terminal panel", async ({ page }) => {
   await page.keyboard.press("Control+Backquote");
   await expect(panel).toBeHidden();
 });
+
+test("the terminal follows the theme", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("complementary", { name: "Explorer" })).toBeVisible();
+  await page.keyboard.press("Control+Backquote");
+  const panel = page.getByRole("region", { name: "Terminal" });
+  await expect(panel).toContainText("Mock shell");
+  const promptColor = () =>
+    panel
+      .locator(".xterm-rows span", { hasText: "lab" })
+      .first()
+      .evaluate((node) => getComputedStyle(node).color);
+  const before = await promptColor();
+
+  await page.keyboard.press("Control+k");
+  await page.keyboard.press("m");
+  const search = page.getByRole("combobox", { name: "Search themes and effects" });
+  await search.fill("lavanda");
+  await search.press("Enter");
+
+  await expect.poll(promptColor).not.toBe(before);
+});

@@ -23,6 +23,11 @@ webview (WebView2 on Windows, WebKitGTK on Linux).
 - `lib/`: shared code, including the IPC layer.
 - `styles/`: design tokens and visual effects as CSS variables.
 
+Features that need the current look without importing `themes/` read the CSS variables on
+`<html>` (the terminal rebuilds its xterm palette with a `MutationObserver`). While the terminal
+has focus, app shortcuts (`` Ctrl+` ``, `Ctrl+B`, `Ctrl+K` chords, `Ctrl+Alt+M`) skip the shell,
+like VS Code's "commands to skip shell".
+
 ## The IPC rule
 
 Only `src/lib/ipc.ts` calls `invoke()` or listens to backend events. Components and

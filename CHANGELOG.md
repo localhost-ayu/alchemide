@@ -25,3 +25,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Tabs with an unsaved indicator, `Ctrl+S` to save, `Ctrl+W` to close and a warning before closing unsaved work; files keep their line endings and BOM
 - Browser mode with a mocked backend (`pnpm dev:web`) and a Linux dev container
 - Built-in terminal panel (`` Ctrl+` ``) with tabs, resizing with the window; PowerShell on Windows, your `$SHELL` on Linux, and WSL profiles (projects inside WSL open straight in their distro)
+- Terminal colors follow the theme, with a reagent-green cursor while animations are on

@@ -7,7 +7,9 @@ const written: string[] = [];
 
 vi.mock("@xterm/xterm", () => ({
   Terminal: class {
+    options: Record<string, unknown> = {};
     loadAddon() {}
+    attachCustomKeyEventHandler() {}
     open() {}
     focus() {}
     dispose() {}
