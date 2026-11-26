@@ -3,10 +3,12 @@ use std::sync::Mutex;
 
 use notify::{RecommendedWatcher, RecursiveMode, Watcher};
 use serde::Serialize;
-use tauri::{AppHandle, State};
+use tauri::{AppHandle, Emitter, State};
 use tauri_plugin_dialog::DialogExt;
 
 use crate::error::{Error, Result};
+
+pub const WORKSPACE_CHANGED_EVENT: &str = "workspace-changed";
 
 mod file;
 mod tree;
@@ -94,8 +96,9 @@ pub async fn open_folder(
     };
     let root = picked.into_path().map_err(|_| Error::NotLocalFolder)?;
     let folder = describe_folder(&root);
-    let watcher = watcher::create(app_handle)?;
+    let watcher = watcher::create(app_handle.clone())?;
     workspace.start(Session { root, watcher });
+    let _ = app_handle.emit(WORKSPACE_CHANGED_EVENT, &folder);
     Ok(Some(folder))
 }
 

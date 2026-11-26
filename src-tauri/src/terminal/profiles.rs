@@ -1,5 +1,7 @@
 use serde::Serialize;
 
+use crate::env::wsl_location;
+
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct Profile {
     pub id: String,
@@ -10,25 +12,6 @@ pub struct Profile {
     pub args: Vec<String>,
     #[serde(skip)]
     pub uses_project_folder: bool,
-}
-
-#[derive(Debug, PartialEq)]
-pub struct WslLocation {
-    pub distro: String,
-    pub path: String,
-}
-
-pub fn wsl_location(windows_path: &str) -> Option<WslLocation> {
-    let normalized = windows_path.replace('/', "\\");
-    let lower = normalized.to_lowercase();
-    let rest = ["\\\\wsl$\\", "\\\\wsl.localhost\\"]
-        .iter()
-        .find(|prefix| lower.starts_with(*prefix))
-        .map(|prefix| &normalized[prefix.len()..])?;
-    let mut parts = rest.split('\\').filter(|part| !part.is_empty());
-    let distro = parts.next()?.to_string();
-    let path = format!("/{}", parts.collect::<Vec<_>>().join("/"));
-    Some(WslLocation { distro, path })
 }
 
 pub fn parse_distros(output: &[u8]) -> Vec<String> {
@@ -104,42 +87,6 @@ pub fn profiles(
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn converts_wsl_dollar_paths() {
-        assert_eq!(
-            wsl_location(r"\\wsl$\Ubuntu\home\nat\alchemide"),
-            Some(WslLocation {
-                distro: "Ubuntu".into(),
-                path: "/home/nat/alchemide".into()
-            })
-        );
-    }
-
-    #[test]
-    fn converts_wsl_localhost_paths_with_any_case_or_slash() {
-        assert_eq!(
-            wsl_location("//WSL.localhost/Debian/srv/app/"),
-            Some(WslLocation {
-                distro: "Debian".into(),
-                path: "/srv/app".into()
-            })
-        );
-        assert_eq!(
-            wsl_location(r"\\wsl.localhost\Ubuntu"),
-            Some(WslLocation {
-                distro: "Ubuntu".into(),
-                path: "/".into()
-            })
-        );
-    }
-
-    #[test]
-    fn ignores_regular_windows_paths() {
-        assert_eq!(wsl_location(r"C:\code\alchemide"), None);
-        assert_eq!(wsl_location(r"\\server\share\x"), None);
-        assert_eq!(wsl_location(r"\\wsl$\"), None);
-    }
 
     #[test]
     fn reads_the_utf16_output_of_wsl_list() {
