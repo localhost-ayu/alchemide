@@ -1,11 +1,13 @@
 import type { EditorState, Text } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { playfulTouchesEnabled, useActivityStore } from "../../lib/activityStore";
 import { hasUnsavedTabs, selectActiveTab, useEditorStore } from "../../lib/editorStore";
 import { onCloseRequested } from "../../lib/ipc";
 import { joinLines } from "../../lib/lineEndings";
 import { createEditorState } from "./createEditorState";
 import { requestCloseTab } from "./requestCloseTab";
+import { saveMessage } from "./saveMessage";
 import { Tabs } from "./Tabs";
 import "./Editor.css";
 
@@ -31,6 +33,8 @@ export function Editor() {
   const containerRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<EditorView | null>(null);
   const sessionsRef = useRef(new Map<string, Session>());
+  const experimentsRef = useRef(0);
+  const [glow, setGlow] = useState<"a" | "b" | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) {
@@ -93,10 +97,17 @@ export function Editor() {
         return;
       }
       const doc = view.state.doc;
-      await useEditorStore.getState().saveFile(tab.path, joinLines(doc.toJSON(), tab.lineEnding));
-      if (!useEditorStore.getState().error) {
-        session.saved = doc;
+      const { track, notify } = useActivityStore.getState();
+      await track(
+        useEditorStore.getState().saveFile(tab.path, joinLines(doc.toJSON(), tab.lineEnding)),
+      );
+      if (useEditorStore.getState().error) {
+        return;
       }
+      session.saved = doc;
+      experimentsRef.current += 1;
+      notify(saveMessage(tab.name, experimentsRef.current, playfulTouchesEnabled()));
+      setGlow((current) => (current === "a" ? "b" : "a"));
     };
     const handleKeyDown = (event: KeyboardEvent) => {
       if (!(event.ctrlKey || event.metaKey)) {
@@ -126,7 +137,7 @@ export function Editor() {
   }, []);
 
   return (
-    <div className="editor">
+    <div className="editor" data-glow={glow ?? undefined}>
       <Tabs />
       {error && (
         <p role="alert" className="editor__error">

@@ -1,6 +1,7 @@
 import { EditorView } from "@codemirror/view";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
+import { useActivityStore } from "../../lib/activityStore";
 import { useEditorStore } from "../../lib/editorStore";
 import { readMockFile, writeFile } from "../../lib/ipc.mock";
 import { Editor } from "./Editor";
@@ -132,4 +133,25 @@ test("shows an error when the file cannot be read", async () => {
   await open(`${root}/missing.ts`);
 
   expect(screen.getByRole("alert").textContent).toContain("file not found");
+});
+
+test("announces each save as a numbered experiment, or plainly without animations", async () => {
+  render(<Editor />);
+  await open(`${root}/query.sql`);
+  const save = async () => {
+    type("query.sql", "x");
+    await act(async () => {
+      fireEvent.keyDown(window, { key: "s", ctrlKey: true });
+    });
+  };
+
+  document.documentElement.dataset.animations = "true";
+  await save();
+  expect(useActivityStore.getState().message?.text).toBe("Experiment #1 saved: query.sql");
+  await save();
+  expect(useActivityStore.getState().message?.text).toBe("Experiment #2 saved: query.sql");
+
+  document.documentElement.dataset.animations = "false";
+  await save();
+  expect(useActivityStore.getState().message?.text).toBe("Saved query.sql");
 });

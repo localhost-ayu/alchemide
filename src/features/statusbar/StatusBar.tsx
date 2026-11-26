@@ -1,5 +1,6 @@
 import { selectActiveTab, useEditorStore } from "../../lib/editorStore";
 import { languageLabel } from "../../lib/languages";
+import { ActivityIndicator } from "./ActivityIndicator";
 import { EnvironmentBadge } from "./EnvironmentBadge";
 import { formatEncoding, formatLineCount, formatPosition } from "./formatStatus";
 import "./StatusBar.css";
@@ -10,7 +11,10 @@ export function StatusBar() {
 
   return (
     <div className="statusbar">
-      <EnvironmentBadge />
+      <div className="statusbar__left">
+        <EnvironmentBadge />
+        <ActivityIndicator />
+      </div>
       {tab && cursor && (
         <div className="statusbar__file">
           <span>{formatPosition(cursor)}</span>

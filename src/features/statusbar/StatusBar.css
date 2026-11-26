@@ -17,3 +17,73 @@
   background: var(--color-selected);
   color: var(--color-accent);
 }
+
+.statusbar__left,
+.activity {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.activity__message {
+  color: var(--color-accent);
+  animation: activity-in calc(var(--motion) * 2) ease-out;
+}
+
+.flask-spinner {
+  width: 14px;
+  height: 14px;
+}
+
+.flask-spinner__glass {
+  fill: none;
+  stroke: var(--color-muted);
+  stroke-width: 1.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.flask-spinner__liquid,
+.flask-spinner__bubble {
+  fill: var(--color-accent);
+}
+
+[data-animations="true"] .flask-spinner__bubble {
+  animation: flask-bubble 1.2s ease-in infinite;
+}
+
+[data-animations="true"] .flask-spinner__bubble:nth-of-type(2) {
+  animation-delay: 0.4s;
+}
+
+[data-animations="true"] .flask-spinner__bubble:nth-of-type(3) {
+  animation-delay: 0.8s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flask-spinner__bubble,
+  .activity__message {
+    animation: none;
+  }
+}
+
+@keyframes flask-bubble {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-6px);
+    opacity: 0;
+  }
+}
+
+@keyframes activity-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
