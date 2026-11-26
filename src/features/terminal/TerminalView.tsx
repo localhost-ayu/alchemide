@@ -1,7 +1,10 @@
 import { FitAddon } from "@xterm/addon-fit";
 import { Terminal } from "@xterm/xterm";
 import { useEffect, useRef } from "react";
+import { playfulTouchesEnabled } from "../../lib/activityStore";
 import { onTerminalOutput, terminalResize, terminalWrite } from "../../lib/ipc";
+import { isChordStart, reachesApp } from "./appShortcuts";
+import { readRootVariable, terminalTheme } from "./terminalTheme";
 import "@xterm/xterm/css/xterm.css";
 
 type TerminalViewProps = {
@@ -24,10 +27,20 @@ export function TerminalView({ id, isActive }: TerminalViewProps) {
       fontFamily: getComputedStyle(document.documentElement).getPropertyValue("--font-code"),
       fontSize: 13,
       allowTransparency: true,
+      theme: terminalTheme(readRootVariable, playfulTouchesEnabled()),
     });
     const fit = new FitAddon();
     terminal.loadAddon(fit);
     terminal.open(container);
+    let chordStartedAt = Number.NEGATIVE_INFINITY;
+    terminal.attachCustomKeyEventHandler((event) => {
+      if (event.type !== "keydown") {
+        return true;
+      }
+      const sinceChord = Date.now() - chordStartedAt;
+      chordStartedAt = isChordStart(event) ? Date.now() : Number.NEGATIVE_INFINITY;
+      return !reachesApp(event, isChordStart(event) ? Number.POSITIVE_INFINITY : sinceChord);
+    });
     terminalRef.current = terminal;
     fitRef.current = fit;
 
@@ -48,9 +61,17 @@ export function TerminalView({ id, isActive }: TerminalViewProps) {
       }
     });
     observer.observe(container);
+    const themeObserver = new MutationObserver(() => {
+      terminal.options.theme = terminalTheme(readRootVariable, playfulTouchesEnabled());
+    });
+    themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["style", "data-animations"],
+    });
 
     return () => {
       observer.disconnect();
+      themeObserver.disconnect();
       input.dispose();
       resize.dispose();
       output.then((unsubscribe) => unsubscribe());
