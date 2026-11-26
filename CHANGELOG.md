@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-26
+
+Productivity release. From this version on, Alchemide updates itself; users of 0.1.0 install 0.2.0 by hand once.
+
 ### Added
 
 - Command palette (`Ctrl+Shift+P`) listing every action with its shortcut, with fuzzy search
@@ -58,5 +62,6 @@ First release: a lightweight editor for Windows and Linux (including WSL) with m
 
 - Browser mode with a mocked backend (`pnpm dev:web`) and a Linux dev container
 
-[Unreleased]: https://github.com/localhost-ayu/alchemide/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/localhost-ayu/alchemide/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/localhost-ayu/alchemide/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/localhost-ayu/alchemide/releases/tag/v0.1.0

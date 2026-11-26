@@ -1,7 +1,7 @@
 {
   "name": "alchemide",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A lightweight, mood-themed code editor built with Tauri, React and CodeMirror.",
   "license": "GPL-3.0-only",
   "type": "module",
