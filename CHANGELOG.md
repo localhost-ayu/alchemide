@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Command palette (`Ctrl+Shift+P`) listing every action with its shortcut, with fuzzy search
 - Quick open (`Ctrl+P`): fuzzy search over the project's file names, respecting `.gitignore`
 - Find and replace across the project (`Ctrl+Shift+F`): plain text or regex, match case, results streamed as they are found, replace only the matches you keep selected; open tabs reload and tabs with unsaved changes are left alone
+- Settings screen (`Ctrl+,`): editor font, font size and tab size, theme and each effect, saved in the config folder
 
 ### Fixed
 

@@ -6,7 +6,7 @@ export const editorTheme = EditorView.theme(
       height: "100%",
       color: "var(--color-text)",
       backgroundColor: "transparent",
-      fontSize: "14px",
+      fontSize: "var(--editor-font-size, 14px)",
     },
     ".cm-scroller": { fontFamily: "var(--font-code)", lineHeight: "1.6" },
     ".cm-content": { caretColor: "var(--color-accent)" },
