@@ -2,27 +2,31 @@ import { useEffect, useState } from "react";
 import { Editor } from "../features/editor/Editor";
 import { Explorer } from "../features/explorer/Explorer";
 import { MarkdownPane } from "../features/markdown/MarkdownPane";
+import { CommandPalette } from "../features/palette/CommandPalette";
 import { StatusBar } from "../features/statusbar/StatusBar";
 import { TerminalPanel } from "../features/terminal/TerminalPanel";
 import { Backdrop } from "../features/themes/Backdrop";
 import { Mascot } from "../features/themes/Mascot";
 import { MoodPicker } from "../features/themes/MoodPicker";
 import { ThemeWarnings } from "../features/themes/ThemeWarnings";
+import { registerCommands } from "../lib/commands";
 import "./App.css";
 
 export function App() {
   const [isExplorerOpen, setExplorerOpen] = useState(true);
 
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "b") {
-        event.preventDefault();
-        setExplorerOpen((open) => !open);
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  useEffect(
+    () =>
+      registerCommands([
+        {
+          id: "view.toggleExplorer",
+          title: "Toggle explorer",
+          keys: "Ctrl+B",
+          run: () => setExplorerOpen((open) => !open),
+        },
+      ]),
+    [],
+  );
 
   return (
     <>
@@ -46,6 +50,7 @@ export function App() {
         </footer>
       </div>
       <MoodPicker />
+      <CommandPalette />
       <ThemeWarnings />
     </>
   );

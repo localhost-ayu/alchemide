@@ -2,6 +2,7 @@ import type { EditorState, Text } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
 import { useEffect, useRef, useState } from "react";
 import { playfulTouchesEnabled, useActivityStore } from "../../lib/activityStore";
+import { registerCommands } from "../../lib/commands";
 import { hasUnsavedTabs, selectActiveTab, useEditorStore } from "../../lib/editorStore";
 import { onCloseRequested } from "../../lib/ipc";
 import { joinLines } from "../../lib/lineEndings";
@@ -120,22 +121,20 @@ export function Editor() {
       notify(saveMessage(tab.name, experimentsRef.current, playfulTouchesEnabled()));
       setGlow((current) => (current === "a" ? "b" : "a"));
     };
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (!(event.ctrlKey || event.metaKey)) {
-        return;
-      }
-      const key = event.key.toLowerCase();
-      const activePath = useEditorStore.getState().activePath;
-      if (key === "s") {
-        event.preventDefault();
-        save();
-      } else if (key === "w" && activePath) {
-        event.preventDefault();
-        requestCloseTab(activePath);
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    return registerCommands([
+      { id: "editor.save", title: "Save file", keys: "Ctrl+S", run: save },
+      {
+        id: "editor.closeTab",
+        title: "Close tab",
+        keys: "Ctrl+W",
+        run: () => {
+          const activePath = useEditorStore.getState().activePath;
+          if (activePath) {
+            requestCloseTab(activePath);
+          }
+        },
+      },
+    ]);
   }, []);
 
   useEffect(() => {

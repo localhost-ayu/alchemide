@@ -5,12 +5,11 @@ import {
   useRef,
   useState,
 } from "react";
+import { registerCommands } from "../../lib/commands";
 import { filterOptions, type MoodOption, moodOptions } from "./moodOptions";
 import { runLookAction } from "./runLookAction";
 import type { Effects, Theme } from "./theme";
 import { useThemeStore } from "./useThemeStore";
-
-const CHORD_TIMEOUT_MS = 1500;
 
 type Choice = { theme: Theme; effects: Effects };
 
@@ -37,29 +36,24 @@ export function MoodPicker() {
   );
   const highlighted = options[Math.min(index, options.length - 1)];
 
-  useEffect(() => {
-    let chordStartedAt = 0;
-    const handleKeyDown = (event: KeyboardEvent) => {
-      const withModifier = event.ctrlKey || event.metaKey;
-      if (withModifier && event.key.toLowerCase() === "k") {
-        event.preventDefault();
-        chordStartedAt = Date.now();
-        return;
-      }
-      const inChord = Date.now() - chordStartedAt < CHORD_TIMEOUT_MS;
-      chordStartedAt = 0;
-      if (inChord && event.key.toLowerCase() === "m") {
-        event.preventDefault();
-        const { theme, effects } = useThemeStore.getState();
-        originalRef.current = { theme, effects };
-        setQuery("");
-        setIndex(0);
-        setOpen(true);
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  useEffect(
+    () =>
+      registerCommands([
+        {
+          id: "themes.pickMood",
+          title: "Choose theme or effects",
+          keys: "Ctrl+K M",
+          run: () => {
+            const { theme, effects } = useThemeStore.getState();
+            originalRef.current = { theme, effects };
+            setQuery("");
+            setIndex(0);
+            setOpen(true);
+          },
+        },
+      ]),
+    [],
+  );
 
   useEffect(() => {
     const original = originalRef.current;

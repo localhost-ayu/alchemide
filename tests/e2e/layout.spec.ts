@@ -123,3 +123,17 @@ test("the terminal follows the theme", async ({ page }) => {
 
   await expect.poll(promptColor).not.toBe(before);
 });
+
+test("runs actions from the command palette", async ({ page }) => {
+  await page.goto("/");
+  const explorer = page.getByRole("complementary", { name: "Explorer" });
+  await expect(explorer).toBeVisible();
+
+  await page.keyboard.press("Control+Shift+P");
+  const search = page.getByRole("combobox", { name: "Run a command" });
+  await expect(page.getByRole("option", { name: /Toggle terminal/ })).toBeVisible();
+  await search.fill("explorer");
+  await search.press("Enter");
+
+  await expect(explorer).toBeHidden();
+});

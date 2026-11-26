@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Command palette (`Ctrl+Shift+P`) listing every action with its shortcut, with fuzzy search
+
 ### Fixed
 
 - The environment badge shows `WSL · <distro>` when the Windows app opens a folder inside WSL

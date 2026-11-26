@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { registerCommands } from "../../lib/commands";
 import { selectActiveTab, selectActiveText, useEditorStore } from "../../lib/editorStore";
 import { MarkdownPreview } from "./MarkdownPreview";
 import { usePreviewStore } from "./usePreviewStore";
@@ -9,16 +10,18 @@ export function MarkdownPane() {
   const isMarkdown = useEditorStore((state) => selectActiveTab(state)?.language === "markdown");
   const source = useEditorStore(selectActiveText);
 
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key.toLowerCase() === "v") {
-        event.preventDefault();
-        usePreviewStore.getState().toggle();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  useEffect(
+    () =>
+      registerCommands([
+        {
+          id: "markdown.togglePreview",
+          title: "Toggle Markdown preview",
+          keys: "Ctrl+Shift+V",
+          run: () => usePreviewStore.getState().toggle(),
+        },
+      ]),
+    [],
+  );
 
   if (!isOpen || !isMarkdown || source === null) {
     return null;
