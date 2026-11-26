@@ -65,3 +65,21 @@ test("switches theme and turns the glass off from the mood picker", async ({ pag
   await expect(html).toHaveAttribute("data-theme", "Menta");
   await expect(explorer).toHaveCSS("backdrop-filter", "none");
 });
+
+test("picks a mascot and toggles it with Ctrl+Alt+M", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("complementary", { name: "Explorer" })).toBeVisible();
+
+  await page.keyboard.press("Control+k");
+  await page.keyboard.press("m");
+  const search = page.getByRole("combobox", { name: "Search themes and effects" });
+  await search.fill("choose mascot");
+  await search.press("Enter");
+
+  const mascot = page.locator(".mascot");
+  await expect(mascot).toBeVisible();
+  await page.keyboard.press("Control+Alt+m");
+  await expect(mascot).toBeHidden();
+  await page.keyboard.press("Control+Alt+m");
+  await expect(mascot).toBeVisible();
+});

@@ -20,7 +20,11 @@
       }
     ],
     "security": {
-      "csp": null
+      "csp": null,
+      "assetProtocol": {
+        "enable": true,
+        "scope": ["$CONFIG/alchemide/backgrounds/*", "$CONFIG/alchemide/mascots/*"]
+      }
     }
   },
   "bundle": {

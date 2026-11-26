@@ -20,3 +20,5 @@ export type FileContent = {
 };
 
 export type Settings = Record<string, unknown>;
+
+export type AssetKind = "background" | "mascot";

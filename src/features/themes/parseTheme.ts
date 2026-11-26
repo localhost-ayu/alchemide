@@ -77,7 +77,7 @@ function readSyntax(section: Fields, ui: ThemeUi, warnings: string[]): ThemeSynt
   return { ...required, type: optional("type", ui.accent2), number: optional("number", ui.accent) };
 }
 
-function readBackground(value: unknown, ui: ThemeUi, warnings: string[]): ThemeBackground {
+export function readBackground(value: unknown, ui: ThemeUi, warnings: string[]): ThemeBackground {
   const fallback: ThemeBackground = { type: "solid", color: ui.bg };
   if (value === undefined) {
     return fallback;
@@ -108,7 +108,7 @@ function readBackground(value: unknown, ui: ThemeUi, warnings: string[]): ThemeB
   return fallback;
 }
 
-function readMascot(value: unknown, warnings: string[]): ThemeMascot | null {
+export function readMascot(value: unknown, warnings: string[]): ThemeMascot | null {
   if (value === undefined || value === null) {
     return null;
   }

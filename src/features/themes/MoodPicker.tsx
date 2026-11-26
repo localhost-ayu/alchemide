@@ -6,6 +6,7 @@ import {
   useState,
 } from "react";
 import { filterOptions, type MoodOption, moodOptions } from "./moodOptions";
+import { runLookAction } from "./runLookAction";
 import type { Effects, Theme } from "./theme";
 import { useThemeStore } from "./useThemeStore";
 
@@ -14,9 +15,14 @@ const CHORD_TIMEOUT_MS = 1500;
 type Choice = { theme: Theme; effects: Effects };
 
 function choiceFor(option: MoodOption, base: Choice): Choice {
-  return option.kind === "theme"
-    ? { theme: option.theme, effects: base.effects }
-    : { theme: base.theme, effects: option.preset.effects };
+  switch (option.kind) {
+    case "theme":
+      return { theme: option.theme, effects: base.effects };
+    case "preset":
+      return { theme: base.theme, effects: option.preset.effects };
+    case "action":
+      return base;
+  }
 }
 
 export function MoodPicker() {
@@ -24,7 +30,11 @@ export function MoodPicker() {
   const [query, setQuery] = useState("");
   const [index, setIndex] = useState(0);
   const originalRef = useRef<Choice | null>(null);
-  const options = useMemo(() => filterOptions(moodOptions(), query), [query]);
+  const custom = useThemeStore((state) => state.custom);
+  const options = useMemo(
+    () => filterOptions(moodOptions(undefined, custom), query),
+    [custom, query],
+  );
   const highlighted = options[Math.min(index, options.length - 1)];
 
   useEffect(() => {
@@ -77,9 +87,14 @@ export function MoodPicker() {
     if (!option || !original) {
       return;
     }
+    setOpen(false);
+    if (option.kind === "action") {
+      useThemeStore.getState().preview(original.theme, original.effects);
+      runLookAction(option.action);
+      return;
+    }
     const { theme, effects } = choiceFor(option, original);
     useThemeStore.getState().commit(theme, effects);
-    setOpen(false);
   };
 
   const handleKeyDown = (event: ReactKeyboardEvent) => {

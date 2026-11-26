@@ -1,4 +1,4 @@
-import type { Entry, Environment, FileContent, Folder, Settings } from "./types";
+import type { AssetKind, Entry, Environment, FileContent, Folder, Settings } from "./types";
 
 const root = "/home/user/sample-project";
 
@@ -90,4 +90,32 @@ export function loadSettings(): Promise<Settings> {
 export function saveSettings(next: Settings): Promise<void> {
   settings = structuredClone(next);
   return Promise.resolve();
+}
+
+const sampleAssets: Record<AssetKind, { path: string; svg: string }> = {
+  background: {
+    path: "backgrounds/sample-lab.svg",
+    svg: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="9"><defs><linearGradient id="g"><stop offset="0" stop-color="#2b1f45"/><stop offset="1" stop-color="#0d3b2e"/></linearGradient></defs><rect width="16" height="9" fill="url(#g)"/></svg>',
+  },
+  mascot: {
+    path: "mascots/sample-flask.svg",
+    svg: '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="12"><path d="M4 0h2v4l4 7H0l4-7z" fill="#b6f24a"/></svg>',
+  },
+};
+
+export function importAsset(kind: AssetKind): Promise<string | null> {
+  return Promise.resolve(sampleAssets[kind].path);
+}
+
+const sampleVideo = "backgrounds/sample-loop.webm";
+
+export function assetUrl(relative: string): Promise<string> {
+  if (relative === sampleVideo) {
+    return Promise.resolve("data:video/webm;base64,");
+  }
+  const asset = Object.values(sampleAssets).find((candidate) => candidate.path === relative);
+  if (!asset) {
+    return Promise.reject(new Error(`asset not found: ${relative}`));
+  }
+  return Promise.resolve(`data:image/svg+xml,${encodeURIComponent(asset.svg)}`);
 }

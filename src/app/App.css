@@ -36,6 +36,7 @@
 
 .app__editor {
   grid-area: editor;
+  position: relative;
   align-items: stretch;
   min-width: 0;
   min-height: 0;

@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Theme engine: JSON themes become CSS variables, invalid themes fall back to a reserve theme with a warning
 - Built-in themes by mood: Catalisador (default), Férreas (Ferrugem, Cobre, Aço), Calmas (Maré, Musgo) and Pastéis (Lavanda, Menta, Pêssego), all with WCAG AA contrast for code
 - Independent effects (glass or solid surface, background, mascot, animations) and the Laboratório, Focado and Só wallpaper presets; animations also follow `prefers-reduced-motion`
+- Your own background (image or video) and mascot, chosen from the mood picker and stored in the config folder; `Ctrl+Alt+M` toggles the mascot
 - Mood picker (`Ctrl+K M`) with live preview of themes and effect presets; the choice is remembered in the config folder
 - Open a project folder from the explorer with the native dialog
 - Collapsible file tree (`Ctrl+B`) that loads folders on demand and respects `.gitignore`
