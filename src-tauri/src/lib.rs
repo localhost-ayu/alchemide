@@ -22,6 +22,7 @@ pub fn run() {
             fs::read_file,
             fs::write_file,
             terminal::terminal_open,
+            terminal::terminal_profiles,
             terminal::terminal_write,
             terminal::terminal_resize,
             terminal::terminal_close

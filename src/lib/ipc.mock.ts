@@ -6,6 +6,7 @@ import type {
   Folder,
   Settings,
   TerminalOutput,
+  TerminalProfile,
 } from "./types";
 
 const root = "/home/user/sample-project";
@@ -140,7 +141,23 @@ function emitOutput(id: number, data: string): void {
   }
 }
 
-export function terminalOpen(_cols: number, _rows: number): Promise<number> {
+const PROFILES: TerminalProfile[] = [
+  { id: "shell", label: "bash" },
+  { id: "wsl:Ubuntu", label: "WSL · Ubuntu" },
+];
+
+export function terminalProfiles(): Promise<TerminalProfile[]> {
+  return Promise.resolve(PROFILES);
+}
+
+export function terminalOpen(
+  profile: string | null,
+  _cols: number,
+  _rows: number,
+): Promise<number> {
+  if (profile !== null && !PROFILES.some((candidate) => candidate.id === profile)) {
+    return Promise.reject(new Error("this terminal profile is not available"));
+  }
   const id = nextTerminal++;
   openTerminals.set(id, "");
   setTimeout(() => emitOutput(id, `Mock shell #${id}\r\n${PROMPT}`), 0);

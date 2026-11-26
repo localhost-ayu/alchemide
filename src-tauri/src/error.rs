@@ -26,6 +26,8 @@ pub enum Error {
     Terminal(String),
     #[error("this terminal is no longer open")]
     NoTerminal,
+    #[error("this terminal profile is not available")]
+    NoProfile,
     #[error(transparent)]
     Io(#[from] std::io::Error),
     #[error("could not watch the folder for changes: {0}")]

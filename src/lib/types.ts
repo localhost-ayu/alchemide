@@ -27,3 +27,8 @@ export type TerminalOutput = {
   id: number;
   data: string;
 };
+
+export type TerminalProfile = {
+  id: string;
+  label: string;
+};

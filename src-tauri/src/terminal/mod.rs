@@ -11,30 +11,12 @@ use tauri::{AppHandle, Emitter, State};
 use crate::error::{Error, Result};
 use crate::fs::Workspace;
 
+mod profiles;
+
+pub use profiles::Profile;
+
 pub const OUTPUT_EVENT: &str = "terminal-output";
 pub const EXIT_EVENT: &str = "terminal-exit";
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct Shell {
-    pub program: String,
-    pub args: Vec<String>,
-}
-
-pub fn default_shell(os: &str, shell_variable: Option<&str>) -> Shell {
-    if os == "windows" {
-        return Shell {
-            program: "powershell.exe".into(),
-            args: vec!["-NoLogo".into()],
-        };
-    }
-    let program = shell_variable
-        .filter(|shell| !shell.trim().is_empty())
-        .unwrap_or("/bin/sh");
-    Shell {
-        program: program.into(),
-        args: vec![],
-    }
-}
 
 pub fn split_complete_utf8(bytes: &[u8]) -> usize {
     match std::str::from_utf8(bytes) {
@@ -101,24 +83,68 @@ fn forward_output(app: AppHandle, id: u32, mut reader: Box<dyn Read + Send>) {
     });
 }
 
-fn start_directory(workspace: &Workspace) -> Option<PathBuf> {
-    workspace.root().or_else(dirs::home_dir)
+#[cfg(windows)]
+fn list_wsl_output() -> Option<Vec<u8>> {
+    use std::os::windows::process::CommandExt;
+    const CREATE_NO_WINDOW: u32 = 0x0800_0000;
+    std::process::Command::new("wsl.exe")
+        .args(["-l", "-q"])
+        .creation_flags(CREATE_NO_WINDOW)
+        .output()
+        .ok()
+        .map(|output| output.stdout)
+}
+
+#[cfg(not(windows))]
+fn list_wsl_output() -> Option<Vec<u8>> {
+    None
+}
+
+fn wsl_distros() -> Vec<String> {
+    list_wsl_output()
+        .map(|output| profiles::parse_distros(&output))
+        .unwrap_or_default()
+}
+
+fn available_profiles(project_folder: Option<&PathBuf>) -> Vec<Profile> {
+    let shell_variable = std::env::var("SHELL").ok();
+    let folder = project_folder.map(|path| path.to_string_lossy().into_owned());
+    profiles::profiles(
+        std::env::consts::OS,
+        shell_variable.as_deref(),
+        folder.as_deref(),
+        &wsl_distros(),
+    )
+}
+
+#[tauri::command]
+pub async fn terminal_profiles(workspace: State<'_, Workspace>) -> Result<Vec<Profile>> {
+    Ok(available_profiles(workspace.root().as_ref()))
 }
 
 #[tauri::command]
 pub async fn terminal_open(
     app: AppHandle,
+    profile: Option<String>,
     cols: u16,
     rows: u16,
     terminals: State<'_, Terminals>,
     workspace: State<'_, Workspace>,
 ) -> Result<u32> {
-    let shell_variable = std::env::var("SHELL").ok();
-    let shell = default_shell(std::env::consts::OS, shell_variable.as_deref());
-    let mut command = CommandBuilder::new(&shell.program);
-    command.args(&shell.args);
+    let root = workspace.root();
+    let profiles = available_profiles(root.as_ref());
+    let chosen = match profile {
+        Some(id) => profiles.into_iter().find(|candidate| candidate.id == id),
+        None => profiles.into_iter().next(),
+    }
+    .ok_or(Error::NoProfile)?;
+    let mut command = CommandBuilder::new(&chosen.program);
+    command.args(&chosen.args);
     command.env("TERM", "xterm-256color");
-    if let Some(directory) = start_directory(&workspace) {
+    let directory = root
+        .filter(|_| chosen.uses_project_folder)
+        .or_else(dirs::home_dir);
+    if let Some(directory) = directory {
         command.cwd(directory);
     }
     let pair = native_pty_system()
@@ -173,28 +199,6 @@ pub async fn terminal_close(id: u32, terminals: State<'_, Terminals>) -> Result<
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn uses_powershell_on_windows() {
-        assert_eq!(
-            default_shell("windows", Some("/bin/zsh")).program,
-            "powershell.exe"
-        );
-    }
-
-    #[test]
-    fn uses_the_shell_variable_on_linux() {
-        assert_eq!(
-            default_shell("linux", Some("/usr/bin/fish")).program,
-            "/usr/bin/fish"
-        );
-    }
-
-    #[test]
-    fn falls_back_to_sh_without_a_shell_variable() {
-        assert_eq!(default_shell("linux", None).program, "/bin/sh");
-        assert_eq!(default_shell("linux", Some("  ")).program, "/bin/sh");
-    }
 
     #[test]
     fn keeps_an_incomplete_utf8_tail_for_the_next_read() {
