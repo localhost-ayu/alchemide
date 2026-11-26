@@ -2,8 +2,8 @@ import { FitAddon } from "@xterm/addon-fit";
 import { Terminal } from "@xterm/xterm";
 import { useEffect, useRef } from "react";
 import { playfulTouchesEnabled } from "../../lib/activityStore";
+import { keyBelongsToApp } from "../../lib/commands";
 import { onTerminalOutput, terminalResize, terminalWrite } from "../../lib/ipc";
-import { isChordStart, reachesApp } from "./appShortcuts";
 import { readRootVariable, terminalTheme } from "./terminalTheme";
 import "@xterm/xterm/css/xterm.css";
 
@@ -32,15 +32,9 @@ export function TerminalView({ id, isActive }: TerminalViewProps) {
     const fit = new FitAddon();
     terminal.loadAddon(fit);
     terminal.open(container);
-    let chordStartedAt = Number.NEGATIVE_INFINITY;
-    terminal.attachCustomKeyEventHandler((event) => {
-      if (event.type !== "keydown") {
-        return true;
-      }
-      const sinceChord = Date.now() - chordStartedAt;
-      chordStartedAt = isChordStart(event) ? Date.now() : Number.NEGATIVE_INFINITY;
-      return !reachesApp(event, isChordStart(event) ? Number.POSITIVE_INFINITY : sinceChord);
-    });
+    terminal.attachCustomKeyEventHandler(
+      (event) => event.type !== "keydown" || !keyBelongsToApp(event),
+    );
     terminalRef.current = terminal;
     fitRef.current = fit;
 

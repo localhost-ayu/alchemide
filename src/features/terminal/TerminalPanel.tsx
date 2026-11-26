@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { registerCommands } from "../../lib/commands";
 import { onTerminalExit, terminalProfiles } from "../../lib/ipc";
 import type { TerminalProfile } from "../../lib/types";
 import { TerminalView } from "./TerminalView";
@@ -14,16 +15,22 @@ export function TerminalPanel() {
   const [profiles, setProfiles] = useState<TerminalProfile[]>([]);
 
   useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.ctrlKey && (event.key === "`" || event.code === "Backquote")) {
-        event.preventDefault();
-        useTerminalStore.getState().toggle();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
+    const unregister = registerCommands([
+      {
+        id: "terminal.toggle",
+        title: "Toggle terminal",
+        keys: "Ctrl+`",
+        run: () => useTerminalStore.getState().toggle(),
+      },
+      {
+        id: "terminal.new",
+        title: "New terminal",
+        run: () => useTerminalStore.getState().openTab(null, "Terminal"),
+      },
+    ]);
     const exit = onTerminalExit((id) => useTerminalStore.getState().removeTab(id));
     return () => {
-      window.removeEventListener("keydown", handleKeyDown);
+      unregister();
       exit.then((unsubscribe) => unsubscribe());
     };
   }, []);

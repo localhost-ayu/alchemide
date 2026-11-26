@@ -24,9 +24,12 @@ webview (WebView2 on Windows, WebKitGTK on Linux).
 - `styles/`: design tokens and visual effects as CSS variables.
 
 Features that need the current look without importing `themes/` read the CSS variables on
-`<html>` (the terminal rebuilds its xterm palette with a `MutationObserver`). While the terminal
-has focus, app shortcuts (`` Ctrl+` ``, `Ctrl+B`, `Ctrl+K` chords, `Ctrl+Alt+M`) skip the shell,
-like VS Code's "commands to skip shell".
+`<html>` (the terminal rebuilds its xterm palette with a `MutationObserver`).
+
+Every action that has a shortcut or appears in the command palette is registered in
+`src/lib/commands.ts` (`registerCommands`, usually from a component's effect). A single
+`keydown` listener dispatches shortcuts, including chords such as `Ctrl+K M`, and the terminal
+asks the same registry (`keyBelongsToApp`) which keys skip the shell.
 
 ## The IPC rule
 
