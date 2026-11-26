@@ -14,6 +14,7 @@ beforeEach(() => {
     cursor: null,
     drafts: {},
     scroll: 0,
+    reveal: null,
     error: null,
   });
 });

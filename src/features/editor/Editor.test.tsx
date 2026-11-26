@@ -15,6 +15,7 @@ beforeEach(() => {
     cursor: null,
     drafts: {},
     scroll: 0,
+    reveal: null,
     error: null,
   });
 });
@@ -161,4 +162,33 @@ test("announces each save as a numbered experiment, or plainly without animation
   document.documentElement.dataset.animations = "false";
   await save();
   expect(useActivityStore.getState().message?.text).toBe("Saved query.sql");
+});
+
+test("opens a file at a given line", async () => {
+  render(<Editor />);
+
+  await act(() => useEditorStore.getState().openAt(`${root}/query.sql`, 3));
+
+  expect(useEditorStore.getState().cursor).toMatchObject({ line: 3, column: 1 });
+});
+
+test("reloads a clean tab after its file changes on disk", async () => {
+  render(<Editor />);
+  await open(`${root}/query.sql`);
+
+  await writeFile(`${root}/query.sql`, "SELECT 42;\n", false);
+  await act(() => useEditorStore.getState().reloadTab(`${root}/query.sql`));
+
+  expect(viewOf("query.sql").state.doc.toString()).toBe("SELECT 42;\n");
+});
+
+test("never reloads a tab with unsaved changes", async () => {
+  render(<Editor />);
+  await open(`${root}/README.md`);
+  type("README.md", "draft ");
+
+  await writeFile(`${root}/README.md`, "changed elsewhere\n", false);
+  await act(() => useEditorStore.getState().reloadTab(`${root}/README.md`));
+
+  expect(viewOf("README.md").state.doc.toString()).toMatch(/^draft # Sample project/);
 });

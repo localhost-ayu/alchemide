@@ -4,6 +4,7 @@ import { Explorer } from "../features/explorer/Explorer";
 import { MarkdownPane } from "../features/markdown/MarkdownPane";
 import { CommandPalette } from "../features/palette/CommandPalette";
 import { QuickOpen } from "../features/palette/QuickOpen";
+import { SearchPanel } from "../features/search/SearchPanel";
 import { StatusBar } from "../features/statusbar/StatusBar";
 import { TerminalPanel } from "../features/terminal/TerminalPanel";
 import { Backdrop } from "../features/themes/Backdrop";
@@ -15,6 +16,7 @@ import "./App.css";
 
 export function App() {
   const [isExplorerOpen, setExplorerOpen] = useState(true);
+  const [sidebar, setSidebar] = useState<"explorer" | "search">("explorer");
 
   useEffect(
     () =>
@@ -25,6 +27,27 @@ export function App() {
           keys: "Ctrl+B",
           run: () => setExplorerOpen((open) => !open),
         },
+        {
+          id: "view.showExplorer",
+          title: "Show explorer",
+          keys: "Ctrl+Shift+E",
+          run: () => {
+            setSidebar("explorer");
+            setExplorerOpen(true);
+          },
+        },
+        {
+          id: "search.show",
+          title: "Search in files",
+          keys: "Ctrl+Shift+F",
+          run: () => {
+            setSidebar("search");
+            setExplorerOpen(true);
+            requestAnimationFrame(() =>
+              document.querySelector<HTMLInputElement>('[aria-label="Search in files"]')?.focus(),
+            );
+          },
+        },
       ]),
     [],
   );
@@ -33,8 +56,17 @@ export function App() {
     <>
       <Backdrop />
       <div className="app" data-explorer={isExplorerOpen ? "open" : "closed"}>
-        <aside className="app__explorer" aria-label="Explorer" hidden={!isExplorerOpen}>
-          <Explorer />
+        <aside
+          className="app__explorer"
+          aria-label={sidebar === "search" ? "Search" : "Explorer"}
+          hidden={!isExplorerOpen}
+        >
+          <div className="app__sidebar-view" hidden={sidebar !== "explorer"}>
+            <Explorer />
+          </div>
+          <div className="app__sidebar-view" hidden={sidebar !== "search"}>
+            <SearchPanel />
+          </div>
         </aside>
         <main className="app__editor" aria-label="Editor">
           <div className="app__workspace">

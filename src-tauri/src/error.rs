@@ -32,6 +32,10 @@ pub enum Error {
     UnsupportedLink,
     #[error("could not open the link: {0}")]
     OpenLink(String),
+    #[error("type something to search")]
+    EmptySearch,
+    #[error("invalid search pattern: {0}")]
+    InvalidPattern(String),
     #[error(transparent)]
     Io(#[from] std::io::Error),
     #[error("could not watch the folder for changes: {0}")]

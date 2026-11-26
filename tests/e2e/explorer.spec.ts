@@ -93,3 +93,28 @@ test("opens a file with quick open", async ({ page }) => {
 
   await expect(page.getByRole("textbox", { name: "Editing App.tsx" })).toBeVisible();
 });
+
+test("finds and replaces across the project", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Open folder" }).click();
+  await page.getByRole("button", { name: "src" }).click();
+  await page.getByRole("button", { name: "App.tsx" }).click();
+  const editor = page.getByRole("textbox", { name: "Editing App.tsx" });
+  await expect(editor).toContainText('"Hello"');
+
+  await page.keyboard.press("Control+Shift+F");
+  const search = page.getByRole("textbox", { name: "Search in files" });
+  await expect(search).toBeFocused();
+  await search.fill("Hello");
+  await search.press("Enter");
+  const panel = page.getByRole("complementary", { name: "Search" });
+  await expect(panel.getByRole("status")).toHaveText("2 results in 2 files");
+
+  await page.getByRole("textbox", { name: "Replace with" }).fill("Olá");
+  page.once("dialog", (dialog) => dialog.accept());
+  await page.getByRole("button", { name: "Replace" }).click();
+
+  await expect(editor).toContainText('"Olá"');
+  await page.keyboard.press("Control+Shift+E");
+  await expect(page.getByRole("button", { name: "App.tsx", exact: true })).toBeVisible();
+});

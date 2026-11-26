@@ -10,6 +10,7 @@ beforeEach(() => {
     cursor: null,
     drafts: {},
     scroll: 0,
+    reveal: null,
     error: null,
   });
 });
@@ -32,6 +33,7 @@ test("describes the active file and the cursor", async () => {
         hasBom: true,
         lineEnding: "CRLF",
         dirty: false,
+        revision: 0,
       },
     ],
     activePath: "/p/legacy.php",

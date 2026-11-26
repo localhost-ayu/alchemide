@@ -132,7 +132,7 @@ test("runs actions from the command palette", async ({ page }) => {
   await page.keyboard.press("Control+Shift+P");
   const search = page.getByRole("combobox", { name: "Run a command" });
   await expect(page.getByRole("option", { name: /Toggle terminal/ })).toBeVisible();
-  await search.fill("explorer");
+  await search.fill("toggle explorer");
   await search.press("Enter");
 
   await expect(explorer).toBeHidden();

@@ -100,10 +100,10 @@ test("plays a video background in a loop and pauses it when animations are off",
 
   await waitFor(() => expect(container.querySelector("video")).not.toBeNull());
   expect(container.querySelector("video")?.loop).toBe(true);
-  expect(play).toHaveBeenCalled();
+  await waitFor(() => expect(play).toHaveBeenCalled());
 
   const { theme, effects, commit } = useThemeStore.getState();
   await act(() => commit(theme, { ...effects, animations: false }));
 
-  expect(pause).toHaveBeenCalled();
+  await waitFor(() => expect(pause).toHaveBeenCalled());
 });

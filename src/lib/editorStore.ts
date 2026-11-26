@@ -11,6 +11,13 @@ export type Tab = {
   hasBom: boolean;
   lineEnding: LineEnding;
   dirty: boolean;
+  revision: number;
+};
+
+export type Reveal = {
+  path: string;
+  line: number;
+  request: number;
 };
 
 export type Cursor = {
@@ -25,6 +32,7 @@ type EditorState = {
   cursor: Cursor | null;
   drafts: Record<string, string>;
   scroll: number;
+  reveal: Reveal | null;
   error: string | null;
   openFile: (path: string) => Promise<void>;
   activate: (path: string) => void;
@@ -34,7 +42,11 @@ type EditorState = {
   setDraft: (path: string, text: string) => void;
   setScroll: (fraction: number) => void;
   saveFile: (path: string, text: string) => Promise<void>;
+  openAt: (path: string, line: number) => Promise<void>;
+  reloadTab: (path: string) => Promise<void>;
 };
+
+let revealRequests = 0;
 
 export const useEditorStore = create<EditorState>((set, get) => ({
   tabs: [],
@@ -42,6 +54,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   cursor: null,
   drafts: {},
   scroll: 0,
+  reveal: null,
   error: null,
   openFile: async (path) => {
     if (get().tabs.some((tab) => tab.path === path)) {
@@ -58,6 +71,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
         hasBom,
         lineEnding: detectLineEnding(text),
         dirty: false,
+        revision: 0,
       };
       set((state) => ({ tabs: [...state.tabs, tab], activePath: path, error: null }));
     } catch (error) {
@@ -98,6 +112,41 @@ export const useEditorStore = create<EditorState>((set, get) => ({
         ),
         error: null,
       }));
+    } catch (error) {
+      set({ error: String(error) });
+    }
+  },
+  openAt: async (path, line) => {
+    await get().openFile(path);
+    if (get().activePath === path) {
+      revealRequests += 1;
+      set({ reveal: { path, line, request: revealRequests } });
+    }
+  },
+  reloadTab: async (path) => {
+    const tab = get().tabs.find((candidate) => candidate.path === path);
+    if (!tab || tab.dirty) {
+      return;
+    }
+    try {
+      const { text, hasBom } = await readFile(path);
+      set((state) => {
+        const { [path]: _stale, ...drafts } = state.drafts;
+        return {
+          drafts,
+          tabs: state.tabs.map((candidate) =>
+            candidate.path === path
+              ? {
+                  ...candidate,
+                  text,
+                  hasBom,
+                  lineEnding: detectLineEnding(text),
+                  revision: candidate.revision + 1,
+                }
+              : candidate,
+          ),
+        };
+      });
     } catch (error) {
       set({ error: String(error) });
     }

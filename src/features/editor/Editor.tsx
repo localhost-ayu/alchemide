@@ -3,7 +3,7 @@ import { EditorView } from "@codemirror/view";
 import { useEffect, useRef, useState } from "react";
 import { playfulTouchesEnabled, useActivityStore } from "../../lib/activityStore";
 import { registerCommands } from "../../lib/commands";
-import { hasUnsavedTabs, selectActiveTab, useEditorStore } from "../../lib/editorStore";
+import { hasUnsavedTabs, selectActiveTab, type Tab, useEditorStore } from "../../lib/editorStore";
 import { onCloseRequested } from "../../lib/ipc";
 import { joinLines } from "../../lib/lineEndings";
 import { createEditorState } from "./createEditorState";
@@ -15,6 +15,7 @@ import "./Editor.css";
 type Session = {
   state: EditorState;
   saved: Text;
+  revision: number;
 };
 
 function reportCursor(state: EditorState): void {
@@ -56,40 +57,73 @@ export function Editor() {
     };
   }, []);
 
+  const createSession = (tab: Tab): Session => {
+    const sessions = sessionsRef.current;
+    const path = tab.path;
+    const tracksDraft = tab.language === "markdown";
+    const onUpdate = EditorView.updateListener.of((update) => {
+      const current = sessions.get(path);
+      if (!current) {
+        return;
+      }
+      current.state = update.state;
+      if (update.docChanged) {
+        useEditorStore.getState().setDirty(path, !update.state.doc.eq(current.saved));
+        if (tracksDraft) {
+          useEditorStore.getState().setDraft(path, update.state.doc.toString());
+        }
+      }
+      if (update.docChanged || update.selectionSet) {
+        reportCursor(update.state);
+      }
+    });
+    const state = createEditorState(tab, onUpdate);
+    const session = { state, saved: state.doc, revision: tab.revision };
+    sessions.set(path, session);
+    return session;
+  };
+  const createSessionRef = useRef(createSession);
+  createSessionRef.current = createSession;
+
   useEffect(() => {
     const view = viewRef.current;
     const active = selectActiveTab(useEditorStore.getState());
     if (!view || !activePath || !active) {
       return;
     }
-    const sessions = sessionsRef.current;
-    let session = sessions.get(activePath);
-    if (!session) {
-      const path = activePath;
-      const tracksDraft = active.language === "markdown";
-      const onUpdate = EditorView.updateListener.of((update) => {
-        const current = sessions.get(path);
-        if (!current) {
-          return;
-        }
-        current.state = update.state;
-        if (update.docChanged) {
-          useEditorStore.getState().setDirty(path, !update.state.doc.eq(current.saved));
-          if (tracksDraft) {
-            useEditorStore.getState().setDraft(path, update.state.doc.toString());
-          }
-        }
-        if (update.docChanged || update.selectionSet) {
-          reportCursor(update.state);
-        }
-      });
-      const state = createEditorState(active, onUpdate);
-      session = { state, saved: state.doc };
-      sessions.set(path, session);
-    }
+    const session = sessionsRef.current.get(activePath) ?? createSessionRef.current(active);
     view.setState(session.state);
     reportCursor(session.state);
   }, [activePath]);
+
+  useEffect(() => {
+    const view = viewRef.current;
+    for (const tab of tabs) {
+      const session = sessionsRef.current.get(tab.path);
+      if (!session || session.revision === tab.revision) {
+        continue;
+      }
+      const fresh = createSessionRef.current(tab);
+      if (view && tab.path === useEditorStore.getState().activePath) {
+        view.setState(fresh.state);
+        reportCursor(fresh.state);
+      }
+    }
+  }, [tabs]);
+
+  const reveal = useEditorStore((state) => state.reveal);
+  useEffect(() => {
+    const view = viewRef.current;
+    if (!view || !reveal || reveal.path !== activePath) {
+      return;
+    }
+    const line = view.state.doc.line(Math.min(Math.max(reveal.line, 1), view.state.doc.lines));
+    view.dispatch({
+      selection: { anchor: line.from },
+      effects: EditorView.scrollIntoView(line.from, { y: "center" }),
+    });
+    view.focus();
+  }, [reveal, activePath]);
 
   useEffect(() => {
     const open = new Set(tabs.map((tab) => tab.path));

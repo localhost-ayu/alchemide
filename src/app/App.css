@@ -68,3 +68,13 @@
 .app__workspace > .editor {
   flex: 1;
 }
+
+.app__sidebar-view {
+  display: flex;
+  width: 100%;
+  min-height: 0;
+}
+
+.app__sidebar-view[hidden] {
+  display: none;
+}
