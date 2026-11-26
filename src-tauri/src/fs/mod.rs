@@ -108,6 +108,12 @@ pub async fn list_dir(path: String, workspace: State<'_, Workspace>) -> Result<V
 }
 
 #[tauri::command]
+pub async fn list_files(workspace: State<'_, Workspace>) -> Result<Vec<tree::ProjectFile>> {
+    let root = workspace.root().ok_or(Error::NoWorkspace)?;
+    Ok(tree::project_files(&root, tree::PROJECT_FILE_LIMIT))
+}
+
+#[tauri::command]
 pub async fn read_file(path: String, workspace: State<'_, Workspace>) -> Result<file::FileContent> {
     let path = Path::new(&path);
     workspace.check(path)?;

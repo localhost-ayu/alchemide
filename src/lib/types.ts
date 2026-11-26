@@ -32,3 +32,8 @@ export type TerminalProfile = {
   id: string;
   label: string;
 };
+
+export type ProjectFile = {
+  path: string;
+  relative: string;
+};

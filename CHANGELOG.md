@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Command palette (`Ctrl+Shift+P`) listing every action with its shortcut, with fuzzy search
+- Quick open (`Ctrl+P`): fuzzy search over the project's file names, respecting `.gitignore`
 
 ### Fixed
 
