@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { useActivityStore } from "../../lib/activityStore";
 import { listDir, openFolder } from "../../lib/ipc";
 import type { Entry, Folder } from "../../lib/types";
 
@@ -35,7 +36,7 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
   },
   loadDir: async (path) => {
     try {
-      const entries = await listDir(path);
+      const entries = await useActivityStore.getState().track(listDir(path));
       set((state) => ({ children: { ...state.children, [path]: entries } }));
     } catch (error) {
       set({ error: String(error) });

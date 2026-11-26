@@ -38,6 +38,7 @@ test("edits and saves a file", async ({ page }) => {
 
   await page.keyboard.press("Control+s");
   await expect(page.getByRole("img", { name: "unsaved" })).toBeHidden();
+  await expect(page.getByRole("status")).toHaveText("Experiment #1 saved: README.md");
 
   await page.getByRole("button", { name: "Close README.md" }).click();
   await page.getByRole("button", { name: "README.md" }).click();
