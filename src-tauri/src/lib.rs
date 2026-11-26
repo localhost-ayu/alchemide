@@ -11,6 +11,7 @@ pub fn run() {
     let result = tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .manage(fs::Workspace::default())
+        .manage(fs::Searches::default())
         .manage(terminal::Terminals::default())
         .invoke_handler(tauri::generate_handler![
             assets::asset_path,
@@ -22,6 +23,8 @@ pub fn run() {
             fs::list_dir,
             fs::list_files,
             fs::read_file,
+            fs::replace_matches,
+            fs::search_start,
             fs::write_file,
             links::open_external,
             terminal::terminal_open,

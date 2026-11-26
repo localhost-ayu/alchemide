@@ -1,8 +1,9 @@
 use std::path::{Path, PathBuf};
-use std::sync::Mutex;
+use std::sync::atomic::{AtomicU32, Ordering};
+use std::sync::{Arc, Mutex};
 
 use notify::{RecommendedWatcher, RecursiveMode, Watcher};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, Emitter, State};
 use tauri_plugin_dialog::DialogExt;
 
@@ -11,6 +12,7 @@ use crate::error::{Error, Result};
 pub const WORKSPACE_CHANGED_EVENT: &str = "workspace-changed";
 
 mod file;
+mod search;
 mod tree;
 mod watcher;
 
@@ -105,6 +107,112 @@ pub async fn open_folder(
 #[tauri::command]
 pub async fn list_dir(path: String, workspace: State<'_, Workspace>) -> Result<Vec<tree::Entry>> {
     workspace.list_and_watch(Path::new(&path))
+}
+
+pub const SEARCH_RESULTS_EVENT: &str = "search-results";
+pub const SEARCH_DONE_EVENT: &str = "search-done";
+const SEARCH_LIMIT: usize = 5_000;
+const SEARCH_BATCH: usize = 50;
+
+#[derive(Default)]
+pub struct Searches {
+    current: Arc<AtomicU32>,
+}
+
+#[derive(Clone, Serialize)]
+struct SearchBatch {
+    id: u32,
+    matches: Vec<search::SearchMatch>,
+}
+
+#[derive(Clone, Serialize)]
+struct SearchDone {
+    id: u32,
+    total: usize,
+    truncated: bool,
+}
+
+#[tauri::command]
+pub async fn search_start(
+    app: AppHandle,
+    id: u32,
+    query: search::SearchQuery,
+    workspace: State<'_, Workspace>,
+    searches: State<'_, Searches>,
+) -> Result<()> {
+    let root = workspace.root().ok_or(Error::NoWorkspace)?;
+    let matcher = search::build_matcher(&query)?;
+    let current = searches.current.clone();
+    current.store(id, Ordering::SeqCst);
+    std::thread::spawn(move || {
+        let mut batch = Vec::new();
+        let mut sent = 0;
+        search::search_files(&root, &matcher, |found| {
+            if current.load(Ordering::SeqCst) != id {
+                return false;
+            }
+            batch.push(found);
+            sent += 1;
+            if batch.len() == SEARCH_BATCH {
+                let matches = std::mem::take(&mut batch);
+                let _ = app.emit(SEARCH_RESULTS_EVENT, SearchBatch { id, matches });
+            }
+            sent < SEARCH_LIMIT
+        });
+        if current.load(Ordering::SeqCst) != id {
+            return;
+        }
+        if !batch.is_empty() {
+            let _ = app.emit(SEARCH_RESULTS_EVENT, SearchBatch { id, matches: batch });
+        }
+        let done = SearchDone {
+            id,
+            total: sent,
+            truncated: sent >= SEARCH_LIMIT,
+        };
+        let _ = app.emit(SEARCH_DONE_EVENT, done);
+    });
+    Ok(())
+}
+
+#[derive(Deserialize)]
+pub struct ReplaceTarget {
+    path: String,
+    lines: Vec<u64>,
+}
+
+#[derive(Serialize)]
+pub struct ReplaceSummary {
+    files: usize,
+    replacements: usize,
+}
+
+#[tauri::command]
+pub async fn replace_matches(
+    query: search::SearchQuery,
+    replacement: String,
+    targets: Vec<ReplaceTarget>,
+    workspace: State<'_, Workspace>,
+) -> Result<ReplaceSummary> {
+    let regex = search::build_regex(&query)?;
+    let mut summary = ReplaceSummary {
+        files: 0,
+        replacements: 0,
+    };
+    for target in targets {
+        let path = Path::new(&target.path);
+        workspace.check(path)?;
+        let content = file::decode(std::fs::read(path)?)?;
+        let lines = target.lines.into_iter().collect();
+        let (text, count) =
+            search::replace_lines(&content.text, &regex, &replacement, query.regex, &lines);
+        if count > 0 {
+            std::fs::write(path, file::encode(&text, content.has_bom))?;
+            summary.files += 1;
+            summary.replacements += count;
+        }
+    }
+    Ok(summary)
 }
 
 #[tauri::command]

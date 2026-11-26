@@ -37,3 +37,38 @@ export type ProjectFile = {
   path: string;
   relative: string;
 };
+
+export type SearchQuery = {
+  text: string;
+  regex: boolean;
+  caseSensitive: boolean;
+};
+
+export type SearchMatch = {
+  path: string;
+  relative: string;
+  line: number;
+  preview: string;
+  ranges: [number, number][];
+};
+
+export type SearchBatch = {
+  id: number;
+  matches: SearchMatch[];
+};
+
+export type SearchDone = {
+  id: number;
+  total: number;
+  truncated: boolean;
+};
+
+export type ReplaceTarget = {
+  path: string;
+  lines: number[];
+};
+
+export type ReplaceSummary = {
+  files: number;
+  replacements: number;
+};

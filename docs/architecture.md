@@ -59,6 +59,10 @@ regular browser without compiling Rust, and the end-to-end tests run against tha
   sends output as `terminal-output` events, holding back an incomplete UTF-8 sequence until the
   next read; `terminal-exit` reports the end. Input, resize and close arrive as commands, and the
   webview never chooses which program runs.
+- Project search runs the `grep` crate on a background thread over the files `ignore` allows,
+  sending `search-results` batches and a final `search-done`. A newer search id cancels the
+  running one. Replacements use the `regex` crate on the selected lines only, keep line endings
+  and BOM, and go through the same open-folder check as every file write.
 - File watching is non-recursive and limited to the folders the explorer has loaded. Watching
   the whole project recursively would also cover `node_modules` and `target`, generating
   noise and exhausting inotify watches. The `fs-changed` event carries the folders to reload.

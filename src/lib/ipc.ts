@@ -8,6 +8,11 @@ import type {
   FileContent,
   Folder,
   ProjectFile,
+  ReplaceSummary,
+  ReplaceTarget,
+  SearchBatch,
+  SearchDone,
+  SearchQuery,
   Settings,
   TerminalOutput,
   TerminalProfile,
@@ -99,4 +104,24 @@ export function openExternal(url: string): Promise<void> {
 
 export function onWorkspaceChange(handler: (folder: Folder) => void): Promise<() => void> {
   return listen<Folder>("workspace-changed", (event) => handler(event.payload));
+}
+
+export function searchStart(id: number, query: SearchQuery): Promise<void> {
+  return invoke<void>("search_start", { id, query });
+}
+
+export function onSearchResults(handler: (batch: SearchBatch) => void): Promise<() => void> {
+  return listen<SearchBatch>("search-results", (event) => handler(event.payload));
+}
+
+export function onSearchDone(handler: (done: SearchDone) => void): Promise<() => void> {
+  return listen<SearchDone>("search-done", (event) => handler(event.payload));
+}
+
+export function replaceMatches(
+  query: SearchQuery,
+  replacement: string,
+  targets: ReplaceTarget[],
+): Promise<ReplaceSummary> {
+  return invoke<ReplaceSummary>("replace_matches", { query, replacement, targets });
 }

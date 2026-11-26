@@ -5,6 +5,11 @@ import type {
   FileContent,
   Folder,
   ProjectFile,
+  ReplaceSummary,
+  ReplaceTarget,
+  SearchBatch,
+  SearchDone,
+  SearchQuery,
   Settings,
   TerminalOutput,
   TerminalProfile,
@@ -262,4 +267,89 @@ export function openExternal(url: string): Promise<void> {
 
 export function mockOpenedLinks(): string[] {
   return [...openedLinks];
+}
+
+const resultHandlers = new Set<(batch: SearchBatch) => void>();
+const doneHandlers = new Set<(done: SearchDone) => void>();
+
+function mockPattern(query: SearchQuery): RegExp {
+  const source = query.regex ? query.text : query.text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return new RegExp(source, query.caseSensitive ? "g" : "gi");
+}
+
+export function searchStart(id: number, query: SearchQuery): Promise<void> {
+  if (!query.text) {
+    return Promise.reject(new Error("type something to search"));
+  }
+  const pattern = mockPattern(query);
+  const matches: SearchBatch["matches"] = [];
+  for (const [path, text] of Object.entries(files).sort()) {
+    text.split("\n").forEach((line, index) => {
+      const ranges = [...line.matchAll(pattern)].map((found): [number, number] => [
+        found.index,
+        found.index + found[0].length,
+      ]);
+      if (ranges.length > 0) {
+        matches.push({
+          path,
+          relative: path.slice(root.length + 1),
+          line: index + 1,
+          preview: line,
+          ranges,
+        });
+      }
+    });
+  }
+  setTimeout(() => {
+    for (const handler of resultHandlers) {
+      handler({ id, matches });
+    }
+    for (const handler of doneHandlers) {
+      handler({ id, total: matches.length, truncated: false });
+    }
+  }, 0);
+  return Promise.resolve();
+}
+
+export function onSearchResults(handler: (batch: SearchBatch) => void): Promise<() => void> {
+  resultHandlers.add(handler);
+  return Promise.resolve(() => resultHandlers.delete(handler));
+}
+
+export function onSearchDone(handler: (done: SearchDone) => void): Promise<() => void> {
+  doneHandlers.add(handler);
+  return Promise.resolve(() => doneHandlers.delete(handler));
+}
+
+export function replaceMatches(
+  query: SearchQuery,
+  replacement: string,
+  targets: ReplaceTarget[],
+): Promise<ReplaceSummary> {
+  let filesChanged = 0;
+  let replacements = 0;
+  for (const target of targets) {
+    const text = files[target.path];
+    if (text === undefined) {
+      continue;
+    }
+    let count = 0;
+    files[target.path] = text
+      .split("\n")
+      .map((line, index) => {
+        if (!target.lines.includes(index + 1)) {
+          return line;
+        }
+        return line.replace(mockPattern(query), (...args) => {
+          count += 1;
+          return query.regex ? args[0].replace(mockPattern(query), replacement) : replacement;
+        });
+      })
+      .join("\n");
+    if (count > 0) {
+      filesChanged += 1;
+      replacements += count;
+    }
+  }
+  return Promise.resolve({ files: filesChanged, replacements });
 }
