@@ -1,7 +1,15 @@
 import { convertFileSrc, invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import type { AssetKind, Entry, Environment, FileContent, Folder, Settings } from "./types";
+import type {
+  AssetKind,
+  Entry,
+  Environment,
+  FileContent,
+  Folder,
+  Settings,
+  TerminalOutput,
+} from "./types";
 
 export function getEnvironment(): Promise<Environment> {
   return invoke<Environment>("get_environment");
@@ -49,4 +57,28 @@ export function importAsset(kind: AssetKind): Promise<string | null> {
 
 export async function assetUrl(relative: string): Promise<string> {
   return convertFileSrc(await invoke<string>("asset_path", { relative }));
+}
+
+export function terminalOpen(cols: number, rows: number): Promise<number> {
+  return invoke<number>("terminal_open", { cols, rows });
+}
+
+export function terminalWrite(id: number, data: string): Promise<void> {
+  return invoke<void>("terminal_write", { id, data });
+}
+
+export function terminalResize(id: number, cols: number, rows: number): Promise<void> {
+  return invoke<void>("terminal_resize", { id, cols, rows });
+}
+
+export function terminalClose(id: number): Promise<void> {
+  return invoke<void>("terminal_close", { id });
+}
+
+export function onTerminalOutput(handler: (output: TerminalOutput) => void): Promise<() => void> {
+  return listen<TerminalOutput>("terminal-output", (event) => handler(event.payload));
+}
+
+export function onTerminalExit(handler: (id: number) => void): Promise<() => void> {
+  return listen<number>("terminal-exit", (event) => handler(event.payload));
 }

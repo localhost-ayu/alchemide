@@ -43,6 +43,10 @@ impl Workspace {
         ensure_inside(&session.root, path)
     }
 
+    pub fn root(&self) -> Option<PathBuf> {
+        self.lock().as_ref().map(|session| session.root.clone())
+    }
+
     fn lock(&self) -> std::sync::MutexGuard<'_, Option<Session>> {
         self.session
             .lock()

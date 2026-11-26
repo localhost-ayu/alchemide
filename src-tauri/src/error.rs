@@ -22,6 +22,10 @@ pub enum Error {
     UnsupportedAsset,
     #[error("the path is not inside the backgrounds or mascots folder")]
     InvalidAssetPath,
+    #[error("terminal error: {0}")]
+    Terminal(String),
+    #[error("this terminal is no longer open")]
+    NoTerminal,
     #[error(transparent)]
     Io(#[from] std::io::Error),
     #[error("could not watch the folder for changes: {0}")]

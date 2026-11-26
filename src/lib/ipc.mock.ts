@@ -1,4 +1,12 @@
-import type { AssetKind, Entry, Environment, FileContent, Folder, Settings } from "./types";
+import type {
+  AssetKind,
+  Entry,
+  Environment,
+  FileContent,
+  Folder,
+  Settings,
+  TerminalOutput,
+} from "./types";
 
 const root = "/home/user/sample-project";
 
@@ -118,4 +126,61 @@ export function assetUrl(relative: string): Promise<string> {
     return Promise.reject(new Error(`asset not found: ${relative}`));
   }
   return Promise.resolve(`data:image/svg+xml,${encodeURIComponent(asset.svg)}`);
+}
+
+const PROMPT = "\x1b[32mlab\x1b[0m:~/sample-project$ ";
+const outputHandlers = new Set<(output: TerminalOutput) => void>();
+const exitHandlers = new Set<(id: number) => void>();
+const openTerminals = new Map<number, string>();
+let nextTerminal = 1;
+
+function emitOutput(id: number, data: string): void {
+  for (const handler of outputHandlers) {
+    handler({ id, data });
+  }
+}
+
+export function terminalOpen(_cols: number, _rows: number): Promise<number> {
+  const id = nextTerminal++;
+  openTerminals.set(id, "");
+  setTimeout(() => emitOutput(id, `Mock shell #${id}\r\n${PROMPT}`), 0);
+  return Promise.resolve(id);
+}
+
+export function terminalWrite(id: number, data: string): Promise<void> {
+  const line = openTerminals.get(id);
+  if (line === undefined) {
+    return Promise.reject(new Error("this terminal is no longer open"));
+  }
+  if (data === "\r") {
+    openTerminals.set(id, "");
+    const reply = line.trim() === "" ? "" : `ran: ${line}\r\n`;
+    emitOutput(id, `\r\n${reply}${PROMPT}`);
+  } else {
+    openTerminals.set(id, line + data);
+    emitOutput(id, data);
+  }
+  return Promise.resolve();
+}
+
+export function terminalResize(_id: number, _cols: number, _rows: number): Promise<void> {
+  return Promise.resolve();
+}
+
+export function terminalClose(id: number): Promise<void> {
+  openTerminals.delete(id);
+  for (const handler of exitHandlers) {
+    handler(id);
+  }
+  return Promise.resolve();
+}
+
+export function onTerminalOutput(handler: (output: TerminalOutput) => void): Promise<() => void> {
+  outputHandlers.add(handler);
+  return Promise.resolve(() => outputHandlers.delete(handler));
+}
+
+export function onTerminalExit(handler: (id: number) => void): Promise<() => void> {
+  exitHandlers.add(handler);
+  return Promise.resolve(() => exitHandlers.delete(handler));
 }
