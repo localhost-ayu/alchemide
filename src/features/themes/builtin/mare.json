@@ -1,0 +1,34 @@
+{
+  "name": "Maré",
+  "mood": "calmas",
+  "ui": {
+    "bg": "#0f1a1f",
+    "panel": "#15242b",
+    "accent": "#7fbfa8",
+    "accent2": "#8fb0d0",
+    "text": "#dbe8eb"
+  },
+  "syntax": {
+    "keyword": "#8fb0d0",
+    "string": "#9ccbb0",
+    "function": "#d6c99a",
+    "comment": "#6e8d97",
+    "variable": "#c3d6dc",
+    "type": "#7fbfa8",
+    "number": "#d4ab96"
+  },
+  "background": {
+    "type": "gradient",
+    "css": "linear-gradient(200deg, #16303a 0%, #0f1a1f 60%)"
+  },
+  "glass": {
+    "panelOpacity": 0.8,
+    "blur": 12
+  },
+  "effects": {
+    "surface": "glass",
+    "background": true,
+    "mascot": true,
+    "animations": true
+  }
+}

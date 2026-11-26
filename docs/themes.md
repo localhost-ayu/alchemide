@@ -17,7 +17,7 @@ A theme is a JSON file. Built-in themes live in `src/features/themes/builtin/`.
     "keyword": "#ff7ac6",
     "string": "#b6f24a",
     "function": "#ffc857",
-    "comment": "#6d6485",
+    "comment": "#857b9f",
     "variable": "#c9b8ff",
     "type": "#7ad7ff",
     "number": "#ffa36c"

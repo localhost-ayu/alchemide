@@ -1,0 +1,34 @@
+{
+  "name": "Ferrugem",
+  "mood": "ferreas",
+  "ui": {
+    "bg": "#1a1311",
+    "panel": "#241a16",
+    "accent": "#e2763b",
+    "accent2": "#d9a441",
+    "text": "#eee2da"
+  },
+  "syntax": {
+    "keyword": "#e2763b",
+    "string": "#c9b46a",
+    "function": "#f0c35a",
+    "comment": "#937d75",
+    "variable": "#d8c3b5",
+    "type": "#8fb4c8",
+    "number": "#e89a84"
+  },
+  "background": {
+    "type": "gradient",
+    "css": "radial-gradient(circle at 15% 0%, #3a2016 0%, #1a1311 60%)"
+  },
+  "glass": {
+    "panelOpacity": 0.8,
+    "blur": 12
+  },
+  "effects": {
+    "surface": "glass",
+    "background": true,
+    "mascot": true,
+    "animations": true
+  }
+}

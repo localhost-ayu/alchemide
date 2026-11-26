@@ -1,0 +1,34 @@
+{
+  "name": "Musgo",
+  "mood": "calmas",
+  "ui": {
+    "bg": "#131915",
+    "panel": "#1a221d",
+    "accent": "#9fbf8f",
+    "accent2": "#a3b8a8",
+    "text": "#dfe7e0"
+  },
+  "syntax": {
+    "keyword": "#a9b9d0",
+    "string": "#9fbf8f",
+    "function": "#d3c79c",
+    "comment": "#788a7d",
+    "variable": "#c6d3c8",
+    "type": "#8fc0b6",
+    "number": "#cfa894"
+  },
+  "background": {
+    "type": "gradient",
+    "css": "radial-gradient(circle at 90% 100%, #22332a 0%, #131915 60%)"
+  },
+  "glass": {
+    "panelOpacity": 0.8,
+    "blur": 12
+  },
+  "effects": {
+    "surface": "glass",
+    "background": true,
+    "mascot": true,
+    "animations": true
+  }
+}

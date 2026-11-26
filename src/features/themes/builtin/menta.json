@@ -1,0 +1,34 @@
+{
+  "name": "Menta",
+  "mood": "pasteis",
+  "ui": {
+    "bg": "#f2faf6",
+    "panel": "#e2f1ea",
+    "accent": "#22755a",
+    "accent2": "#4a78b0",
+    "text": "#23332c"
+  },
+  "syntax": {
+    "keyword": "#4a6fb0",
+    "string": "#22755a",
+    "function": "#86590a",
+    "comment": "#5c7268",
+    "variable": "#2e4038",
+    "type": "#0f6f78",
+    "number": "#b0503c"
+  },
+  "background": {
+    "type": "gradient",
+    "css": "linear-gradient(170deg, #e6f6ee 0%, #f2faf6 60%)"
+  },
+  "glass": {
+    "panelOpacity": 0.8,
+    "blur": 12
+  },
+  "effects": {
+    "surface": "glass",
+    "background": true,
+    "mascot": true,
+    "animations": true
+  }
+}

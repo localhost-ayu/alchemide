@@ -1,0 +1,34 @@
+{
+  "name": "Pêssego",
+  "mood": "pasteis",
+  "ui": {
+    "bg": "#fdf6f1",
+    "panel": "#f6e8de",
+    "accent": "#a64f24",
+    "accent2": "#8a5cb0",
+    "text": "#3a2b24"
+  },
+  "syntax": {
+    "keyword": "#a33f28",
+    "string": "#467228",
+    "function": "#8a5cb0",
+    "comment": "#7a665c",
+    "variable": "#4a3830",
+    "type": "#256b7a",
+    "number": "#a3405e"
+  },
+  "background": {
+    "type": "gradient",
+    "css": "radial-gradient(circle at 100% 0%, #fde3d3 0%, #fdf6f1 55%)"
+  },
+  "glass": {
+    "panelOpacity": 0.8,
+    "blur": 12
+  },
+  "effects": {
+    "surface": "glass",
+    "background": true,
+    "mascot": true,
+    "animations": true
+  }
+}

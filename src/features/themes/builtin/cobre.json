@@ -1,0 +1,34 @@
+{
+  "name": "Cobre",
+  "mood": "ferreas",
+  "ui": {
+    "bg": "#13181a",
+    "panel": "#1b2225",
+    "accent": "#d58a5a",
+    "accent2": "#5fb7a2",
+    "text": "#e3e9ea"
+  },
+  "syntax": {
+    "keyword": "#d58a5a",
+    "string": "#7fc9b2",
+    "function": "#e7b878",
+    "comment": "#788b90",
+    "variable": "#c4d3d6",
+    "type": "#5fb7a2",
+    "number": "#e59a7a"
+  },
+  "background": {
+    "type": "gradient",
+    "css": "linear-gradient(160deg, #1d2a2b 0%, #13181a 55%, #24180f 100%)"
+  },
+  "glass": {
+    "panelOpacity": 0.8,
+    "blur": 12
+  },
+  "effects": {
+    "surface": "glass",
+    "background": true,
+    "mascot": true,
+    "animations": true
+  }
+}
