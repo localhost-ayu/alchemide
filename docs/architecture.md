@@ -85,6 +85,10 @@ content ships with the app or enters the repository.
 
 Settings live in `settings.json` in the same folder (`config.rs`). Rust treats the file as an
 opaque JSON object, written atomically, and falls back to `{}` when it is missing or broken; the
-frontend validates each field it reads.
+frontend validates each field it reads. Keys today: `theme`, `effects`, `background`, `mascot`
+and `editor` (`fontFamily`, `fontSize`, `tabSize`).
+
+The settings screen belongs to `features/settings`, but the look section comes from
+`features/themes`: `App` passes it in as a child, so the two features never import each other.
 
 Decisions and their reasons are recorded in [`decisions/`](decisions/).

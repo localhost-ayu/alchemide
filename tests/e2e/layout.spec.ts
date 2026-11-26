@@ -137,3 +137,17 @@ test("runs actions from the command palette", async ({ page }) => {
 
   await expect(explorer).toBeHidden();
 });
+
+test("changes theme and effects from the settings screen", async ({ page }) => {
+  await page.goto("/");
+  const explorer = page.getByRole("complementary", { name: "Explorer" });
+  await expect(explorer).toBeVisible();
+
+  await page.keyboard.press("Control+,");
+  const settings = page.getByRole("dialog", { name: "Settings" });
+  await settings.getByRole("combobox", { name: "Theme" }).selectOption("Aço");
+  await settings.getByRole("checkbox", { name: "Glass panels" }).uncheck();
+
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "Aço");
+  await expect(explorer).toHaveCSS("backdrop-filter", "none");
+});

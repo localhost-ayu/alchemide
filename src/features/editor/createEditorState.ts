@@ -4,9 +4,10 @@ import {
   foldGutter,
   foldKeymap,
   indentOnInput,
+  indentUnit,
   syntaxHighlighting,
 } from "@codemirror/language";
-import { EditorState, type Extension } from "@codemirror/state";
+import { Compartment, EditorState, type Extension } from "@codemirror/state";
 import {
   drawSelection,
   EditorView,
@@ -21,7 +22,13 @@ import { editorTheme } from "./editorTheme";
 import { highlightStyle } from "./highlightStyle";
 import { languageSupport } from "./languageSupport";
 
-export function createEditorState(file: Tab, onUpdate: Extension): EditorState {
+export const indentation = new Compartment();
+
+export function indentationFor(tabSize: number): Extension {
+  return [EditorState.tabSize.of(tabSize), indentUnit.of(" ".repeat(tabSize))];
+}
+
+export function createEditorState(file: Tab, onUpdate: Extension, tabSize: number): EditorState {
   return EditorState.create({
     doc: file.text,
     extensions: [
@@ -38,6 +45,7 @@ export function createEditorState(file: Tab, onUpdate: Extension): EditorState {
       syntaxHighlighting(highlightStyle),
       keymap.of([...defaultKeymap, ...historyKeymap, ...foldKeymap, indentWithTab]),
       languageSupport(file.language),
+      indentation.of(indentationFor(tabSize)),
       editorTheme,
       EditorView.contentAttributes.of({ "aria-label": `Editing ${file.name}` }),
       onUpdate,

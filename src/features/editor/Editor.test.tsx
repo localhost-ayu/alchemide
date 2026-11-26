@@ -2,6 +2,7 @@ import { EditorView } from "@codemirror/view";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { useActivityStore } from "../../lib/activityStore";
+import { useEditorSettings } from "../../lib/editorSettings";
 import { useEditorStore } from "../../lib/editorStore";
 import { readMockFile, writeFile } from "../../lib/ipc.mock";
 import { Editor } from "./Editor";
@@ -191,4 +192,16 @@ test("never reloads a tab with unsaved changes", async () => {
   await act(() => useEditorStore.getState().reloadTab(`${root}/README.md`));
 
   expect(viewOf("README.md").state.doc.toString()).toMatch(/^draft # Sample project/);
+});
+
+test("applies a new tab size to open files without reloading them", async () => {
+  render(<Editor />);
+  await open(`${root}/query.sql`);
+  type("query.sql", "x");
+
+  await act(() => useEditorSettings.getState().update({ tabSize: 8 }));
+
+  expect(viewOf("query.sql").state.tabSize).toBe(8);
+  expect(viewOf("query.sql").state.doc.toString()).toMatch(/^x/);
+  await act(() => useEditorSettings.getState().update({ tabSize: 2 }));
 });

@@ -3,10 +3,11 @@ import { EditorView } from "@codemirror/view";
 import { useEffect, useRef, useState } from "react";
 import { playfulTouchesEnabled, useActivityStore } from "../../lib/activityStore";
 import { registerCommands } from "../../lib/commands";
+import { useEditorSettings } from "../../lib/editorSettings";
 import { hasUnsavedTabs, selectActiveTab, type Tab, useEditorStore } from "../../lib/editorStore";
 import { onCloseRequested } from "../../lib/ipc";
 import { joinLines } from "../../lib/lineEndings";
-import { createEditorState } from "./createEditorState";
+import { createEditorState, indentation, indentationFor } from "./createEditorState";
 import { requestCloseTab } from "./requestCloseTab";
 import { saveMessage } from "./saveMessage";
 import { Tabs } from "./Tabs";
@@ -77,7 +78,7 @@ export function Editor() {
         reportCursor(update.state);
       }
     });
-    const state = createEditorState(tab, onUpdate);
+    const state = createEditorState(tab, onUpdate, useEditorSettings.getState().tabSize);
     const session = { state, saved: state.doc, revision: tab.revision };
     sessions.set(path, session);
     return session;
@@ -110,6 +111,15 @@ export function Editor() {
       }
     }
   }, [tabs]);
+
+  const tabSize = useEditorSettings((state) => state.tabSize);
+  useEffect(() => {
+    const effects = indentation.reconfigure(indentationFor(tabSize));
+    for (const session of sessionsRef.current.values()) {
+      session.state = session.state.update({ effects }).state;
+    }
+    viewRef.current?.dispatch({ effects });
+  }, [tabSize]);
 
   const reveal = useEditorStore((state) => state.reveal);
   useEffect(() => {
