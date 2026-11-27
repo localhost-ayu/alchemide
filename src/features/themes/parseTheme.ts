@@ -5,6 +5,7 @@ import {
   type EditorBackdropMode,
   type Effects,
   type Fit,
+  type MascotPosition,
   type Theme,
   type ThemeBackground,
   type ThemeMascot,
@@ -147,6 +148,15 @@ export function readBackground(value: unknown, ui: ThemeUi, warnings: string[]):
   return fallback;
 }
 
+function readMascotPosition(value: unknown): MascotPosition | null {
+  if (!isFields(value)) {
+    return null;
+  }
+  const inRange = (n: unknown): n is number =>
+    typeof n === "number" && Number.isFinite(n) && n >= 0 && n <= 1;
+  return inRange(value.x) && inRange(value.y) ? { x: value.x, y: value.y } : null;
+}
+
 export function readMascot(value: unknown, warnings: string[]): ThemeMascot | null {
   if (value === undefined || value === null) {
     return null;
@@ -156,11 +166,15 @@ export function readMascot(value: unknown, warnings: string[]): ThemeMascot | nu
     return null;
   }
   const corner = CORNERS.find((candidate) => candidate === value.corner) ?? "bottom-right";
+  const layer = value.layer === "front" || value.layer === "behind" ? value.layer : null;
+  const position = readMascotPosition(value.position);
   return {
     path: value.path,
     corner,
     opacity: numberIn(value.opacity, 0, 1, 0.35),
     size: numberIn(value.size, 32, 1024, 280),
+    ...(layer ? { layer } : {}),
+    ...(position ? { position } : {}),
   };
 }
 

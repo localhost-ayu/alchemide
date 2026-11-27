@@ -40,17 +40,17 @@ live in the `themes/` folder of the app config folder (see [Your own themes](#yo
 
 ## Fields
 
-| Field        | Required | Notes                                                                                                                                                 |
-| ------------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`       | yes      | Shown in the mood picker                                                                                                                              |
-| `mood`       | no       | Free text used to group themes                                                                                                                        |
-| `ui`         | yes      | Hex colors: `bg`, `panel`, `accent`, `accent2`, `text`                                                                                                |
-| `syntax`     | yes      | Hex colors: `keyword`, `string`, `function`, `comment`, `variable`; optional `type` (defaults to `ui.accent2`) and `number` (defaults to `ui.accent`) |
-| `background` | no       | See below. Defaults to a solid `ui.bg`                                                                                                                |
-| `glass`      | no       | `panelOpacity` from 0.2 to 1 (default 0.78), `blur` in px from 0 to 40 (default 12)                                                                   |
-| `shape`      | no       | `radius` in px from 0 to 16 (default 8; small corners use half), `font` for the interface: `system`, `rounded`, `serif` or `mono` (default `system`)  |
-| `mascot`     | no       | `path`, `corner` (`top-left`, `top-right`, `bottom-left`, `bottom-right`), `opacity` 0–1, `size` 32–1024 px                                           |
-| `effects`    | no       | Initial effects when the theme is chosen                                                                                                              |
+| Field        | Required | Notes                                                                                                                                                                                                                                                   |
+| ------------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`       | yes      | Shown in the mood picker                                                                                                                                                                                                                                |
+| `mood`       | no       | Free text used to group themes                                                                                                                                                                                                                          |
+| `ui`         | yes      | Hex colors: `bg`, `panel`, `accent`, `accent2`, `text`                                                                                                                                                                                                  |
+| `syntax`     | yes      | Hex colors: `keyword`, `string`, `function`, `comment`, `variable`; optional `type` (defaults to `ui.accent2`) and `number` (defaults to `ui.accent`)                                                                                                   |
+| `background` | no       | See below. Defaults to a solid `ui.bg`                                                                                                                                                                                                                  |
+| `glass`      | no       | `panelOpacity` from 0.2 to 1 (default 0.78), `blur` in px from 0 to 40 (default 12)                                                                                                                                                                     |
+| `shape`      | no       | `radius` in px from 0 to 16 (default 8; small corners use half), `font` for the interface: `system`, `rounded`, `serif` or `mono` (default `system`)                                                                                                    |
+| `mascot`     | no       | `path`, `corner` (`top-left`, `top-right`, `bottom-left`, `bottom-right`), `opacity` 0–1, `size` 32–1024 px; optional `layer` (`behind`, default, or `front` of the code) and `position` (`x` and `y` 0–1 inside the editor area, replacing the corner) |
+| `effects`    | no       | Initial effects when the theme is chosen                                                                                                                                                                                                                |
 
 ### Backgrounds
 
@@ -115,6 +115,12 @@ The mascot and the background fit are also plain CSS, so previews change them wi
 `data-backdrop-fit` attributes.
 
 ## Your own background and mascot
+
+The mascot is locked by default: clicks pass through it. "Lock or unlock the mascot to move it"
+(command palette) or the "Locked" switch in the theme editor unlocks it; then drag it anywhere
+in the editor area, and double click to send it back to its corner. The lock is saved as
+`mascotLocked` in the settings, and the position in your mascot. PNG, WebP and GIF mascots are
+accepted; animated ones stand still on their first frame when animations are off.
 
 The mood picker (`Ctrl+K M`) has actions to choose a background image or video and a mascot
 image, and to remove them. The chosen file is copied into `backgrounds/` or `mascots/` in the

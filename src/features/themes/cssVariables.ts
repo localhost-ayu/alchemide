@@ -67,6 +67,8 @@ export function toCssVariables(theme: Theme): Record<string, string> {
     "--layer-blur": `${editorBackdropOf(theme)?.blur ?? 0}px`,
     "--mascot-size": `${mascot?.size ?? 0}px`,
     "--mascot-opacity": String(mascot?.opacity ?? 0),
+    "--mascot-x": String(mascot?.position?.x ?? 0),
+    "--mascot-y": String(mascot?.position?.y ?? 0),
     "--radius": `${shape.radius}px`,
     "--radius-sm": `${Math.round(shape.radius / 2)}px`,
     "--font-ui": UI_FONT_STACKS[shape.font],

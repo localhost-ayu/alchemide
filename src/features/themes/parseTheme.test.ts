@@ -134,6 +134,19 @@ test("reads the shape and falls back to the default for missing or invalid value
   });
 });
 
+test("reads the mascot layer and position, ignoring invalid ones", () => {
+  const mascot = (fields: Record<string, unknown>) =>
+    parse({ ...minimal, mascot: { path: "mascots/m.png", ...fields } }).theme.mascot;
+
+  expect(mascot({ layer: "front", position: { x: 0.2, y: 0.9 } })).toMatchObject({
+    layer: "front",
+    position: { x: 0.2, y: 0.9 },
+  });
+  const invalid = mascot({ layer: "sideways", position: { x: 2, y: 0.5 } });
+  expect(invalid).not.toHaveProperty("layer");
+  expect(invalid).not.toHaveProperty("position");
+});
+
 test("reads what sits behind open files and falls back for invalid values", () => {
   const background = (editor: unknown) =>
     parse({ ...minimal, background: { type: "image", path: "a.png", editor } }).theme.background;

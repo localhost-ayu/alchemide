@@ -44,11 +44,17 @@ export type MediaBackground = Extract<ThemeBackground, { type: "image" | "video"
 
 export type Corner = "top-left" | "top-right" | "bottom-left" | "bottom-right";
 
+export type MascotLayer = "behind" | "front";
+
+export type MascotPosition = { x: number; y: number };
+
 export type ThemeMascot = {
   path: string;
   corner: Corner;
   opacity: number;
   size: number;
+  layer?: MascotLayer;
+  position?: MascotPosition;
 };
 
 export type UiFont = "system" | "rounded" | "serif" | "mono";
