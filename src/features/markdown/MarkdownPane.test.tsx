@@ -64,3 +64,20 @@ test("stays hidden for files that are not Markdown", async () => {
 
   expect(screen.queryByRole("region", { name: "Markdown preview" })).toBeNull();
 });
+
+test("a button on Markdown files toggles the preview and shows its state", async () => {
+  render(<MarkdownPane />);
+  await openFile(`${root}/query.sql`);
+  expect(screen.queryByRole("button", { name: "Toggle Markdown preview" })).toBeNull();
+
+  await openFile(`${root}/README.md`);
+  const button = screen.getByRole("button", { name: "Toggle Markdown preview" });
+  expect(button.getAttribute("aria-pressed")).toBe("false");
+
+  fireEvent.click(button);
+  expect(screen.getByRole("region", { name: "Markdown preview" })).toBeTruthy();
+  expect(button.getAttribute("aria-pressed")).toBe("true");
+
+  fireEvent.click(button);
+  expect(screen.queryByRole("region", { name: "Markdown preview" })).toBeNull();
+});

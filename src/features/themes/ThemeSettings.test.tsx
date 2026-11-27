@@ -24,17 +24,14 @@ test("switches the theme and each effect", async () => {
   expect(root.dataset.theme).toBe("Maré");
 
   await act(async () => {
-    fireEvent.click(screen.getByRole("checkbox", { name: "Glass panels" }));
-  });
-  await act(async () => {
     fireEvent.click(screen.getByRole("checkbox", { name: "Animations" }));
   });
 
-  expect(root.dataset.surface).toBe("solid");
   expect(root.dataset.animations).toBe("false");
+  expect(screen.queryByRole("checkbox", { name: "Glass panels" })).toBeNull();
   expect(await loadSettings()).toMatchObject({
     theme: "Maré",
-    effects: { surface: "solid", animations: false, background: true },
+    effects: { animations: false, background: true },
   });
 });
 

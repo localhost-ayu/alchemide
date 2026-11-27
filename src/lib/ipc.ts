@@ -4,6 +4,7 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import type {
   AssetKind,
   Blame,
+  Branch,
   Commit,
   ContainerAction,
   DockerContainer,
@@ -260,4 +261,12 @@ export function gitShow(hash: string): Promise<string> {
 
 export function gitBlame(path: string): Promise<Blame> {
   return invoke<Blame>("git_blame", { path });
+}
+
+export function gitBranches(): Promise<Branch[]> {
+  return invoke<Branch[]>("git_branches");
+}
+
+export function gitSwitch(branch: string): Promise<void> {
+  return invoke<void>("git_switch", { branch });
 }

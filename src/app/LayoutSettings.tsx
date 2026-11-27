@@ -1,4 +1,10 @@
-import { type Layout, useLayoutStore } from "../lib/layoutStore";
+import { type Layout, type MenuBarMode, useLayoutStore } from "../lib/layoutStore";
+
+const MENU_BAR_LABELS: [MenuBarMode, string][] = [
+  ["auto", "Shows with Alt or at the top edge"],
+  ["always", "Always visible"],
+  ["never", "Hidden (menus stay in the settings button)"],
+];
 
 const OPTIONS: { key: keyof Pick<Layout, "activityBar" | "statusBar" | "tabs">; label: string }[] =
   [
@@ -23,6 +29,23 @@ export function LayoutSettings() {
           />
         </label>
       ))}
+      <label className="settings__field">
+        <span>Menu bar</span>
+        <select
+          value={layout.menuBar}
+          onChange={(event) =>
+            layout.update({
+              menuBar: MENU_BAR_LABELS.find(([mode]) => mode === event.target.value)?.[0] ?? "auto",
+            })
+          }
+        >
+          {MENU_BAR_LABELS.map(([mode, label]) => (
+            <option key={mode} value={mode}>
+              {label}
+            </option>
+          ))}
+        </select>
+      </label>
     </section>
   );
 }

@@ -12,7 +12,12 @@ The reference was Zed's Git panel: a dock on the right with the changes and the 
 
 - Scope chosen with the user: look and commit. The dock lists changed files with their diff,
   stages and unstages per file, stages everything, commits with a message and shows the history
-  with the diff of each commit. Push, pull, branches and discarding changes stay in the terminal.
+  with the diff of each commit. Push, pull, creating branches and discarding changes stay in the
+  terminal.
+- Added later at the user's request (issue #123): switching to an existing local branch, or to a
+  remote one without a local copy (`git switch` creates the tracking branch). Git itself refuses
+  when uncommitted changes would be lost, and the dock shows its message. Branch names are checked
+  (no leading `-`, no `..`, spaces or the characters git forbids) before reaching the CLI.
 - Rust runs the `git` CLI directly (no shell, no console window on Windows,
   `GIT_TERMINAL_PROMPT=0`), from the repository root found with `git rev-parse --show-toplevel`.
   The user's own git configuration applies, including hooks and signing.

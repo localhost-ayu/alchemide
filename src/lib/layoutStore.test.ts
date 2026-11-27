@@ -91,3 +91,9 @@ test("previews a size without saving it and saves it on update", async () => {
 
   expect((await loadSettings()).layout).toMatchObject({ sidebarWidth: 340 });
 });
+
+test("reads the menu bar mode and falls back to auto", () => {
+  expect(readLayout({ menuBar: "always" }).menuBar).toBe("always");
+  expect(readLayout({ menuBar: "sometimes" }).menuBar).toBe("auto");
+  expect(readLayout({}).menuBar).toBe("auto");
+});

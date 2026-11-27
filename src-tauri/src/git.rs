@@ -100,6 +100,59 @@ pub fn is_safe_repo_path(path: &str) -> bool {
             .all(|component| matches!(component, Component::Normal(_)))
 }
 
+#[derive(Debug, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Branch {
+    pub name: String,
+    pub current: bool,
+    pub remote_only: bool,
+}
+
+pub fn parse_branches(local: &str, remote: &str) -> Vec<Branch> {
+    let mut branches: Vec<Branch> = local
+        .lines()
+        .filter_map(|line| {
+            let (marker, name) = line.split_once('\u{1f}')?;
+            Some(Branch {
+                name: name.trim().to_string(),
+                current: marker == "*",
+                remote_only: false,
+            })
+        })
+        .filter(|branch| !branch.name.is_empty() && !branch.name.starts_with('('))
+        .collect();
+    for line in remote.lines().map(str::trim) {
+        let Some((_, name)) = line.split_once('/') else {
+            continue;
+        };
+        if name == "HEAD" || name.is_empty() || branches.iter().any(|b| b.name == name) {
+            continue;
+        }
+        branches.push(Branch {
+            name: name.to_string(),
+            current: false,
+            remote_only: true,
+        });
+    }
+    branches
+}
+
+pub fn is_branch_name(name: &str) -> bool {
+    const FORBIDDEN: [char; 7] = ['~', '^', ':', '?', '*', '[', '\\'];
+    !name.is_empty()
+        && !name.starts_with('-')
+        && !name.starts_with('/')
+        && !name.ends_with('/')
+        && !name.ends_with('.')
+        && !name.ends_with(".lock")
+        && !name.contains("..")
+        && !name.contains("@{")
+        && !name.contains("//")
+        && name
+            .chars()
+            .all(|c| !c.is_whitespace() && !c.is_control() && !FORBIDDEN.contains(&c))
+}
+
 #[derive(Debug, Default, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct BlameCommit {
@@ -324,6 +377,34 @@ pub async fn git_commit(message: String, workspace: State<'_, Workspace>) -> Res
 }
 
 #[tauri::command]
+pub async fn git_branches(workspace: State<'_, Workspace>) -> Result<Vec<Branch>> {
+    let dir = repository_root(&workspace)?;
+    blocking(move || {
+        let local = run(
+            &dir,
+            &["branch", "--format=%(HEAD)%1f%(refname:short)"],
+            &[],
+        )?;
+        let remote = run(
+            &dir,
+            &["branch", "--remotes", "--format=%(refname:short)"],
+            &[],
+        )?;
+        Ok(parse_branches(&text(local), &text(remote)))
+    })
+    .await
+}
+
+#[tauri::command]
+pub async fn git_switch(branch: String, workspace: State<'_, Workspace>) -> Result<()> {
+    if !is_branch_name(&branch) {
+        return Err(Error::Git("not a branch name".into()));
+    }
+    let dir = repository_root(&workspace)?;
+    blocking(move || run(&dir, &["switch", "--quiet", &branch], &[]).map(|_| ())).await
+}
+
+#[tauri::command]
 pub async fn git_blame(path: String, workspace: State<'_, Workspace>) -> Result<Blame> {
     let path = PathBuf::from(path);
     workspace.check(&path)?;
@@ -429,6 +510,48 @@ mod tests {
     }
 
     #[test]
+    fn lists_local_branches_then_remote_ones_without_a_local_copy() {
+        let local = " \u{1f}feature/login\n*\u{1f}main\n \u{1f}(HEAD detached at abc)\n";
+        let remote = "origin/HEAD\norigin/main\norigin/release\nupstream/feature/login\n";
+        let branches = parse_branches(local, remote);
+        let summary: Vec<_> = branches
+            .iter()
+            .map(|b| (b.name.as_str(), b.current, b.remote_only))
+            .collect();
+        assert_eq!(
+            summary,
+            [
+                ("feature/login", false, false),
+                ("main", true, false),
+                ("release", false, true),
+            ]
+        );
+    }
+
+    #[test]
+    fn accepts_only_safe_branch_names() {
+        for good in ["main", "feature/login", "fix-1.2", "release_2026"] {
+            assert!(is_branch_name(good), "{good} should be accepted");
+        }
+        for bad in [
+            "",
+            "-f",
+            "--orphan=x",
+            "a..b",
+            "a b",
+            "x~1",
+            "x^",
+            "a:b",
+            "x.lock",
+            "/x",
+            "x/",
+            "a@{1}",
+        ] {
+            assert!(!is_branch_name(bad), "{bad} should be rejected");
+        }
+    }
+
+    #[test]
     fn reads_blame_porcelain_output() {
         let a = "a".repeat(40);
         let z = "0".repeat(40);
@@ -496,6 +619,20 @@ mod tests {
             .expect("log"),
         ));
         assert_eq!(log[0].subject, "first");
+
+        git(repo, &["branch", "other"]);
+        git(repo, &["switch", "--quiet", "other"]);
+        let local = text(
+            run(
+                repo,
+                &["branch", "--format=%(HEAD)%1f%(refname:short)"],
+                &[],
+            )
+            .expect("branches"),
+        );
+        let branches = parse_branches(&local, "");
+        assert!(branches.iter().any(|b| b.name == "other" && b.current));
+        assert!(branches.iter().any(|b| b.name == "main" && !b.current));
 
         std::fs::write(repo.join("a.txt"), "one\ntwo\n").expect("write");
         let blame = parse_blame(&text(

@@ -152,3 +152,9 @@ export type Blame = {
   commits: Record<string, BlameCommit>;
   lines: string[];
 };
+
+export type Branch = {
+  name: string;
+  current: boolean;
+  remoteOnly: boolean;
+};

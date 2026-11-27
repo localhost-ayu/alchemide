@@ -29,6 +29,7 @@ import { clampSize, SIDEBAR_WIDTH, TERMINAL_HEIGHT, useLayoutStore } from "../li
 import { ActivityBar } from "./ActivityBar";
 import "./App.css";
 import { LayoutSettings } from "./LayoutSettings";
+import { MenuBar } from "./MenuBar";
 import { ResizeHandle } from "./ResizeHandle";
 
 const SIDEBAR_LABELS = { explorer: "Explorer", search: "Search", docker: "Docker" };
@@ -42,6 +43,7 @@ function focusSearch(): void {
 export function App() {
   const fileOpen = useEditorStore((state) => state.activePath !== null);
   const sidebar = useLayoutStore((state) => state.sidebar);
+  const menuBar = useLayoutStore((state) => state.menuBar);
   const sidebarOpen = useLayoutStore((state) => state.sidebarOpen);
   const activityBar = useLayoutStore((state) => state.activityBar);
   const statusBar = useLayoutStore((state) => state.statusBar);
@@ -119,8 +121,10 @@ export function App() {
   return (
     <>
       <Backdrop />
+      {!zen && <MenuBar />}
       <div
         className="app"
+        data-menu-bar={zen ? "never" : menuBar}
         data-explorer={isSidebarOpen ? "open" : "closed"}
         data-activity-bar={activityBar && !zen ? "shown" : "hidden"}
         data-statusbar={statusBar && !zen ? "shown" : "hidden"}

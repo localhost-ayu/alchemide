@@ -146,10 +146,16 @@ test("changes theme and effects from the settings screen", async ({ page }) => {
   await page.keyboard.press("Control+,");
   const settings = page.getByRole("dialog", { name: "Settings" });
   await settings.getByRole("combobox", { name: "Theme" }).selectOption("Aço");
-  await settings.getByRole("checkbox", { name: "Glass panels" }).uncheck();
-
   await expect(page.locator("html")).toHaveAttribute("data-theme", "Aço");
+  await page.keyboard.press("Escape");
+
+  await page.keyboard.press("Control+k");
+  await page.keyboard.press("e");
+  const editor = page.getByRole("complementary", { name: "Theme editor" });
+  await editor.getByRole("checkbox", { name: "Glass panels" }).uncheck();
   await expect(explorer).toHaveCSS("backdrop-filter", "none");
+  await editor.getByRole("button", { name: "Save as new theme" }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-surface", "solid");
 });
 
 test("switches side bar views from the activity bar and hides bars", async ({ page }) => {
@@ -372,4 +378,88 @@ test("settings switches follow the theme accent", async ({ page }) => {
   const toRgb = (hex: string) =>
     `rgb(${[1, 3, 5].map((i) => Number.parseInt(hex.slice(i, i + 2), 16)).join(", ")})`;
   expect(background).toBe(toRgb(accent));
+});
+
+test("the menu bar appears with Alt and runs a command by category", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("complementary").first()).toBeVisible();
+  const bar = page.getByRole("menubar", { name: "Menu bar" });
+  await expect(bar).toBeHidden();
+
+  await page.keyboard.press("Alt");
+  await expect(bar).toBeVisible();
+  await bar.getByRole("menuitem", { name: "Terminal" }).click();
+  await page
+    .getByRole("menu", { name: "Terminal" })
+    .getByRole("menuitem", { name: /Toggle terminal/ })
+    .click();
+
+  await expect(page.getByRole("region", { name: "Terminal" })).toBeVisible();
+  await expect(bar).toBeHidden();
+});
+
+test("the settings button lists the menus", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Settings and menus" }).click();
+  await page.getByRole("menuitem", { name: /Settings…/ }).click();
+  await expect(page.getByRole("dialog", { name: "Settings" })).toBeVisible();
+});
+
+test("switches branches from the Git dock", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("complementary").first()).toBeVisible();
+  await page.getByRole("button", { name: "Open Git panel" }).click();
+  const dock = page.getByRole("complementary", { name: "Git" });
+  const branch = dock.getByRole("combobox", { name: "Branch" });
+  await expect(branch).toHaveValue("main");
+
+  await dock.getByRole("button", { name: "Stage all" }).click();
+  await dock.getByRole("textbox", { name: "Commit message" }).fill("chore: save work");
+  await dock.getByRole("button", { name: /^Commit/ }).click();
+  await expect(dock).toContainText("No changes to commit");
+
+  await branch.selectOption("feature/login");
+  await expect(branch).toHaveValue("feature/login");
+});
+
+test("the status bar button opens and hides the terminal", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("complementary").first()).toBeVisible();
+  const panel = page.getByRole("region", { name: "Terminal" });
+  const toggle = page.getByRole("contentinfo").getByRole("button", { name: "Toggle terminal" });
+
+  await toggle.click();
+  await expect(panel).toBeVisible();
+  await toggle.click();
+  await expect(panel).toBeHidden();
+});
+
+test("unlocks the mascot and drags it anywhere", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("complementary").first()).toBeVisible();
+  await page.keyboard.press("Control+k");
+  await page.keyboard.press("m");
+  const search = page.getByRole("combobox", { name: "Search themes and effects" });
+  await search.fill("choose mascot");
+  await search.press("Enter");
+  const mascot = page.locator(".mascot");
+  await expect(mascot).toBeVisible();
+  await expect(mascot).toHaveCSS("pointer-events", "none");
+
+  await page.keyboard.press("Control+Shift+P");
+  await page.getByRole("combobox", { name: "Run a command" }).fill("unlock the mascot");
+  await page.keyboard.press("Enter");
+  await expect(mascot).toHaveCSS("pointer-events", "auto");
+
+  const box = await mascot.boundingBox();
+  expect(box).not.toBeNull();
+  const start = { x: (box?.x ?? 0) + 5, y: (box?.y ?? 0) + 5 };
+  await page.mouse.move(start.x, start.y);
+  await page.mouse.down();
+  await page.mouse.move(start.x - 300, start.y - 200, { steps: 5 });
+  await page.mouse.up();
+
+  await expect(page.locator("html")).toHaveAttribute("data-mascot-corner", "free");
+  const moved = await mascot.boundingBox();
+  expect(moved?.x ?? 0).toBeLessThan((box?.x ?? 0) - 100);
 });

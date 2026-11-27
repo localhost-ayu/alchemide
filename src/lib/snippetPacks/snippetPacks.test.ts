@@ -52,3 +52,27 @@ test("class snippets use the file name", () => {
   expect(view.state.doc.toString()).toContain("class UserController extends Controller");
   view.destroy();
 });
+
+function expand(packId: string, name: string): string {
+  const item = SNIPPET_PACKS.find((pack) => pack.id === packId)?.snippets.find(
+    (candidate) => candidate.name === name,
+  );
+  const view = new EditorView({ state: EditorState.create({ doc: "" }) });
+  snippet(toTemplate(item?.body ?? "", variables))(view, { label: name }, 0, 0);
+  const text = view.state.doc.toString();
+  view.destroy();
+  return text;
+}
+
+test("SQL snippets expand for SQL files", () => {
+  expect(expand("sql", "Select")).toBe("SELECT *\nFROM table\nWHERE condition;");
+  const sql = SNIPPET_PACKS.find((pack) => pack.id === "sql");
+  expect(sql?.snippets.every((item) => item.languages.includes("sql"))).toBe(true);
+});
+
+test("SQL Server snippets keep @ and # names", () => {
+  expect(expand("sqlserver", "Last hours")).toBe("DATEADD(hour, -48, GETDATE())");
+  expect(expand("sqlserver", "Variable")).toBe("DECLARE @name INT = 0;");
+  expect(expand("sqlserver", "Temp table")).toContain("INTO #temp");
+  expect(expand("sqlserver", "Try catch")).toContain("IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;");
+});

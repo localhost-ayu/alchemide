@@ -11,6 +11,7 @@ beforeEach(() => {
     tab: "changes",
     status: null,
     log: [],
+    branches: [],
     selection: null,
     diff: null,
     message: "",
@@ -32,7 +33,7 @@ test("Ctrl+Shift+G opens the dock with the branch and the changes", async () => 
     fireEvent.keyDown(window, { key: "G", ctrlKey: true, shiftKey: true });
   });
 
-  expect(screen.getByText("⎇ main")).toBeTruthy();
+  expect(screen.getByRole("combobox", { name: "Branch" })).toHaveProperty("value", "main");
   const staged = screen.getByRole("region", { name: "Staged changes" });
   const changes = screen.getByRole("region", { name: "Changes" });
   expect(within(staged).getByText("README.md")).toBeTruthy();
@@ -97,4 +98,46 @@ test("unstages a file back to the changes", async () => {
   expect(
     within(screen.getByRole("region", { name: "Changes" })).getByText("README.md"),
   ).toBeTruthy();
+});
+
+test("lists the branches and switches once the changes are committed", async () => {
+  await openDock();
+  const branch = () => screen.getByRole("combobox", { name: "Branch" }) as HTMLSelectElement;
+  expect([...branch().options].map((option) => option.textContent)).toEqual([
+    "main",
+    "feature/login",
+    "release (remote)",
+  ]);
+
+  await act(async () => {
+    fireEvent.change(branch(), { target: { value: "feature/login" } });
+  });
+  expect(screen.getByRole("alert").textContent).toMatch(/would be overwritten/);
+  expect(branch().value).toBe("main");
+
+  await act(async () => {
+    fireEvent.click(screen.getByRole("button", { name: "Stage all" }));
+  });
+  fireEvent.change(screen.getByRole("textbox", { name: "Commit message" }), {
+    target: { value: "wip" },
+  });
+  await act(async () => {
+    fireEvent.click(screen.getByRole("button", { name: /^Commit/ }));
+  });
+  await act(async () => {
+    fireEvent.change(branch(), { target: { value: "release" } });
+  });
+  expect(branch().value).toBe("release");
+  expect(screen.queryByRole("alert")).toBeNull();
+});
+
+test("a failed commit keeps its message on screen after the refresh", async () => {
+  await openDock();
+  await act(async () => {
+    fireEvent.click(screen.getByRole("button", { name: "Unstage README.md" }));
+  });
+  await act(async () => {
+    await useGitStore.getState().commit();
+  });
+  expect(screen.getByRole("alert").textContent).toMatch(/commit message|nothing to commit/);
 });
