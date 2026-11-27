@@ -7,6 +7,8 @@ import type {
   Environment,
   FileContent,
   Folder,
+  LspMessage,
+  LspStart,
   ProjectFile,
   ReplaceSummary,
   ReplaceTarget,
@@ -126,6 +128,26 @@ export function replaceMatches(
   targets: ReplaceTarget[],
 ): Promise<ReplaceSummary> {
   return invoke<ReplaceSummary>("replace_matches", { query, replacement, targets });
+}
+
+export function lspStart(language: string): Promise<LspStart> {
+  return invoke<LspStart>("lsp_start", { language });
+}
+
+export function lspSend(id: number, message: string): Promise<void> {
+  return invoke<void>("lsp_send", { id, message });
+}
+
+export function lspStop(id: number): Promise<void> {
+  return invoke<void>("lsp_stop", { id });
+}
+
+export function onLspMessage(handler: (message: LspMessage) => void): Promise<() => void> {
+  return listen<LspMessage>("lsp-message", (event) => handler(event.payload));
+}
+
+export function onLspExit(handler: (id: number) => void): Promise<() => void> {
+  return listen<number>("lsp-exit", (event) => handler(event.payload));
 }
 
 export function listUserThemes(): Promise<UserThemeFile[]> {

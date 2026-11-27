@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Language servers: autocomplete, hover, inline errors and go to definition (`F12`, also across
+  files) for PHP (Intelephense), JavaScript/TypeScript/JSX/TSX (`typescript-language-server`)
+  and SQL (`sqls`). Servers are found on `PATH`; when one is missing, the status bar shows how to
+  install it instead of an error
+- "Restart language servers" in the command palette
+
 ## [0.3.0] - 2026-11-27
 
 Theme editor release: your own themes, a theme library, a visual theme editor with live preview and sliders for glass, background and mascot.

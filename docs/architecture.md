@@ -77,6 +77,12 @@ regular browser without compiling Rust, and the end-to-end tests run against tha
   updater plugin's Rust API, against `latest.json` in the latest GitHub release, and only
   installed when the signature matches the public key in `tauri.conf.json`. The webview has no
   updater permission. The check can be turned off in the settings.
+- Language servers (`lsp/`) are started by `lsp_start` from a fixed list, found on `PATH` and
+  run without a shell. Messages are framed with `Content-Length` in Rust; `lsp_send` writes to
+  stdin and a reader thread sends each message as `lsp-message`, with `lsp-exit` when the process
+  ends. One server runs per family and open folder, and the webview never names a program.
+  The frontend side is `@codemirror/lsp-client` with a transport over these events
+  (`features/editor/languageServers.ts`); see [decision 0005](decisions/0005-language-servers.md).
 - Links from the Markdown preview go through `open_external`, which accepts only `http`,
   `https` and `mailto` and calls the opener crate from Rust; the opener plugin is not registered,
   so the webview has no way to open arbitrary files or programs.
