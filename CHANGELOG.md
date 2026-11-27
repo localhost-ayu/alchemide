@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- The terminal uses the theme's panel color instead of a transparent background, which showed black on Linux, and keeps black and white text readable on light themes
+
 ## [0.6.2] - 2026-11-27
 
 Patch release: select fields are readable in every theme on Linux and WSL.
