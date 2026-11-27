@@ -354,3 +354,20 @@ test("settings switches follow the theme accent", async ({ page }) => {
     `rgb(${[1, 3, 5].map((i) => Number.parseInt(hex.slice(i, i + 2), 16)).join(", ")})`;
   expect(background).toBe(toRgb(accent));
 });
+
+test("switches branches from the Git dock", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("complementary").first()).toBeVisible();
+  await page.getByRole("button", { name: "Open Git panel" }).click();
+  const dock = page.getByRole("complementary", { name: "Git" });
+  const branch = dock.getByRole("combobox", { name: "Branch" });
+  await expect(branch).toHaveValue("main");
+
+  await dock.getByRole("button", { name: "Stage all" }).click();
+  await dock.getByRole("textbox", { name: "Commit message" }).fill("chore: save work");
+  await dock.getByRole("button", { name: /^Commit/ }).click();
+  await expect(dock).toContainText("No changes to commit");
+
+  await branch.selectOption("feature/login");
+  await expect(branch).toHaveValue("feature/login");
+});

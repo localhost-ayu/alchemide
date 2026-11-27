@@ -127,9 +127,10 @@ export function GitDock() {
   const open = useGitStore((state) => state.open);
   const tab = useGitStore((state) => state.tab);
   const branch = useGitStore((state) => state.status?.branch);
+  const branches = useGitStore((state) => state.branches);
   const diff = useGitStore((state) => state.diff);
   const error = useGitStore((state) => state.error);
-  const { toggle, setTab, refresh } = useGitStore.getState();
+  const { toggle, setTab, refresh, switchBranch } = useGitStore.getState();
 
   useEffect(
     () =>
@@ -198,7 +199,25 @@ export function GitDock() {
           ×
         </button>
       </header>
-      {branch && <p className="git-dock__branch">⎇ {branch}</p>}
+      {branch && (
+        <label className="git-dock__branch">
+          <span aria-hidden="true">⎇</span>
+          <select
+            aria-label="Branch"
+            value={branch}
+            onChange={(event) => switchBranch(event.target.value)}
+          >
+            {branches.map((item) => (
+              <option key={item.name} value={item.name}>
+                {item.remoteOnly ? `${item.name} (remote)` : item.name}
+              </option>
+            ))}
+            {!branches.some((item) => item.name === branch) && (
+              <option value={branch}>{branch}</option>
+            )}
+          </select>
+        </label>
+      )}
       {error && (
         <p role="alert" className="git-dock__error">
           {error}

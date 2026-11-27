@@ -251,3 +251,19 @@
 .git-diff__line--meta {
   color: var(--color-muted);
 }
+
+.git-dock__branch {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.git-dock__branch select {
+  flex: 1;
+  min-width: 0;
+  padding: 2px 24px 2px 6px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font: inherit;
+  font-size: 12px;
+}

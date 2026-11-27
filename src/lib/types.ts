@@ -141,3 +141,9 @@ export type Commit = {
   date: string;
   subject: string;
 };
+
+export type Branch = {
+  name: string;
+  current: boolean;
+  remoteOnly: boolean;
+};

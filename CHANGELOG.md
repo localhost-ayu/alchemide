@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Switch branches from the Git dock: local branches and remote ones without a local copy
+
+### Fixed
+
+- Git dock errors (a failed stage, commit or switch) no longer vanish right after they appear
+
+### Added
+
 - Tabs of files that share a name show the folder that tells them apart (`conexao.php · beer`)
 
 ### Changed
