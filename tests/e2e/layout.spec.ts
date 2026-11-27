@@ -380,6 +380,23 @@ test("settings switches follow the theme accent", async ({ page }) => {
   expect(background).toBe(toRgb(accent));
 });
 
+test("switches branches from the Git dock", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("complementary").first()).toBeVisible();
+  await page.getByRole("button", { name: "Open Git panel" }).click();
+  const dock = page.getByRole("complementary", { name: "Git" });
+  const branch = dock.getByRole("combobox", { name: "Branch" });
+  await expect(branch).toHaveValue("main");
+
+  await dock.getByRole("button", { name: "Stage all" }).click();
+  await dock.getByRole("textbox", { name: "Commit message" }).fill("chore: save work");
+  await dock.getByRole("button", { name: /^Commit/ }).click();
+  await expect(dock).toContainText("No changes to commit");
+
+  await branch.selectOption("feature/login");
+  await expect(branch).toHaveValue("feature/login");
+});
+
 test("the status bar button opens and hides the terminal", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("complementary").first()).toBeVisible();

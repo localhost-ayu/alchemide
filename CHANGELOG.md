@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Switch branches from the Git dock: local branches and remote ones without a local copy
 - A terminal button in the bottom right corner of the status bar opens and hides the terminal
 - A button at the end of the tab bar opens and closes the preview of Markdown files
 - SQL snippet pack (on by default: `sel`, `ij`, `lj`, `cte`, `ins`, `upd`, `case`, `rownum`…) and a SQL Server pack (`top`, `page`, `lasth`, `decl`, `trycatch`, `merge`, `temp`…), turned on in Settings → Snippets
@@ -16,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Tabs of files that share a name show the folder that tells them apart (`conexao.php · beer`)
 - What sits behind open files over a wallpaper: a dimmed, blurred layer (new default, the wallpaper stays sharp with no file open), the wallpaper as it is, or the theme color. Adjustable in the theme editor under Background
 - Option in Settings → General to close panels by clicking outside them (off by default)
+
+### Fixed
+
+- Git dock errors (a failed stage, commit or switch) no longer vanish right after they appear
 
 ### Changed
 

@@ -1,5 +1,6 @@
 import type {
   AssetKind,
+  Branch,
   ChangedFile,
   Commit,
   ContainerAction,
@@ -791,7 +792,7 @@ export function onLspExit(handler: (id: number) => void): Promise<() => void> {
   return Promise.resolve(() => lspExitHandlers.delete(handler));
 }
 
-type MockGit = { files: ChangedFile[]; log: Commit[] };
+type MockGit = { files: ChangedFile[]; log: Commit[]; branch: string; branches: string[] };
 
 const INITIAL_GIT: MockGit = {
   files: [
@@ -799,6 +800,8 @@ const INITIAL_GIT: MockGit = {
     { path: "README.md", originalPath: null, staged: "M", unstaged: null },
     { path: "notes.txt", originalPath: null, staged: null, unstaged: "?" },
   ],
+  branch: "main",
+  branches: ["main", "feature/login"],
   log: [
     {
       hash: "4f1c2a9e0b7d6c5a4b3c2d1e0f9a8b7c6d5e4f3a",
@@ -817,7 +820,7 @@ export function resetMockGit(): void {
 }
 
 export function gitStatus(): Promise<GitStatus> {
-  return Promise.resolve({ branch: "main", files: structuredClone(git.files) });
+  return Promise.resolve({ branch: git.branch, files: structuredClone(git.files) });
 }
 
 export function gitDiff(path: string, staged: boolean, untracked: boolean): Promise<string> {
@@ -887,4 +890,34 @@ export function gitShow(hash: string): Promise<string> {
         `${commit.subject}\n\ndiff --git a/src/App.tsx b/src/App.tsx\n@@ -1 +1 @@\n-before\n+after\n`,
       )
     : Promise.reject(new Error("git: unknown commit"));
+}
+
+const MOCK_REMOTE_BRANCHES = ["release"];
+
+export function gitBranches(): Promise<Branch[]> {
+  const local = git.branches.map((name) => ({
+    name,
+    current: name === git.branch,
+    remoteOnly: false,
+  }));
+  const remote = MOCK_REMOTE_BRANCHES.filter((name) => !git.branches.includes(name)).map(
+    (name) => ({ name, current: false, remoteOnly: true }),
+  );
+  return Promise.resolve([...local, ...remote]);
+}
+
+export function gitSwitch(branch: string): Promise<void> {
+  if (git.files.some((file) => file.staged || (file.unstaged && file.unstaged !== "?"))) {
+    return Promise.reject(
+      new Error("git: Your local changes to the following files would be overwritten by checkout"),
+    );
+  }
+  if (!git.branches.includes(branch)) {
+    if (!MOCK_REMOTE_BRANCHES.includes(branch)) {
+      return Promise.reject(new Error(`git: invalid reference: ${branch}`));
+    }
+    git.branches = [...git.branches, branch];
+  }
+  git.branch = branch;
+  return Promise.resolve();
 }

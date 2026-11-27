@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { useActivityStore } from "../../lib/activityStore";
 import {
+  gitBranches,
   gitCommit,
   gitDiff,
   gitLog,
@@ -8,9 +9,10 @@ import {
   gitStage,
   gitStageAll,
   gitStatus,
+  gitSwitch,
   gitUnstage,
 } from "../../lib/ipc";
-import type { ChangedFile, Commit, GitStatus } from "../../lib/types";
+import type { Branch, ChangedFile, Commit, GitStatus } from "../../lib/types";
 
 export type GitTab = "changes" | "history";
 
@@ -23,6 +25,7 @@ type GitState = {
   tab: GitTab;
   status: GitStatus | null;
   log: Commit[];
+  branches: Branch[];
   selection: GitSelection | null;
   diff: string | null;
   message: string;
@@ -37,6 +40,7 @@ type GitState = {
   unstage: (file: ChangedFile) => Promise<void>;
   stageAll: () => Promise<void>;
   commit: () => Promise<void>;
+  switchBranch: (name: string) => Promise<void>;
 };
 
 function errorText(error: unknown): string {
@@ -45,13 +49,16 @@ function errorText(error: unknown): string {
 
 export const useGitStore = create<GitState>((set, get) => {
   const act = async (work: () => Promise<unknown>) => {
+    let failure: string | null = null;
     try {
       await useActivityStore.getState().track(work());
-      set({ error: null });
     } catch (error) {
-      set({ error: errorText(error) });
+      failure = errorText(error);
     }
     await get().refresh();
+    if (failure) {
+      set({ error: failure });
+    }
   };
 
   return {
@@ -59,6 +66,7 @@ export const useGitStore = create<GitState>((set, get) => {
     tab: "changes",
     status: null,
     log: [],
+    branches: [],
     selection: null,
     diff: null,
     message: "",
@@ -74,10 +82,10 @@ export const useGitStore = create<GitState>((set, get) => {
     setMessage: (message) => set({ message }),
     refresh: async () => {
       try {
-        const [status, log] = await Promise.all([gitStatus(), gitLog()]);
-        set({ status, log, error: null });
+        const [status, log, branches] = await Promise.all([gitStatus(), gitLog(), gitBranches()]);
+        set({ status, log, branches, error: null });
       } catch (error) {
-        set({ status: null, log: [], error: errorText(error) });
+        set({ status: null, log: [], branches: [], error: errorText(error) });
       }
     },
     showFile: async (file, staged) => {
@@ -100,16 +108,23 @@ export const useGitStore = create<GitState>((set, get) => {
     stage: (file) => act(() => gitStage([file.path])),
     unstage: (file) => act(() => gitUnstage([file.path])),
     stageAll: () => act(() => gitStageAll()),
+    switchBranch: async (name) => {
+      if (name === get().status?.branch) {
+        return;
+      }
+      set({ selection: null, diff: null });
+      await act(async () => {
+        await gitSwitch(name);
+        useActivityStore.getState().notify(`Switched to ${name}`);
+      });
+    },
     commit: async () => {
       const message = get().message;
-      try {
-        const hash = await useActivityStore.getState().track(gitCommit(message));
-        set({ message: "", selection: null, diff: null, error: null });
+      await act(async () => {
+        const hash = await gitCommit(message);
+        set({ message: "", selection: null, diff: null });
         useActivityStore.getState().notify(`Committed ${hash}`);
-      } catch (error) {
-        set({ error: errorText(error) });
-      }
-      await get().refresh();
+      });
     },
   };
 });
