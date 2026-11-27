@@ -1,4 +1,5 @@
 import { type KeyboardEvent, useState } from "react";
+import { useKeepInView } from "../../lib/useKeepInView";
 
 export type PaletteItem = {
   id: string;
@@ -30,6 +31,7 @@ export function Palette({
 }: PaletteProps) {
   const [index, setIndex] = useState(0);
   const highlighted = items[Math.min(index, items.length - 1)];
+  useKeepInView(highlighted && `palette-${highlighted.id}`);
 
   const handleKeyDown = (event: KeyboardEvent) => {
     const count = Math.max(items.length, 1);

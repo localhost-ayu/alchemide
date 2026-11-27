@@ -6,6 +6,7 @@ import {
   useState,
 } from "react";
 import { registerCommands } from "../../lib/commands";
+import { useKeepInView } from "../../lib/useKeepInView";
 import { filterOptions, type MoodOption, moodOptions } from "./moodOptions";
 import { runLookAction } from "./runLookAction";
 import type { Effects, Theme } from "./theme";
@@ -35,6 +36,7 @@ export function MoodPicker() {
     [custom, query],
   );
   const highlighted = options[Math.min(index, options.length - 1)];
+  useKeepInView(isOpen ? highlighted?.id : undefined);
 
   useEffect(
     () =>
