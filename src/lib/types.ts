@@ -100,6 +100,18 @@ export type UpdateInfo = {
   notes: string | null;
 };
 
+export type DockerContainer = {
+  id: string;
+  name: string;
+  image: string;
+  state: string;
+  status: string;
+  ports: string;
+  project: string | null;
+};
+
+export type ContainerAction = "start" | "stop" | "restart";
+
 export type SnippetFile = {
   file: string;
   content: string;

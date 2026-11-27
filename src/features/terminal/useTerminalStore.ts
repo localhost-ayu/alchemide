@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { terminalClose, terminalOpen } from "../../lib/ipc";
+import { terminalClose, terminalOpen, terminalWrite } from "../../lib/ipc";
 
 export type TerminalTab = {
   id: number;
@@ -12,7 +12,7 @@ type TerminalState = {
   activeId: number | null;
   error: string | null;
   toggle: () => Promise<void>;
-  openTab: (profile: string | null, label: string) => Promise<void>;
+  openTab: (profile: string | null, label: string, command?: string) => Promise<void>;
   closeTab: (id: number) => Promise<void>;
   removeTab: (id: number) => void;
   activate: (id: number) => void;
@@ -32,7 +32,7 @@ export const useTerminalStore = create<TerminalState>((set, get) => ({
       await get().openTab(null, "Terminal");
     }
   },
-  openTab: async (profile, label) => {
+  openTab: async (profile, label, command) => {
     try {
       const id = await terminalOpen(profile, INITIAL_SIZE.cols, INITIAL_SIZE.rows);
       set((state) => ({
@@ -41,6 +41,10 @@ export const useTerminalStore = create<TerminalState>((set, get) => ({
         isOpen: true,
         error: null,
       }));
+      if (command) {
+        await terminalWrite(id, command);
+        await terminalWrite(id, "\r");
+      }
     } catch (error) {
       set({ error: String(error) });
     }

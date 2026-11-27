@@ -10,6 +10,7 @@ A lightweight, mood-themed code editor built with Tauri, React and CodeMirror.
   Rust, Python and Go
 - Collapsible file explorer that respects `.gitignore`
 - Built-in terminal with automatic Windows, Linux and WSL profiles
+- Docker panel: running and stopped containers, start, stop, restart and logs without opening Docker Desktop
 - Markdown preview
 - Autocomplete, hover, inline errors and go to definition (`F12`) through language servers you
   install: Intelephense (PHP), `typescript-language-server` (JS/TS/React) and `sqls` (SQL)

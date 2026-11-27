@@ -1,5 +1,6 @@
 mod assets;
 mod config;
+mod docker;
 mod env;
 mod error;
 mod fs;
@@ -43,6 +44,8 @@ pub fn run() {
             snippets::list_user_snippets,
             terminal::terminal_close,
             terminal::terminal_open,
+            docker::docker_containers,
+            docker::docker_action,
             terminal::terminal_profiles,
             terminal::terminal_resize,
             terminal::terminal_write,

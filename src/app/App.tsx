@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { DockerPanel } from "../features/docker/DockerPanel";
 import { Editor } from "../features/editor/Editor";
 import { Explorer } from "../features/explorer/Explorer";
 import { MarkdownPane } from "../features/markdown/MarkdownPane";
@@ -23,9 +24,11 @@ import { UpdateSettings } from "../features/updater/UpdateSettings";
 import { registerCommands } from "../lib/commands";
 import "./App.css";
 
+const SIDEBAR_LABELS = { explorer: "Explorer", search: "Search", docker: "Docker" };
+
 export function App() {
   const [isExplorerOpen, setExplorerOpen] = useState(true);
-  const [sidebar, setSidebar] = useState<"explorer" | "search">("explorer");
+  const [sidebar, setSidebar] = useState<"explorer" | "search" | "docker">("explorer");
 
   useEffect(
     () =>
@@ -57,6 +60,15 @@ export function App() {
             );
           },
         },
+        {
+          id: "docker.show",
+          title: "Show Docker containers",
+          keys: "Ctrl+Shift+D",
+          run: () => {
+            setSidebar("docker");
+            setExplorerOpen(true);
+          },
+        },
       ]),
     [],
   );
@@ -67,7 +79,7 @@ export function App() {
       <div className="app" data-explorer={isExplorerOpen ? "open" : "closed"}>
         <aside
           className="app__explorer"
-          aria-label={sidebar === "search" ? "Search" : "Explorer"}
+          aria-label={SIDEBAR_LABELS[sidebar]}
           hidden={!isExplorerOpen}
         >
           <div className="app__sidebar-view" hidden={sidebar !== "explorer"}>
@@ -75,6 +87,9 @@ export function App() {
           </div>
           <div className="app__sidebar-view" hidden={sidebar !== "search"}>
             <SearchPanel />
+          </div>
+          <div className="app__sidebar-view" hidden={sidebar !== "docker"}>
+            <DockerPanel visible={isExplorerOpen && sidebar === "docker"} />
           </div>
         </aside>
         <main className="app__editor" aria-label="Editor">

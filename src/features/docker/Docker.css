@@ -1,0 +1,139 @@
+.docker {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  height: 100%;
+  padding: 12px;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.docker__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.docker__title,
+.docker__heading {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.docker__heading {
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.docker__notice {
+  margin: 0;
+  font-size: 12px;
+  color: var(--color-muted);
+}
+
+.docker__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.docker__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px;
+  border-radius: 4px;
+}
+
+.docker__row:hover {
+  background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+}
+
+.docker__row[aria-busy="true"] {
+  opacity: 0.6;
+}
+
+.docker__dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-muted);
+  opacity: 0.5;
+}
+
+.docker__row[data-state="running"] .docker__dot {
+  background: var(--color-accent);
+  opacity: 1;
+  box-shadow: 0 0 6px var(--color-accent);
+}
+
+.docker__row[data-state="paused"] .docker__dot,
+.docker__row[data-state="restarting"] .docker__dot {
+  background: var(--color-accent-2);
+  opacity: 1;
+}
+
+.docker__info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.docker__name,
+.docker__meta {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.docker__name {
+  font-size: 13px;
+  color: var(--color-text);
+}
+
+.docker__meta {
+  font-size: 11px;
+  color: var(--color-muted);
+}
+
+.docker__actions {
+  display: flex;
+  gap: 2px;
+  opacity: 0.4;
+  transition: opacity var(--motion);
+}
+
+.docker__row:hover .docker__actions,
+.docker__row:focus-within .docker__actions {
+  opacity: 1;
+}
+
+.docker__actions button,
+.docker__refresh {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  color: var(--color-muted);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.docker__actions button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.docker__actions button:hover:not(:disabled),
+.docker__refresh:hover {
+  color: var(--color-accent);
+}

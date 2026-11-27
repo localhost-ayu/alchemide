@@ -1,4 +1,5 @@
 import { beforeEach, expect, test } from "vitest";
+import { onTerminalOutput } from "../../lib/ipc.mock";
 import { useTerminalStore } from "./useTerminalStore";
 
 beforeEach(() => {
@@ -43,4 +44,15 @@ test("shows an error when a profile cannot start", async () => {
 
   expect(useTerminalStore.getState().error).toContain("not available");
   expect(useTerminalStore.getState().tabs).toHaveLength(0);
+});
+
+test("a terminal opened with a command runs it right away", async () => {
+  const outputs: string[] = [];
+  const stop = await onTerminalOutput(({ data }) => outputs.push(data));
+
+  await useTerminalStore.getState().openTab(null, "logs", "docker logs web");
+  stop();
+
+  expect(useTerminalStore.getState().tabs.map(({ label }) => label)).toEqual(["logs"]);
+  expect(outputs.join("")).toContain("ran: docker logs web");
 });

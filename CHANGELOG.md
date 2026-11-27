@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Docker panel (`Ctrl+Shift+D`): running and stopped containers grouped by Compose project, with start, stop and restart, and logs followed in a new terminal tab; refreshes every 5 seconds while visible and shows a short notice when Docker is missing or not running
+
 ## [0.5.0] - 2026-11-27
 
 VS Code bridge: import VS Code themes, bundled code fonts and interface zoom, Rust, Python and Go, snippets in the VS Code format with built-in packs, and more control over the look.

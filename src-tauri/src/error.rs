@@ -48,6 +48,10 @@ pub enum Error {
     Update(String),
     #[error("there is no update to install")]
     NoUpdate,
+    #[error("Docker is not installed or not on the PATH")]
+    DockerMissing,
+    #[error("Docker: {0}")]
+    Docker(String),
     #[error("could not change the zoom: {0}")]
     Zoom(String),
     #[error(transparent)]
