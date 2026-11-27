@@ -43,7 +43,10 @@ const tree: Record<string, Entry[]> = {
   ],
 };
 
+const LOOSE_FILE = "/home/user/notes/todo.md";
+
 const files: Record<string, string> = {
+  [LOOSE_FILE]: "# Notes\n\n- [ ] Water the plants\n",
   [`${root}/README.md`]: [
     "# Sample project",
     "",
@@ -80,6 +83,10 @@ export function getEnvironment(): Promise<Environment> {
 
 export function setMockEnvironment(next: Environment): void {
   environment = next;
+}
+
+export function pickFile(): Promise<string | null> {
+  return Promise.resolve(LOOSE_FILE);
 }
 
 export function openFolder(): Promise<Folder | null> {
