@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { registerCommands } from "../../lib/commands";
 import { onFsChange } from "../../lib/ipc";
 import "./Explorer.css";
 import { Tree } from "./Tree";
@@ -9,6 +10,19 @@ export function Explorer() {
   const error = useWorkspaceStore((state) => state.error);
   const pickFolder = useWorkspaceStore((state) => state.pickFolder);
   const refreshDirs = useWorkspaceStore((state) => state.refreshDirs);
+
+  useEffect(
+    () =>
+      registerCommands([
+        {
+          id: "explorer.openFolder",
+          title: "Open folder…",
+          keys: "Ctrl+K Ctrl+O",
+          run: () => useWorkspaceStore.getState().pickFolder(),
+        },
+      ]),
+    [],
+  );
 
   useEffect(() => {
     if (!folder) {
