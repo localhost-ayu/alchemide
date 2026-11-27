@@ -984,6 +984,71 @@ export function createEntry(parent: string, name: string, isDir: boolean): Promi
   return Promise.resolve(dir);
 }
 
+function underPath(candidate: string, path: string): boolean {
+  return candidate === path || candidate.startsWith(`${path}/`);
+}
+
+function moveKeys<T>(record: Record<string, T>, from: string, to: string): void {
+  for (const key of Object.keys(record)) {
+    if (underPath(key, from)) {
+      const value = record[key] as T;
+      delete record[key];
+      record[to + key.slice(from.length)] = value;
+    }
+  }
+}
+
+function retarget(entries: Entry[], from: string, to: string): Entry[] {
+  return entries.map((entry) =>
+    underPath(entry.path, from) ? { ...entry, path: to + entry.path.slice(from.length) } : entry,
+  );
+}
+
+export function renameEntry(path: string, newName: string): Promise<string> {
+  const name = newName.trim();
+  if (!name || name === "." || name === ".." || /[\\/<>:"|?*]/.test(name)) {
+    return Promise.reject(new Error("that name cannot be used for a file or folder"));
+  }
+  if (path === root) {
+    return Promise.reject(new Error("the open folder itself cannot be renamed or deleted"));
+  }
+  const parent = path.slice(0, path.lastIndexOf("/"));
+  const target = `${parent}/${name}`;
+  if (target === path) {
+    return Promise.resolve(path);
+  }
+  if ((tree[parent] ?? []).some((entry) => entry.path === target)) {
+    return Promise.reject(new Error("a file or folder with that name already exists"));
+  }
+  tree[parent] = sortEntries(
+    (tree[parent] ?? []).map((entry) =>
+      entry.path === path ? { ...entry, name, path: target } : entry,
+    ),
+  );
+  moveKeys(tree, path, target);
+  for (const key of Object.keys(tree)) {
+    tree[key] = retarget(tree[key] ?? [], path, target);
+  }
+  moveKeys(files, path, target);
+  return Promise.resolve(target);
+}
+
+export function deleteEntry(path: string): Promise<void> {
+  if (path === root) {
+    return Promise.reject(new Error("the open folder itself cannot be renamed or deleted"));
+  }
+  const parent = path.slice(0, path.lastIndexOf("/"));
+  tree[parent] = (tree[parent] ?? []).filter((entry) => entry.path !== path);
+  for (const record of [tree, files] as Record<string, unknown>[]) {
+    for (const key of Object.keys(record)) {
+      if (underPath(key, path)) {
+        delete record[key];
+      }
+    }
+  }
+  return Promise.resolve();
+}
+
 const INITIAL_TREE = structuredClone(tree);
 const INITIAL_FILES = structuredClone(files);
 

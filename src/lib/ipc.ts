@@ -274,3 +274,11 @@ export function gitSwitch(branch: string): Promise<void> {
 export function createEntry(parent: string, name: string, isDir: boolean): Promise<string> {
   return invoke<string>("create_entry", { parent, name, isDir });
 }
+
+export function renameEntry(path: string, newName: string): Promise<string> {
+  return invoke<string>("rename_entry", { path, newName });
+}
+
+export function deleteEntry(path: string): Promise<void> {
+  return invoke<void>("delete_entry", { path });
+}

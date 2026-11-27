@@ -12,6 +12,7 @@ import { useWorkspaceStore } from "./useWorkspaceStore";
 
 beforeEach(() => {
   resetMockFiles();
+  useEditorStore.setState({ tabs: [], activePath: null, drafts: {} });
   useWorkspaceStore.setState({
     creating: null,
     folder: null,
@@ -128,4 +129,91 @@ test("creates a folder from the header button", async () => {
     fireEvent.keyDown(input, { key: "Enter" });
   });
   expect(screen.getByRole("button", { name: "docs" }).getAttribute("aria-expanded")).toBe("false");
+});
+
+const ROOT = "/home/user/sample-project";
+
+async function expandSrc() {
+  await act(async () => {
+    fireEvent.click(screen.getByRole("button", { name: "src" }));
+  });
+}
+
+test("renames a file inline and its open tab follows", async () => {
+  await openSampleFolder();
+  await expandSrc();
+  await act(() => useEditorStore.getState().openFile(`${ROOT}/src/main.ts`));
+
+  fireEvent.contextMenu(screen.getByRole("button", { name: "main.ts" }));
+  fireEvent.click(screen.getByRole("menuitem", { name: /Rename/ }));
+  const input = screen.getByRole("textbox", { name: "New name for main.ts" });
+  fireEvent.change(input, { target: { value: "index.ts" } });
+  await act(async () => {
+    fireEvent.keyDown(input, { key: "Enter" });
+  });
+
+  expect(screen.getByRole("button", { name: "index.ts" })).toBeTruthy();
+  expect(screen.queryByRole("button", { name: "main.ts" })).toBeNull();
+  const tabs = useEditorStore.getState().tabs.map((tab) => tab.path);
+  expect(tabs).toContain(`${ROOT}/src/index.ts`);
+  expect(tabs).not.toContain(`${ROOT}/src/main.ts`);
+});
+
+test("refuses to rename while an affected tab has unsaved changes", async () => {
+  await openSampleFolder();
+  await expandSrc();
+  await act(() => useEditorStore.getState().openFile(`${ROOT}/src/App.tsx`));
+  act(() => useEditorStore.getState().setDirty(`${ROOT}/src/App.tsx`, true));
+
+  fireEvent.contextMenu(screen.getByRole("button", { name: "src" }));
+  fireEvent.click(screen.getByRole("menuitem", { name: /Rename/ }));
+  const input = screen.getByRole("textbox", { name: "New name for src" });
+  fireEvent.change(input, { target: { value: "source" } });
+  await act(async () => {
+    fireEvent.keyDown(input, { key: "Enter" });
+  });
+
+  expect(screen.getByRole("alert").textContent).toBe("Save or close App.tsx first");
+  expect(screen.queryByRole("button", { name: "source" })).toBeNull();
+});
+
+test("Delete on a focused file asks, moves it to the trash and closes its tab", async () => {
+  await openSampleFolder();
+  await act(() => useEditorStore.getState().openFile(`${ROOT}/README.md`));
+  const asked: string[] = [];
+  const original = window.confirm;
+  window.confirm = (question?: string) => {
+    asked.push(question ?? "");
+    return asked.length > 1;
+  };
+
+  const file = screen.getByRole("button", { name: "README.md" });
+  fireEvent.click(file);
+  await act(async () => {
+    fireEvent.keyDown(file, { key: "Delete" });
+  });
+  expect(screen.getByRole("button", { name: "README.md" })).toBeTruthy();
+
+  await act(async () => {
+    fireEvent.keyDown(screen.getByRole("button", { name: "README.md" }), { key: "Delete" });
+  });
+  window.confirm = original;
+
+  expect(asked[0]).toBe("Move README.md to the trash?");
+  expect(screen.queryByRole("button", { name: "README.md" })).toBeNull();
+  expect(useEditorStore.getState().tabs.some((tab) => tab.path.endsWith("README.md"))).toBe(false);
+});
+
+test("F2 renames the focused item and the open folder itself cannot be renamed", async () => {
+  await openSampleFolder();
+  const file = screen.getByRole("button", { name: "query.sql" });
+  fireEvent.click(file);
+  fireEvent.keyDown(file, { key: "F2" });
+  expect(screen.getByRole("textbox", { name: "New name for query.sql" })).toBeTruthy();
+  fireEvent.keyDown(screen.getByRole("textbox", { name: "New name for query.sql" }), {
+    key: "Escape",
+  });
+
+  act(() => useWorkspaceStore.getState().startRename(ROOT));
+  expect(useWorkspaceStore.getState().renaming).toBeNull();
 });

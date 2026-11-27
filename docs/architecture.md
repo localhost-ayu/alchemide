@@ -78,6 +78,11 @@ regular browser without compiling Rust, and the end-to-end tests run against tha
   `.`, `..`, empty parts, absolute paths or characters Windows forbids), so the result stays under
   the parent; missing folders are created, and an existing file is never overwritten
   (`create_new`).
+- Renaming (`rename_entry`) takes a single plain name and stays in the same folder; deleting
+  (`delete_entry`) moves the entry to the system trash with the `trash` crate (Recycle Bin on
+  Windows, the freedesktop trash on Linux) instead of removing it. Neither works on the open folder
+  itself. The explorer refuses a rename while an affected tab has unsaved changes, because each tab
+  saves to its own path; clean tabs are closed and reopened at the new path.
 - The last opened folder is remembered in `state.json`, which only Rust writes, not in
   `settings.json` (the webview can rewrite that one). `reopen_last_folder` reads it on start, so
   the webview never names a folder to open.

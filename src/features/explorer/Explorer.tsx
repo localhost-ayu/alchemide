@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { registerCommands } from "../../lib/commands";
 import { onFsChange } from "../../lib/ipc";
 import "./Explorer.css";
+import { ExplorerContextMenu } from "./ExplorerContextMenu";
 import { Tree } from "./Tree";
 import { useWorkspaceStore } from "./useWorkspaceStore";
 
@@ -30,6 +31,16 @@ export function Explorer() {
           id: "explorer.newFolder",
           title: "New folder",
           run: () => useWorkspaceStore.getState().startCreate(true),
+        },
+        {
+          id: "explorer.rename",
+          title: "Rename the selected file or folder",
+          run: () => useWorkspaceStore.getState().startRename(),
+        },
+        {
+          id: "explorer.delete",
+          title: "Delete the selected file or folder",
+          run: () => useWorkspaceStore.getState().deletePath(),
         },
       ]),
     [],
@@ -89,6 +100,7 @@ export function Explorer() {
             </button>
           </div>
           <Tree root={folder.path} />
+          <ExplorerContextMenu />
         </>
       ) : (
         <button type="button" className="explorer__open" onClick={pickFolder}>

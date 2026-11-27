@@ -339,6 +339,55 @@ pub fn create(parent: &Path, name: &str, is_dir: bool) -> Result<PathBuf> {
     Ok(target)
 }
 
+pub fn rename(path: &Path, new_name: &str) -> Result<PathBuf> {
+    let parent = path.parent().ok_or(Error::InvalidName)?;
+    if new_name.contains(['/', '\\']) {
+        return Err(Error::InvalidName);
+    }
+    let target = child_path(parent, new_name).ok_or(Error::InvalidName)?;
+    if target == path {
+        return Ok(target);
+    }
+    let same_entry = target.exists() && target.canonicalize().ok() == path.canonicalize().ok();
+    if target.exists() && !same_entry {
+        return Err(Error::AlreadyExists);
+    }
+    std::fs::rename(path, &target)?;
+    Ok(target)
+}
+
+fn ensure_not_root(workspace: &Workspace, path: &Path) -> Result<()> {
+    let root = workspace.root().ok_or(Error::NoWorkspace)?;
+    if root.canonicalize()? == path.canonicalize()? {
+        return Err(Error::WorkspaceRoot);
+    }
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn rename_entry(
+    path: String,
+    new_name: String,
+    workspace: State<'_, Workspace>,
+) -> Result<String> {
+    let path = Path::new(&path);
+    workspace.check(path)?;
+    ensure_not_root(&workspace, path)?;
+    let renamed = rename(path, &new_name)?;
+    Ok(renamed.to_string_lossy().into_owned())
+}
+
+#[tauri::command]
+pub async fn delete_entry(path: String, workspace: State<'_, Workspace>) -> Result<()> {
+    let path = PathBuf::from(path);
+    workspace.check(&path)?;
+    ensure_not_root(&workspace, &path)?;
+    tauri::async_runtime::spawn_blocking(move || trash::delete(&path))
+        .await
+        .map_err(|error| Error::Trash(error.to_string()))?
+        .map_err(|error| Error::Trash(error.to_string()))
+}
+
 #[tauri::command]
 pub async fn create_entry(
     parent: String,
@@ -383,6 +432,32 @@ mod tests {
         ] {
             assert_eq!(child_path(parent, bad), None, "{bad:?} should be rejected");
         }
+    }
+
+    #[test]
+    fn renames_in_place_without_overwriting_or_moving() {
+        let root = TempDir::new().expect("temp dir");
+        let file = create(root.path(), "a.txt", false).expect("file");
+        create(root.path(), "b.txt", false).expect("other");
+
+        let renamed = rename(&file, "c.txt").expect("rename");
+        assert_eq!(renamed, root.path().join("c.txt"));
+        assert!(renamed.is_file() && !file.exists());
+
+        assert!(matches!(
+            rename(&renamed, "b.txt"),
+            Err(Error::AlreadyExists)
+        ));
+        assert!(matches!(
+            rename(&renamed, "sub/d.txt"),
+            Err(Error::InvalidName)
+        ));
+        assert!(matches!(rename(&renamed, ".."), Err(Error::InvalidName)));
+        assert_eq!(rename(&renamed, "c.txt").expect("same name"), renamed);
+
+        let folder = create(root.path(), "src/deep", true).expect("folder");
+        let moved = rename(folder.parent().expect("src"), "lib").expect("dir");
+        assert!(moved.join("deep").is_dir());
     }
 
     #[test]
