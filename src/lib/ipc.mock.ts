@@ -4,6 +4,8 @@ import type {
   Environment,
   FileContent,
   Folder,
+  LspMessage,
+  LspStart,
   ProjectFile,
   ReplaceSummary,
   ReplaceTarget,
@@ -14,6 +16,8 @@ import type {
   TerminalOutput,
   TerminalProfile,
   UpdateInfo,
+  UserThemeFile,
+  VscodeTheme,
 } from "./types";
 
 const root = "/home/user/sample-project";
@@ -153,6 +157,132 @@ export function loadSettings(): Promise<Settings> {
 export function saveSettings(next: Settings): Promise<void> {
   settings = structuredClone(next);
   return Promise.resolve();
+}
+
+let userThemes = new Map<string, unknown>();
+
+export function setMockUserThemes(themes: Record<string, unknown>): void {
+  userThemes = new Map(Object.entries(themes));
+}
+
+export function mockUserThemes(): Record<string, unknown> {
+  return Object.fromEntries(userThemes);
+}
+
+export function listUserThemes(): Promise<UserThemeFile[]> {
+  const files = [...userThemes.keys()].sort();
+  return Promise.resolve(
+    files.map((file) => ({ file, theme: structuredClone(userThemes.get(file)) ?? null })),
+  );
+}
+
+function themeFileName(name: string): string {
+  const stem =
+    name
+      .toLowerCase()
+      .replace(/[^a-z0-9_-]+/g, "-")
+      .replace(/^-+|-+$/g, "") || "theme";
+  let file = `${stem}.json`;
+  for (let counter = 2; userThemes.has(file); counter++) {
+    file = `${stem}-${counter}.json`;
+  }
+  return file;
+}
+
+export function saveUserTheme(file: string | null, theme: unknown): Promise<string> {
+  const name = (theme as { name?: unknown } | null)?.name;
+  if (typeof name !== "string" || name.trim() === "") {
+    return Promise.reject(new Error("a theme must be a JSON object with a name"));
+  }
+  const target = file ?? themeFileName(name);
+  userThemes.set(target, structuredClone(theme));
+  return Promise.resolve(target);
+}
+
+export function deleteUserTheme(file: string): Promise<void> {
+  userThemes.delete(file);
+  return Promise.resolve();
+}
+
+let themeToImport: unknown | null = null;
+const exportedThemes: unknown[] = [];
+
+export function setMockThemeToImport(theme: unknown | null): void {
+  themeToImport = theme;
+}
+
+export function mockExportedThemes(): unknown[] {
+  return structuredClone(exportedThemes);
+}
+
+export function importTheme(): Promise<unknown | null> {
+  return Promise.resolve(structuredClone(themeToImport));
+}
+
+export function exportTheme(theme: unknown): Promise<boolean> {
+  exportedThemes.push(structuredClone(theme));
+  return Promise.resolve(true);
+}
+
+const MOCK_VSCODE_THEMES: Record<string, { entry: VscodeTheme; theme: unknown }> = {
+  "/vscode/theme-defaults/themes/dark_modern.json": {
+    entry: {
+      label: "Dark Modern",
+      extension: "theme-defaults",
+      path: "/vscode/theme-defaults/themes/dark_modern.json",
+      dark: true,
+    },
+    theme: {
+      name: "Dark Modern",
+      type: "dark",
+      colors: {
+        "editor.background": "#1F1F1F",
+        "editor.foreground": "#CCCCCC",
+        "sideBar.background": "#181818",
+        focusBorder: "#0078D4",
+      },
+      tokenColors: [
+        { scope: "keyword.control", settings: { foreground: "#C586C0" } },
+        { scope: "string", settings: { foreground: "#CE9178" } },
+        { scope: "comment", settings: { foreground: "#6A9955" } },
+      ],
+    },
+  },
+  "/vscode/theme-solarized-light/themes/solarized-light.json": {
+    entry: {
+      label: "Solarized Light",
+      extension: "theme-solarized-light",
+      path: "/vscode/theme-solarized-light/themes/solarized-light.json",
+      dark: false,
+    },
+    theme: {
+      name: "Solarized Light",
+      type: "light",
+      colors: { "editor.background": "#FDF6E3", "editor.foreground": "#657B83" },
+      tokenColors: [{ scope: "keyword", settings: { foreground: "#859900" } }],
+    },
+  },
+};
+
+let vscodeThemeToPick: unknown | null = null;
+
+export function setMockVscodeThemeToPick(theme: unknown | null): void {
+  vscodeThemeToPick = theme;
+}
+
+export function listVscodeThemes(): Promise<VscodeTheme[]> {
+  return Promise.resolve(Object.values(MOCK_VSCODE_THEMES).map(({ entry }) => ({ ...entry })));
+}
+
+export function loadVscodeTheme(path: string): Promise<unknown> {
+  const found = MOCK_VSCODE_THEMES[path];
+  return found
+    ? Promise.resolve(structuredClone(found.theme))
+    : Promise.reject(new Error("the file is not a valid theme"));
+}
+
+export function pickVscodeTheme(): Promise<unknown | null> {
+  return Promise.resolve(structuredClone(vscodeThemeToPick));
 }
 
 const sampleAssets: Record<AssetKind, { path: string; svg: string }> = {
@@ -387,4 +517,157 @@ export function installUpdate(): Promise<void> {
   }
   installedUpdates += 1;
   return Promise.resolve();
+}
+
+const lspMessageHandlers = new Set<(message: LspMessage) => void>();
+const lspExitHandlers = new Set<(id: number) => void>();
+const runningServers = new Set<number>();
+let mockServerFamilies = new Set(["typescript"]);
+
+const SERVER_FAMILIES: Record<string, { family: string; name: string; install: string }> = {
+  javascript: {
+    family: "typescript",
+    name: "TypeScript language server",
+    install: "npm install -g typescript-language-server typescript",
+  },
+  typescript: {
+    family: "typescript",
+    name: "TypeScript language server",
+    install: "npm install -g typescript-language-server typescript",
+  },
+  jsx: {
+    family: "typescript",
+    name: "TypeScript language server",
+    install: "npm install -g typescript-language-server typescript",
+  },
+  tsx: {
+    family: "typescript",
+    name: "TypeScript language server",
+    install: "npm install -g typescript-language-server typescript",
+  },
+  php: { family: "php", name: "Intelephense", install: "npm install -g intelephense" },
+  sql: { family: "sql", name: "sqls", install: "go install github.com/sqls-server/sqls@latest" },
+};
+
+const FAMILY_IDS: Record<string, number> = { typescript: 1, php: 2, sql: 3 };
+
+export function setMockLanguageServers(families: string[]): void {
+  mockServerFamilies = new Set(families);
+}
+
+export function stopMockLanguageServer(id: number): void {
+  runningServers.delete(id);
+  for (const handler of lspExitHandlers) {
+    handler(id);
+  }
+}
+
+export function lspStart(language: string): Promise<LspStart> {
+  const server = SERVER_FAMILIES[language];
+  if (!server) {
+    return Promise.resolve({ kind: "unsupported" });
+  }
+  if (!mockServerFamilies.has(server.family)) {
+    return Promise.resolve({ kind: "missing", name: server.name, install: server.install });
+  }
+  const id = FAMILY_IDS[server.family] ?? 0;
+  runningServers.add(id);
+  return Promise.resolve({ kind: "ready", id, root, name: server.name });
+}
+
+type MockRequest = {
+  id?: number;
+  method?: string;
+  params?: { textDocument?: { uri?: string; text?: string }; contentChanges?: { text?: string }[] };
+};
+
+function mockReply(id: number, payload: unknown): void {
+  setTimeout(() => {
+    for (const handler of lspMessageHandlers) {
+      handler({ id, message: JSON.stringify(payload) });
+    }
+  }, 0);
+}
+
+const MOCK_RESULTS: Record<string, unknown> = {
+  initialize: {
+    capabilities: {
+      textDocumentSync: 1,
+      completionProvider: { triggerCharacters: ["."] },
+      hoverProvider: true,
+      definitionProvider: true,
+    },
+  },
+  "textDocument/completion": {
+    isIncomplete: false,
+    items: [
+      { label: "flaskReady", kind: 6, detail: "const flaskReady: boolean" },
+      { label: "mixReagents", kind: 3, detail: "function mixReagents(): void" },
+    ],
+  },
+  "textDocument/definition": {
+    uri: `file://${root}/src/main.ts`,
+    range: { start: { line: 2, character: 8 }, end: { line: 2, character: 11 } },
+  },
+  "textDocument/hover": {
+    contents: { kind: "markdown", value: "Mock hover from the lab server" },
+  },
+};
+
+function mockDiagnostics(id: number, request: MockRequest): void {
+  const uri = request.params?.textDocument?.uri;
+  const changes = request.params?.contentChanges ?? [];
+  const text = request.params?.textDocument?.text ?? changes[changes.length - 1]?.text;
+  if (!uri || text === undefined) {
+    return;
+  }
+  const diagnostics = text.split("\n").flatMap((line, index) => {
+    const column = line.indexOf("debugger");
+    return column < 0
+      ? []
+      : [
+          {
+            range: {
+              start: { line: index, character: column },
+              end: { line: index, character: column + "debugger".length },
+            },
+            severity: 1,
+            message: "Unexpected debugger statement",
+          },
+        ];
+  });
+  mockReply(id, {
+    jsonrpc: "2.0",
+    method: "textDocument/publishDiagnostics",
+    params: { uri, diagnostics },
+  });
+}
+
+export function lspSend(id: number, message: string): Promise<void> {
+  if (!runningServers.has(id)) {
+    return Promise.reject(new Error("this language server is no longer running"));
+  }
+  const request = JSON.parse(message) as MockRequest;
+  if (request.method === "textDocument/didOpen" || request.method === "textDocument/didChange") {
+    mockDiagnostics(id, request);
+  }
+  if (request.id !== undefined && request.method) {
+    mockReply(id, { jsonrpc: "2.0", id: request.id, result: MOCK_RESULTS[request.method] ?? null });
+  }
+  return Promise.resolve();
+}
+
+export function lspStop(id: number): Promise<void> {
+  runningServers.delete(id);
+  return Promise.resolve();
+}
+
+export function onLspMessage(handler: (message: LspMessage) => void): Promise<() => void> {
+  lspMessageHandlers.add(handler);
+  return Promise.resolve(() => lspMessageHandlers.delete(handler));
+}
+
+export function onLspExit(handler: (id: number) => void): Promise<() => void> {
+  lspExitHandlers.add(handler);
+  return Promise.resolve(() => lspExitHandlers.delete(handler));
 }

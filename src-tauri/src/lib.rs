@@ -4,8 +4,11 @@ mod env;
 mod error;
 mod fs;
 mod links;
+mod lsp;
 mod terminal;
+mod themes;
 mod updater;
+mod vscode_themes;
 mod zoom;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -17,6 +20,7 @@ pub fn run() {
         .manage(fs::Workspace::default())
         .manage(fs::Searches::default())
         .manage(terminal::Terminals::default())
+        .manage(lsp::LanguageServers::default())
         .invoke_handler(tauri::generate_handler![
             assets::asset_path,
             assets::import_asset,
@@ -31,13 +35,24 @@ pub fn run() {
             fs::search_start,
             fs::write_file,
             links::open_external,
+            lsp::lsp_send,
+            lsp::lsp_start,
+            lsp::lsp_stop,
             terminal::terminal_open,
             terminal::terminal_profiles,
             terminal::terminal_write,
             terminal::terminal_resize,
             terminal::terminal_close,
+            themes::delete_user_theme,
+            themes::export_theme,
+            themes::import_theme,
+            themes::list_user_themes,
+            themes::save_user_theme,
             updater::check_update,
             updater::install_update,
+            vscode_themes::list_vscode_themes,
+            vscode_themes::load_vscode_theme,
+            vscode_themes::pick_vscode_theme,
             zoom::set_zoom
         ])
         .run(tauri::generate_context!());

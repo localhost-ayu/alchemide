@@ -1,5 +1,5 @@
 import { readBackground, readMascot } from "./parseTheme";
-import type { Theme, ThemeBackground, ThemeMascot } from "./theme";
+import type { MediaBackground, Theme, ThemeBackground, ThemeMascot } from "./theme";
 
 export type CustomLook = {
   background: ThemeBackground | null;
@@ -37,4 +37,46 @@ export function withCustomLook(theme: Theme, custom: CustomLook): Theme {
     background: custom.background ?? theme.background,
     mascot: custom.mascot ?? theme.mascot,
   };
+}
+
+export type Look = {
+  theme: Theme;
+  custom: CustomLook;
+};
+
+export type BackgroundChanges = Partial<Pick<MediaBackground, "fit" | "blur" | "dim">>;
+export type MascotChanges = Partial<Omit<ThemeMascot, "path">>;
+
+function asMedia(background: ThemeBackground | null): MediaBackground | null {
+  return background?.type === "image" || background?.type === "video" ? background : null;
+}
+
+export function shownBackground(look: Look): MediaBackground | null {
+  return asMedia(look.custom.background) ?? asMedia(look.theme.background);
+}
+
+export function shownMascot(look: Look): ThemeMascot | null {
+  return look.custom.mascot ?? look.theme.mascot;
+}
+
+export function changeBackground(look: Look, changes: BackgroundChanges): Look {
+  const custom = asMedia(look.custom.background);
+  if (custom) {
+    return { ...look, custom: { ...look.custom, background: { ...custom, ...changes } } };
+  }
+  const own = asMedia(look.theme.background);
+  if (!own) {
+    return look;
+  }
+  return { ...look, theme: { ...look.theme, background: { ...own, ...changes } } };
+}
+
+export function changeMascot(look: Look, changes: MascotChanges): Look {
+  if (look.custom.mascot) {
+    return { ...look, custom: { ...look.custom, mascot: { ...look.custom.mascot, ...changes } } };
+  }
+  if (!look.theme.mascot) {
+    return look;
+  }
+  return { ...look, theme: { ...look.theme, mascot: { ...look.theme.mascot, ...changes } } };
 }

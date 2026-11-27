@@ -22,6 +22,14 @@ pub enum Error {
     UnsupportedAsset,
     #[error("the path is not inside the backgrounds or mascots folder")]
     InvalidAssetPath,
+    #[error("this language server is no longer running")]
+    NoLanguageServerSession,
+    #[error("language server error: {0}")]
+    LanguageServer(String),
+    #[error("a theme must be a JSON object with a name")]
+    InvalidTheme,
+    #[error("the theme file name is not valid")]
+    InvalidThemeFile,
     #[error("terminal error: {0}")]
     Terminal(String),
     #[error("this terminal is no longer open")]
