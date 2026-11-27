@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-27
+
+Language servers: autocomplete, hover, inline errors and go to definition for PHP, JavaScript/TypeScript and SQL, when the servers are installed.
+
+### Added
+
+- Language servers: autocomplete, hover, inline errors and go to definition (`F12`, also across
+  files) for PHP (Intelephense), JavaScript/TypeScript/JSX/TSX (`typescript-language-server`)
+  and SQL (`sqls`). Servers are found on `PATH`; when one is missing, the status bar shows how to
+  install it instead of an error
+- "Restart language servers" in the command palette
+
+## [0.3.0] - 2026-11-27
+
+Theme editor release: your own themes, a theme library, a visual theme editor with live preview and sliders for glass, background and mascot.
+
 ### Added
 
 - Your own themes: JSON theme files in the `themes` folder of the config folder appear in the mood picker and in the settings next to the built-in themes; broken files are skipped with a warning, and "Reload your themes" picks up new files
@@ -83,7 +99,9 @@ First release: a lightweight editor for Windows and Linux (including WSL) with m
 
 - Browser mode with a mocked backend (`pnpm dev:web`) and a Linux dev container
 
-[Unreleased]: https://github.com/localhost-ayu/alchemide/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/localhost-ayu/alchemide/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/localhost-ayu/alchemide/compare/v0.3.0...v0.4.0
+[0.3.0]: https://github.com/localhost-ayu/alchemide/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/localhost-ayu/alchemide/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/localhost-ayu/alchemide/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/localhost-ayu/alchemide/releases/tag/v0.1.0
