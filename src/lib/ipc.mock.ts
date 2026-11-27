@@ -201,6 +201,26 @@ export function deleteUserTheme(file: string): Promise<void> {
   return Promise.resolve();
 }
 
+let themeToImport: unknown | null = null;
+const exportedThemes: unknown[] = [];
+
+export function setMockThemeToImport(theme: unknown | null): void {
+  themeToImport = theme;
+}
+
+export function mockExportedThemes(): unknown[] {
+  return structuredClone(exportedThemes);
+}
+
+export function importTheme(): Promise<unknown | null> {
+  return Promise.resolve(structuredClone(themeToImport));
+}
+
+export function exportTheme(theme: unknown): Promise<boolean> {
+  exportedThemes.push(structuredClone(theme));
+  return Promise.resolve(true);
+}
+
 const sampleAssets: Record<AssetKind, { path: string; svg: string }> = {
   background: {
     path: "backgrounds/sample-lab.svg",

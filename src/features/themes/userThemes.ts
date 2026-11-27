@@ -37,3 +37,16 @@ export function readUserThemes(files: UserThemeFile[], builtin: Theme[]): Loaded
   }
   return { themes, warnings };
 }
+
+export function uniqueName(name: string, taken: string[]): string {
+  const used = new Set(taken.map(nameKey));
+  const base = name.trim();
+  if (!used.has(nameKey(base))) {
+    return base;
+  }
+  let counter = 2;
+  while (used.has(nameKey(`${base} ${counter}`))) {
+    counter += 1;
+  }
+  return `${base} ${counter}`;
+}

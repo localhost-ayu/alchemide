@@ -2,6 +2,8 @@ use std::path::{Component, Path};
 
 use serde::Serialize;
 use serde_json::Value;
+use tauri::AppHandle;
+use tauri_plugin_dialog::{DialogExt, FilePath};
 
 use crate::assets::{sanitize, unique_file_name};
 use crate::config::config_dir;
@@ -93,6 +95,29 @@ pub fn remove_user_theme(dir: &Path, file: &str) -> Result<()> {
     Ok(())
 }
 
+pub fn export_file_name(name: &str) -> String {
+    format!("{}.json", sanitize(name, "theme"))
+}
+
+pub fn write_export(path: &Path, theme: &Value) -> Result<()> {
+    theme_name(theme)?;
+    let text = serde_json::to_string_pretty(theme).map_err(|_| Error::InvalidTheme)?;
+    std::fs::write(path, text)?;
+    Ok(())
+}
+
+async fn run_dialog<T: Send + 'static>(
+    pick: impl FnOnce() -> Option<T> + Send + 'static,
+) -> Result<Option<T>> {
+    tauri::async_runtime::spawn_blocking(pick)
+        .await
+        .map_err(|_| Error::Dialog)
+}
+
+fn local_path(picked: FilePath) -> Result<std::path::PathBuf> {
+    picked.into_path().map_err(|_| Error::NotLocalFolder)
+}
+
 pub fn themes_dir() -> Result<std::path::PathBuf> {
     Ok(config_dir()?.join(FOLDER))
 }
@@ -110,6 +135,41 @@ pub async fn save_user_theme(file: Option<String>, theme: Value) -> Result<Strin
 #[tauri::command]
 pub async fn delete_user_theme(file: String) -> Result<()> {
     remove_user_theme(&themes_dir()?, &file)
+}
+
+#[tauri::command]
+pub async fn import_theme(app: AppHandle) -> Result<Option<Value>> {
+    let picked = run_dialog(move || {
+        app.dialog()
+            .file()
+            .add_filter("Theme", &["json"])
+            .blocking_pick_file()
+    })
+    .await?;
+    let Some(picked) = picked else {
+        return Ok(None);
+    };
+    read_theme_file(&local_path(picked)?)?
+        .map(Some)
+        .ok_or(Error::InvalidTheme)
+}
+
+#[tauri::command]
+pub async fn export_theme(app: AppHandle, theme: Value) -> Result<bool> {
+    let file_name = export_file_name(theme_name(&theme)?);
+    let picked = run_dialog(move || {
+        app.dialog()
+            .file()
+            .add_filter("Theme", &["json"])
+            .set_file_name(file_name)
+            .blocking_save_file()
+    })
+    .await?;
+    let Some(picked) = picked else {
+        return Ok(false);
+    };
+    write_export(&local_path(picked)?, &theme)?;
+    Ok(true)
 }
 
 #[cfg(test)]
@@ -227,6 +287,41 @@ mod tests {
             remove_user_theme(dir.path(), "../settings.json"),
             Err(Error::InvalidThemeFile)
         ));
+    }
+
+    #[test]
+    fn suggests_an_export_file_name_from_the_theme_name() {
+        assert_eq!(export_file_name("Noite Ácida"), "noite-cida.json");
+        assert_eq!(export_file_name("***"), "theme.json");
+    }
+
+    #[test]
+    fn exports_a_named_theme_as_readable_json() {
+        let dir = TempDir::new().expect("temp dir");
+        let path = dir.path().join("lab.json");
+        let theme = json!({ "name": "Lab", "ui": { "bg": "#000000" } });
+
+        write_export(&path, &theme).expect("export");
+
+        let text = std::fs::read_to_string(&path).expect("read");
+        assert!(text.contains("\n  \"name\": \"Lab\""));
+        assert_eq!(read_theme_file(&path).expect("read back"), Some(theme));
+        assert!(matches!(
+            write_export(&path, &json!({ "ui": {} })),
+            Err(Error::InvalidTheme)
+        ));
+    }
+
+    #[test]
+    fn reads_only_json_objects_and_rejects_huge_files() {
+        let dir = TempDir::new().expect("temp dir");
+        let broken = dir.path().join("broken.json");
+        std::fs::write(&broken, "{ nope").expect("write");
+        let huge = dir.path().join("huge.json");
+        std::fs::write(&huge, vec![b' '; (MAX_THEME_SIZE + 1) as usize]).expect("write");
+
+        assert_eq!(read_theme_file(&broken).expect("read"), None);
+        assert!(matches!(read_theme_file(&huge), Err(Error::TooLarge)));
     }
 
     #[test]

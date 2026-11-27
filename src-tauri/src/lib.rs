@@ -37,6 +37,8 @@ pub fn run() {
             terminal::terminal_resize,
             terminal::terminal_close,
             themes::delete_user_theme,
+            themes::export_theme,
+            themes::import_theme,
             themes::list_user_themes,
             themes::save_user_theme,
             updater::check_update,
