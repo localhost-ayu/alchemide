@@ -18,11 +18,45 @@ type KeyLike = {
   metaKey: boolean;
 };
 
+export type KeyOverrides = Record<string, string | null>;
+
 type CommandState = {
   commands: Record<string, Command>;
+  overrides: KeyOverrides;
 };
 
-export const useCommandStore = create<CommandState>(() => ({ commands: {} }));
+export const useCommandStore = create<CommandState>(() => ({ commands: {}, overrides: {} }));
+
+export function effectiveKeys(command: Command, overrides: KeyOverrides): string | undefined {
+  if (command.id in overrides) {
+    return overrides[command.id] ?? undefined;
+  }
+  return command.keys;
+}
+
+export function findConflicts(
+  commands: Command[],
+  overrides: KeyOverrides,
+): Record<string, string[]> {
+  const byKeys: Record<string, string[]> = {};
+  for (const command of commands) {
+    const keys = effectiveKeys(command, overrides);
+    if (keys) {
+      byKeys[keys] = [...(byKeys[keys] ?? []), command.id];
+    }
+  }
+  return Object.fromEntries(Object.entries(byKeys).filter(([, ids]) => ids.length > 1));
+}
+
+let recording = false;
+
+export function setRecording(on: boolean): void {
+  recording = on;
+}
+
+export function isRecording(): boolean {
+  return recording;
+}
 
 let pendingChord: { stroke: string; at: number } | null = null;
 let listening = false;
@@ -75,9 +109,11 @@ export function strokeOf(event: KeyLike): string {
 }
 
 function bindings(): { command: Command; strokes: string[] }[] {
-  return Object.values(useCommandStore.getState().commands)
-    .filter((command) => command.keys)
-    .map((command) => ({ command, strokes: (command.keys ?? "").split(" ") }));
+  const { commands, overrides } = useCommandStore.getState();
+  return Object.values(commands).flatMap((command) => {
+    const keys = effectiveKeys(command, overrides);
+    return keys ? [{ command, strokes: keys.split(" ") }] : [];
+  });
 }
 
 function chordIsPending(now: number): boolean {
@@ -107,6 +143,9 @@ export function findCommand(event: KeyLike, now = Date.now()): Command | "chord"
 }
 
 export function dispatchKey(event: KeyLike & { preventDefault: () => void }, now = Date.now()) {
+  if (recording) {
+    return;
+  }
   const found = findCommand(event, now);
   if (found === null) {
     if (!["Control", "Shift", "Alt", "Meta"].includes(event.key)) {
@@ -124,6 +163,9 @@ export function dispatchKey(event: KeyLike & { preventDefault: () => void }, now
 }
 
 export function keyBelongsToApp(event: KeyLike, now = Date.now()): boolean {
+  if (recording) {
+    return true;
+  }
   return chordIsPending(now) || findCommand(event, now) !== null;
 }
 

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { isRecording } from "./commands";
 
 type Entry = { close: () => void };
 
@@ -14,7 +15,7 @@ function listen(): void {
     "keydown",
     (event) => {
       const top = stack[stack.length - 1];
-      if (event.key !== "Escape" || !top) {
+      if (event.key !== "Escape" || !top || isRecording()) {
         return;
       }
       event.preventDefault();

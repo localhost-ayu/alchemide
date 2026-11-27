@@ -229,3 +229,23 @@ test("Esc closes the settings even when the focus is not inside them", async ({ 
 
   await expect(settings).toBeHidden();
 });
+
+test("changes a keyboard shortcut and uses it", async ({ page }) => {
+  await page.goto("/");
+  const explorer = page.getByRole("complementary", { name: "Explorer" });
+  await expect(explorer).toBeVisible();
+
+  await page.keyboard.press("Control+,");
+  const settings = page.getByRole("dialog", { name: "Settings" });
+  await settings.getByRole("button", { name: "Change shortcut for Toggle side bar" }).click();
+  await page.keyboard.press("Control+Shift+J");
+  await expect(settings.getByLabel("Shortcut for Toggle side bar", { exact: true })).toHaveText(
+    "Ctrl+Shift+J",
+  );
+  await page.keyboard.press("Escape");
+
+  await page.keyboard.press("Control+b");
+  await expect(explorer).toBeVisible();
+  await page.keyboard.press("Control+Shift+J");
+  await expect(explorer).toBeHidden();
+});
