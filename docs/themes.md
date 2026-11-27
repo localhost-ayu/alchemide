@@ -1,6 +1,7 @@
 # Themes
 
-A theme is a JSON file. Built-in themes live in `src/features/themes/builtin/`.
+A theme is a JSON file. Built-in themes live in `src/features/themes/builtin/`; your own themes
+live in the `themes/` folder of the app config folder (see [Your own themes](#your-own-themes)).
 
 ```json
 {
@@ -100,3 +101,15 @@ background or mascot overrides the one of the current theme and stays when you s
 
 Videos play muted in a loop and pause while animations are off. `Ctrl+Alt+M` shows or hides the
 mascot.
+
+## Your own themes
+
+Put theme files in `themes/` inside the config folder (`%APPDATA%lchemide	hemes` on Windows,
+`~/.config/alchemide/themes` on Linux), one theme per `.json` file. They show up under "Meus temas"
+in the mood picker and under "Your themes" in the settings, next to the built-in themes.
+
+- Themes are read when the app starts and with "Reload your themes" in the command palette.
+- A file that is not a valid theme is skipped with a warning; it never replaces your current look.
+- Names must be unique, ignoring case. A theme named like a built-in theme, or like a theme in an
+  earlier file (files are read in alphabetical order), is skipped with a warning.
+- Built-in themes are read-only.

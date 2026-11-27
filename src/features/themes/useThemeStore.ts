@@ -1,15 +1,17 @@
 import { create } from "zustand";
-import { loadSettings, saveSettings } from "../../lib/ipc";
+import { listUserThemes, loadSettings, saveSettings } from "../../lib/ipc";
 import { applyEffects, applyTheme } from "./applyTheme";
 import { BUILTIN_THEMES, DEFAULT_THEME } from "./builtinThemes";
 import { type CustomLook, NO_CUSTOM_LOOK, readCustomLook, withCustomLook } from "./customLook";
 import { readEffects } from "./parseTheme";
 import type { Effects, Theme } from "./theme";
+import { nameKey, readUserThemes, type UserTheme } from "./userThemes";
 
 type ThemeState = {
   theme: Theme;
   effects: Effects;
   custom: CustomLook;
+  userThemes: UserTheme[];
   warnings: string[];
   preview: (theme: Theme, effects?: Effects) => void;
   commit: (theme: Theme, effects: Effects) => Promise<void>;
@@ -45,6 +47,7 @@ export const useThemeStore = create<ThemeState>((set, get) => {
     theme: DEFAULT_THEME,
     effects: DEFAULT_THEME.effects,
     custom: NO_CUSTOM_LOOK,
+    userThemes: [],
     warnings: [],
     preview: (theme, effects = theme.effects) => show(theme, effects, get().custom),
     commit: async (theme, effects) => {
@@ -62,8 +65,37 @@ export const useThemeStore = create<ThemeState>((set, get) => {
   };
 });
 
+export function allThemes(userThemes: UserTheme[]): Theme[] {
+  return [...BUILTIN_THEMES, ...userThemes.map((userTheme) => userTheme.theme)];
+}
+
 export function findTheme(name: unknown): Theme | null {
-  return BUILTIN_THEMES.find((theme) => theme.name === name) ?? null;
+  if (typeof name !== "string") {
+    return null;
+  }
+  const themes = allThemes(useThemeStore.getState().userThemes);
+  return themes.find((theme) => nameKey(theme.name) === nameKey(name)) ?? null;
+}
+
+async function loadUserThemes(): Promise<boolean> {
+  try {
+    const { themes, warnings } = readUserThemes(await listUserThemes(), BUILTIN_THEMES);
+    useThemeStore.setState({ userThemes: themes, warnings });
+    return true;
+  } catch (error) {
+    useThemeStore.setState({ warnings: [`could not load your themes: ${String(error)}`] });
+    return false;
+  }
+}
+
+export async function reloadUserThemes(): Promise<void> {
+  if (!(await loadUserThemes())) {
+    return;
+  }
+  const { theme, effects, custom } = useThemeStore.getState();
+  const current = findTheme(theme.name) ?? DEFAULT_THEME;
+  show(current, effects, custom);
+  useThemeStore.setState({ theme: current });
 }
 
 export async function initThemes(): Promise<void> {
@@ -72,6 +104,7 @@ export async function initThemes(): Promise<void> {
     useThemeStore.setState({ theme, effects, custom });
   };
   apply(DEFAULT_THEME, DEFAULT_THEME.effects, NO_CUSTOM_LOOK);
+  await loadUserThemes();
   try {
     const settings = await loadSettings();
     const theme = findTheme(settings.theme) ?? DEFAULT_THEME;

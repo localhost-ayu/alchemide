@@ -9,7 +9,7 @@ import { registerCommands } from "../../lib/commands";
 import { filterOptions, type MoodOption, moodOptions } from "./moodOptions";
 import { runLookAction } from "./runLookAction";
 import type { Effects, Theme } from "./theme";
-import { useThemeStore } from "./useThemeStore";
+import { reloadUserThemes, useThemeStore } from "./useThemeStore";
 
 type Choice = { theme: Theme; effects: Effects };
 
@@ -30,9 +30,18 @@ export function MoodPicker() {
   const [index, setIndex] = useState(0);
   const originalRef = useRef<Choice | null>(null);
   const custom = useThemeStore((state) => state.custom);
+  const userThemes = useThemeStore((state) => state.userThemes);
   const options = useMemo(
-    () => filterOptions(moodOptions(undefined, custom), query),
-    [custom, query],
+    () =>
+      filterOptions(
+        moodOptions(
+          undefined,
+          custom,
+          userThemes.map((userTheme) => userTheme.theme),
+        ),
+        query,
+      ),
+    [custom, userThemes, query],
   );
   const highlighted = options[Math.min(index, options.length - 1)];
 
@@ -50,6 +59,11 @@ export function MoodPicker() {
             setIndex(0);
             setOpen(true);
           },
+        },
+        {
+          id: "themes.reload",
+          title: "Reload your themes",
+          run: () => reloadUserThemes(),
         },
       ]),
     [],

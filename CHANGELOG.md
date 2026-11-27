@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Your own themes: JSON theme files in the `themes` folder of the config folder appear in the mood picker and in the settings next to the built-in themes; broken files are skipped with a warning, and "Reload your themes" picks up new files
+
 ## [0.2.0] - 2026-11-26
 
 Productivity release. From this version on, Alchemide updates itself; users of 0.1.0 install 0.2.0 by hand once.
