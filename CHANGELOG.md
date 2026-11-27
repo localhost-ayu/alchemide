@@ -10,19 +10,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Menu bar with every command by category (File, Edit, View, Go, Terminal, Git, Theme, Help) and its shortcut. It hides itself by default and shows with a quick Alt tap or with the pointer at the top edge; Settings → Layout switches it to always visible or hidden
+- Switch branches from the Git dock: local branches and remote ones without a local copy
+- A terminal button in the bottom right corner of the status bar opens and hides the terminal
+- A button at the end of the tab bar opens and closes the preview of Markdown files
+- SQL snippet pack (on by default: `sel`, `ij`, `lj`, `cte`, `ins`, `upd`, `case`, `rownum`…) and a SQL Server pack (`top`, `page`, `lasth`, `decl`, `trycatch`, `merge`, `temp`…), turned on in Settings → Snippets
+- The mascot can be unlocked and dragged anywhere in the editor (double click sends it back to its corner), drawn behind the code (new default) or in front of it, and an animated GIF stands still when animations are off
+- Option in Settings → General to close panels by clicking outside them (off by default)
+- Tabs of files that share a name show the folder that tells them apart (`conexao.php · beer`)
+- What sits behind open files over a wallpaper: a dimmed, blurred layer (new default, the wallpaper stays sharp with no file open), the wallpaper as it is, or the theme color. Adjustable in the theme editor under Background
 
 ### Changed
 
 - The settings button in the activity bar opens "Settings…" and the same menus, by category
-
-### Added
-
-- Option in Settings → General to close panels by clicking outside them (off by default)
-- Tabs of files that share a name show the folder that tells them apart (`conexao.php · beer`)
-
-### Changed
-
+- The "Glass panels" switch moved from Settings to the theme editor, next to the glass opacity and blur, with a live preview
+- The "Open a file" hint stays readable over a wallpaper
 - Settings use toggle switches in the theme accent color instead of checkboxes
+
+### Fixed
+
+- Git dock errors (a failed stage, commit or switch) no longer vanish right after they appear
 
 ## [0.7.0] - 2026-11-27
 

@@ -23,12 +23,34 @@ export function MarkdownPane() {
     [],
   );
 
-  if (!isOpen || !isMarkdown || source === null) {
+  if (!isMarkdown || source === null) {
     return null;
   }
   return (
-    <section className="markdown-pane" aria-label="Markdown preview">
-      <MarkdownPreview source={source} />
-    </section>
+    <>
+      <button
+        type="button"
+        className="markdown-toggle"
+        aria-label="Toggle Markdown preview"
+        aria-pressed={isOpen}
+        title="Markdown preview (Ctrl+Shift+V)"
+        onClick={() => usePreviewStore.getState().toggle()}
+      >
+        <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+          <path
+            d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5Z"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.3"
+          />
+          <circle cx="8" cy="8" r="2.2" fill="currentColor" />
+        </svg>
+      </button>
+      {isOpen && (
+        <section className="markdown-pane" aria-label="Markdown preview">
+          <MarkdownPreview source={source} />
+        </section>
+      )}
+    </>
   );
 }

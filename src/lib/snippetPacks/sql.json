@@ -1,0 +1,136 @@
+{
+  "name": "SQL",
+  "languages": ["sql"],
+  "snippets": {
+    "Select": {
+      "prefix": "sel",
+      "body": ["SELECT ${1:*}", "FROM ${2:table}", "WHERE ${3:condition};"],
+      "description": "SELECT … FROM … WHERE"
+    },
+    "Select distinct": {
+      "prefix": "seld",
+      "body": ["SELECT DISTINCT ${1:column}", "FROM ${2:table};"],
+      "description": "SELECT DISTINCT"
+    },
+    "Inner join": {
+      "prefix": "ij",
+      "body": ["INNER JOIN ${1:table} ${2:t} ON ${2:t}.${3:id} = ${4:other}.${5:id}"],
+      "description": "INNER JOIN … ON"
+    },
+    "Left join": {
+      "prefix": "lj",
+      "body": ["LEFT JOIN ${1:table} ${2:t} ON ${2:t}.${3:id} = ${4:other}.${5:id}"],
+      "description": "LEFT JOIN … ON"
+    },
+    "Group by": {
+      "prefix": "grp",
+      "body": [
+        "SELECT ${1:column}, COUNT(*) AS ${2:total}",
+        "FROM ${3:table}",
+        "GROUP BY ${1:column}",
+        "HAVING COUNT(*) > ${4:1}",
+        "ORDER BY ${2:total} DESC;"
+      ],
+      "description": "Count per group with HAVING"
+    },
+    "Common table expression": {
+      "prefix": "cte",
+      "body": [
+        "WITH ${1:name} AS (",
+        "\tSELECT ${2:*}",
+        "\tFROM ${3:table}",
+        "\tWHERE ${4:condition}",
+        ")",
+        "SELECT *",
+        "FROM ${1:name};"
+      ],
+      "description": "WITH … AS (…) SELECT"
+    },
+    "Insert": {
+      "prefix": "ins",
+      "body": ["INSERT INTO ${1:table} (${2:columns})", "VALUES (${3:values});"],
+      "description": "INSERT INTO … VALUES"
+    },
+    "Insert from select": {
+      "prefix": "inss",
+      "body": [
+        "INSERT INTO ${1:table} (${2:columns})",
+        "SELECT ${2:columns}",
+        "FROM ${3:source}",
+        "WHERE ${4:condition};"
+      ],
+      "description": "INSERT INTO … SELECT"
+    },
+    "Update": {
+      "prefix": "upd",
+      "body": ["UPDATE ${1:table}", "SET ${2:column} = ${3:value}", "WHERE ${4:condition};"],
+      "description": "UPDATE … SET … WHERE"
+    },
+    "Delete": {
+      "prefix": "del",
+      "body": ["DELETE FROM ${1:table}", "WHERE ${2:condition};"],
+      "description": "DELETE FROM … WHERE"
+    },
+    "Case": {
+      "prefix": "case",
+      "body": [
+        "CASE",
+        "\tWHEN ${1:condition} THEN ${2:result}",
+        "\tELSE ${3:other}",
+        "END AS ${4:alias}"
+      ],
+      "description": "CASE WHEN … THEN … ELSE … END"
+    },
+    "Exists": {
+      "prefix": "exists",
+      "body": [
+        "EXISTS (",
+        "\tSELECT 1",
+        "\tFROM ${1:table} ${2:t}",
+        "\tWHERE ${2:t}.${3:id} = ${4:outer}.${5:id}",
+        ")"
+      ],
+      "description": "Correlated EXISTS subquery"
+    },
+    "Row number": {
+      "prefix": "rownum",
+      "body": [
+        "ROW_NUMBER() OVER (PARTITION BY ${1:column} ORDER BY ${2:column} DESC) AS ${3:row_number}"
+      ],
+      "description": "ROW_NUMBER() window function"
+    },
+    "Window sum": {
+      "prefix": "over",
+      "body": [
+        "${1:SUM}(${2:column}) OVER (PARTITION BY ${3:column} ORDER BY ${4:column}) AS ${5:alias}"
+      ],
+      "description": "Aggregate over a window"
+    },
+    "Create table": {
+      "prefix": "ct",
+      "body": [
+        "CREATE TABLE ${1:name} (",
+        "\tid ${2:INTEGER} PRIMARY KEY,",
+        "\t${3:column} ${4:VARCHAR(255)} NOT NULL,",
+        "\tcreated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP",
+        ");"
+      ],
+      "description": "CREATE TABLE with id and created_at"
+    },
+    "Add column": {
+      "prefix": "addcol",
+      "body": ["ALTER TABLE ${1:table} ADD ${2:column} ${3:VARCHAR(255)} ${4:NULL};"],
+      "description": "ALTER TABLE … ADD column"
+    },
+    "Create index": {
+      "prefix": "idx",
+      "body": ["CREATE INDEX ix_${1:table}_${2:column} ON ${1:table} (${2:column});"],
+      "description": "CREATE INDEX"
+    },
+    "Transaction": {
+      "prefix": "tran",
+      "body": ["BEGIN TRANSACTION;", "", "$0", "", "COMMIT;"],
+      "description": "Transaction block"
+    }
+  }
+}

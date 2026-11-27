@@ -326,3 +326,7 @@
     transform: translateY(-6px);
   }
 }
+
+.app__editor:has(.markdown-toggle) .tabs {
+  padding-right: 36px;
+}
