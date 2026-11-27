@@ -33,15 +33,32 @@ test("collapses the side bar when the open view is clicked again", async () => {
   expect(screen.queryByRole("button", { pressed: true })).toBeNull();
 });
 
-test("opens the settings", () => {
-  const opened: string[] = [];
+test("the settings button opens the settings and every menu by category", () => {
+  const ran: string[] = [];
   const unregister = registerCommands([
-    { id: "settings.open", title: "Open settings", run: () => opened.push("settings") },
+    { id: "settings.open", title: "Open settings", run: () => ran.push("settings") },
+    {
+      id: "themes.pickMood",
+      title: "Choose a mood",
+      keys: "Ctrl+K M",
+      run: () => ran.push("mood"),
+    },
   ]);
   render(<ActivityBar />);
+  const button = screen.getByRole("button", { name: "Settings and menus" });
 
-  fireEvent.click(screen.getByRole("button", { name: "Settings" }));
+  fireEvent.click(button);
+  fireEvent.click(screen.getByRole("menuitem", { name: /Settings…/ }));
+  expect(ran).toEqual(["settings"]);
+  expect(screen.queryByRole("menu")).toBeNull();
+
+  fireEvent.click(button);
+  fireEvent.click(screen.getByRole("menuitem", { name: /Theme/ }));
+  const theme = screen.getByRole("menu", { name: "Theme" });
+  expect(theme.textContent).toContain("Ctrl+K M");
+  fireEvent.click(screen.getByRole("menuitem", { name: /Choose a mood/ }));
   unregister();
 
-  expect(opened).toEqual(["settings"]);
+  expect(ran).toEqual(["settings", "mood"]);
+  expect(screen.queryByRole("menu")).toBeNull();
 });

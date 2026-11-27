@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Menu bar with every command by category (File, Edit, View, Go, Terminal, Git, Theme, Help) and its shortcut. It hides itself by default and shows with a quick Alt tap or with the pointer at the top edge; Settings → Layout switches it to always visible or hidden
+
+### Changed
+
+- The settings button in the activity bar opens "Settings…" and the same menus, by category
+
+### Added
+
 - Option in Settings → General to close panels by clicking outside them (off by default)
 - Tabs of files that share a name show the folder that tells them apart (`conexao.php · beer`)
 
