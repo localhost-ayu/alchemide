@@ -1,4 +1,4 @@
-import { toCssVariables } from "./cssVariables";
+import { editorBackdropOf, toCssVariables } from "./cssVariables";
 import type { Effects, Theme } from "./theme";
 
 export function applyTheme(theme: Theme, root: HTMLElement = document.documentElement): void {
@@ -8,6 +8,7 @@ export function applyTheme(theme: Theme, root: HTMLElement = document.documentEl
   root.dataset.theme = theme.name;
   root.dataset.mascotCorner = theme.mascot?.corner ?? "bottom-right";
   root.dataset.backdropFit = "fit" in theme.background ? theme.background.fit : "cover";
+  root.dataset.editorBackdrop = editorBackdropOf(theme)?.mode ?? "sharp";
 }
 
 export function applyEffects(
