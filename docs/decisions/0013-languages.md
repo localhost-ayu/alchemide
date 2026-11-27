@@ -32,4 +32,7 @@ in English.
 
 - New texts go through `t()` with a key in both dictionaries.
 - Adding a language is one new dictionary and one entry in `LANGUAGE_PREFERENCES`.
-- Errors from Rust are still English text until they carry a code (issue #146).
+- Errors from Rust cross the IPC as `{ code, message, detail }`: `code` is the variant name,
+  `message` the English text (a fallback for codes the front does not know yet) and `detail` the
+  underlying text for errors that wrap one. `src/lib/ipc.ts` turns them into `Error`s with the
+  message from `error.<code>` in the current language, so the rest of the front is unchanged.

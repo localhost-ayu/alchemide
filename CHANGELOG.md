@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Error messages from the backend (files, Git, Docker, terminal, updates…) follow the interface language too
 - The whole interface is available in Brazilian Portuguese: menus, commands, panels, settings, the theme editor, the Git dock, Docker, search, the terminal and messages
 
 ### Fixed

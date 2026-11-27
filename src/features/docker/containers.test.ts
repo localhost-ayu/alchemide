@@ -39,3 +39,9 @@ test("explains a missing or stopped Docker in plain words", () => {
   ).toMatch(/Docker is not running/);
   expect(dockerNotice("Error: Docker: No such container")).toBe("Docker: No such container");
 });
+
+test("recognizes the missing Docker message in Portuguese too", () => {
+  expect(dockerNotice("o Docker não está instalado ou não está no PATH")).toBe(
+    "Docker is not installed or not on the PATH.",
+  );
+});
