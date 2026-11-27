@@ -6,6 +6,7 @@ mod fs;
 mod links;
 mod terminal;
 mod updater;
+mod zoom;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -36,7 +37,8 @@ pub fn run() {
             terminal::terminal_resize,
             terminal::terminal_close,
             updater::check_update,
-            updater::install_update
+            updater::install_update,
+            zoom::set_zoom
         ])
         .run(tauri::generate_context!());
     if let Err(error) = result {

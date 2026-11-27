@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Six bundled code fonts licensed under the SIL OFL: Maple Mono (now the default), JetBrains Mono,
+  Adwaita Mono, Fira Code, Cascadia Code and IBM Plex Mono, plus "Installed font…" for any font on
+  the system
+- Terminal font size, line height, ligatures on or off and interface zoom in the settings, with a
+  live font sample
+- Zoom in, zoom out and reset zoom: `Ctrl+=`, `Ctrl+-`, `Ctrl+0`
+
 ## [0.2.0] - 2026-11-26
 
 Productivity release. From this version on, Alchemide updates itself; users of 0.1.0 install 0.2.0 by hand once.

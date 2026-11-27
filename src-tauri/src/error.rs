@@ -40,6 +40,8 @@ pub enum Error {
     Update(String),
     #[error("there is no update to install")]
     NoUpdate,
+    #[error("could not change the zoom: {0}")]
+    Zoom(String),
     #[error(transparent)]
     Io(#[from] std::io::Error),
     #[error("could not watch the folder for changes: {0}")]

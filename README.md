@@ -10,6 +10,9 @@ A lightweight, mood-themed code editor built with Tauri, React and CodeMirror.
 - Collapsible file explorer that respects `.gitignore`
 - Built-in terminal with automatic Windows, Linux and WSL profiles
 - Markdown preview
+- Six bundled code fonts (Maple Mono, JetBrains Mono, Adwaita Mono, Fira Code, Cascadia Code,
+  IBM Plex Mono) or any installed font; separate sizes for the editor and the terminal, line
+  height, ligatures and interface zoom (`Ctrl+=`, `Ctrl+-`, `Ctrl+0`)
 - Themes by mood, custom backgrounds and independent visual effects
 
 ## Install

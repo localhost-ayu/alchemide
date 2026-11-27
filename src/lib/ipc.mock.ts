@@ -258,6 +258,17 @@ export function onTerminalExit(handler: (id: number) => void): Promise<() => voi
 
 const openedLinks: string[] = [];
 
+let zoom = 1;
+
+export function mockZoom(): number {
+  return zoom;
+}
+
+export function setZoom(scale: number): Promise<void> {
+  zoom = Math.min(1.6, Math.max(0.7, scale));
+  return Promise.resolve();
+}
+
 export function openExternal(url: string): Promise<void> {
   if (!/^(?:https?:\/\/|mailto:)./i.test(url.trim())) {
     return Promise.reject(new Error("only web and mail links can be opened"));

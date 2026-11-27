@@ -80,3 +80,20 @@
 .settings__field input[type="checkbox"] {
   accent-color: var(--color-accent);
 }
+
+.settings__sample {
+  margin: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  font-family: var(--font-code);
+  font-size: var(--editor-font-size, 14px);
+  font-variant-ligatures: var(--code-ligatures, normal);
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.settings__field--check {
+  justify-content: flex-start;
+  gap: 8px;
+}
