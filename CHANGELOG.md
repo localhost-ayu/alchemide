@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-11-27
+
+Layout and Docker: a containers panel, an activity bar, hideable bars and zen mode.
+
 ### Added
 
 - Activity bar to switch between Explorer, Search and Docker; clicking the open view collapses the side bar
@@ -128,7 +132,8 @@ First release: a lightweight editor for Windows and Linux (including WSL) with m
 
 - Browser mode with a mocked backend (`pnpm dev:web`) and a Linux dev container
 
-[Unreleased]: https://github.com/localhost-ayu/alchemide/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/localhost-ayu/alchemide/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/localhost-ayu/alchemide/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/localhost-ayu/alchemide/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/localhost-ayu/alchemide/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/localhost-ayu/alchemide/compare/v0.2.1...v0.3.0
