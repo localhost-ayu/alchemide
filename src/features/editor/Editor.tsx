@@ -5,7 +5,7 @@ import { playfulTouchesEnabled, useActivityStore } from "../../lib/activityStore
 import { registerCommands } from "../../lib/commands";
 import { useEditorSettings } from "../../lib/editorSettings";
 import { hasUnsavedTabs, selectActiveTab, type Tab, useEditorStore } from "../../lib/editorStore";
-import { onCloseRequested, onWorkspaceChange } from "../../lib/ipc";
+import { onCloseRequested, onWorkspaceChange, pickFile } from "../../lib/ipc";
 import { useLanguageServerStore } from "../../lib/languageServerStore";
 import { joinLines } from "../../lib/lineEndings";
 import {
@@ -240,6 +240,17 @@ export function Editor() {
     };
     return registerCommands([
       { id: "editor.save", title: "Save file", keys: "Ctrl+S", run: save },
+      {
+        id: "editor.openFile",
+        title: "Open file…",
+        keys: "Ctrl+O",
+        run: async () => {
+          const path = await pickFile().catch(() => null);
+          if (path) {
+            await useEditorStore.getState().openFile(path);
+          }
+        },
+      },
       {
         id: "editor.closeTab",
         title: "Close tab",

@@ -70,6 +70,9 @@ regular browser without compiling Rust, and the end-to-end tests run against tha
   access is never granted for convenience. Today the window has `core:default` plus
   `core:window:allow-destroy`, needed to close the window after the unsaved-changes check.
   File access goes through app commands that reject paths outside the open folder.
+  The only exception is a file picked with "Open file…" (`Ctrl+O`, the `pick_file` command):
+  its canonical path is added to an allow list for the session, so that one file can be read and
+  saved; nothing else outside the folder becomes reachable.
 - The last opened folder is remembered in `state.json`, which only Rust writes, not in
   `settings.json` (the webview can rewrite that one). `reopen_last_folder` reads it on start, so
   the webview never names a folder to open.

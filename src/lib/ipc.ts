@@ -39,6 +39,10 @@ export function reopenLastFolder(): Promise<Folder | null> {
   return invoke<Folder | null>("reopen_last_folder");
 }
 
+export function pickFile(): Promise<string | null> {
+  return invoke<string | null>("pick_file");
+}
+
 export function listDir(path: string): Promise<Entry[]> {
   return invoke<Entry[]>("list_dir", { path });
 }

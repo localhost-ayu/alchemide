@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU32, Ordering};
 use std::sync::{Arc, Mutex};
@@ -24,6 +25,7 @@ struct Session {
 #[derive(Default)]
 pub struct Workspace {
     session: Mutex<Option<Session>>,
+    loose_files: Mutex<HashSet<PathBuf>>,
 }
 
 impl Workspace {
@@ -42,9 +44,19 @@ impl Workspace {
     }
 
     fn check(&self, path: &Path) -> Result<()> {
-        let guard = self.lock();
-        let session = guard.as_ref().ok_or(Error::NoWorkspace)?;
-        ensure_inside(&session.root, path)
+        let root = self.root();
+        let loose = self.loose();
+        is_allowed(root.as_deref(), &loose, path)
+    }
+
+    fn allow_file(&self, path: PathBuf) {
+        self.loose().insert(path);
+    }
+
+    fn loose(&self) -> std::sync::MutexGuard<'_, HashSet<PathBuf>> {
+        self.loose_files
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner())
     }
 
     pub fn root(&self) -> Option<PathBuf> {
@@ -56,6 +68,13 @@ impl Workspace {
             .lock()
             .unwrap_or_else(|poisoned| poisoned.into_inner())
     }
+}
+
+pub fn is_allowed(root: Option<&Path>, loose_files: &HashSet<PathBuf>, path: &Path) -> Result<()> {
+    if loose_files.contains(&path.canonicalize()?) {
+        return Ok(());
+    }
+    ensure_inside(root.ok_or(Error::NoWorkspace)?, path)
 }
 
 pub fn ensure_inside(root: &Path, path: &Path) -> Result<()> {
@@ -120,6 +139,20 @@ pub async fn reopen_last_folder(
         return Ok(None);
     };
     open_root(app, &workspace, root).map(Some)
+}
+
+#[tauri::command]
+pub async fn pick_file(app: AppHandle, workspace: State<'_, Workspace>) -> Result<Option<String>> {
+    let picked =
+        tauri::async_runtime::spawn_blocking(move || app.dialog().file().blocking_pick_file())
+            .await
+            .map_err(|_| Error::Dialog)?;
+    let Some(picked) = picked else {
+        return Ok(None);
+    };
+    let path = picked.into_path().map_err(|_| Error::NotLocalFolder)?;
+    workspace.allow_file(path.canonicalize()?);
+    Ok(Some(path.to_string_lossy().into_owned()))
 }
 
 #[tauri::command]
@@ -263,6 +296,29 @@ pub async fn write_file(
 mod tests {
     use super::*;
     use tempfile::TempDir;
+
+    #[test]
+    fn allows_files_picked_outside_the_open_folder() {
+        let dir = TempDir::new().expect("temp dir");
+        let root = dir.path().join("project");
+        std::fs::create_dir(&root).expect("project");
+        let notes = dir.path().join("notes.md");
+        let other = dir.path().join("other.md");
+        std::fs::write(&notes, "").expect("notes");
+        std::fs::write(&other, "").expect("other");
+        let loose = HashSet::from([notes.canonicalize().expect("canonical")]);
+
+        assert!(is_allowed(Some(&root), &loose, &notes).is_ok());
+        assert!(is_allowed(None, &loose, &notes).is_ok());
+        assert!(matches!(
+            is_allowed(Some(&root), &loose, &other),
+            Err(Error::OutsideWorkspace)
+        ));
+        assert!(matches!(
+            is_allowed(None, &loose, &other),
+            Err(Error::NoWorkspace)
+        ));
+    }
 
     #[test]
     fn accepts_paths_inside_the_root() {

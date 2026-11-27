@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { App } from "./app/App";
 import { useWorkspaceStore } from "./features/explorer/useWorkspaceStore";
 import { initGeneralSettings } from "./features/settings/useGeneralSettings";
+import { initTerminalSettings } from "./features/terminal/useTerminalSettings";
 import { initThemes } from "./features/themes/useThemeStore";
 import { initEditorSettings } from "./lib/editorSettings";
 import { initLayout } from "./lib/layoutStore";
@@ -17,6 +18,7 @@ initGeneralSettings().then(({ reopenLastFolder }) => {
 });
 initEditorSettings();
 initLayout();
+initTerminalSettings();
 useSnippetStore
   .getState()
   .load()

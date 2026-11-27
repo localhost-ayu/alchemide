@@ -43,7 +43,10 @@ const tree: Record<string, Entry[]> = {
   ],
 };
 
+const LOOSE_FILE = "/home/user/notes/todo.md";
+
 const files: Record<string, string> = {
+  [LOOSE_FILE]: "# Notes\n\n- [ ] Water the plants\n",
   [`${root}/README.md`]: [
     "# Sample project",
     "",
@@ -90,6 +93,10 @@ export function setMockLastFolder(remembered: boolean): void {
 
 export function reopenLastFolder(): Promise<Folder | null> {
   return lastFolderRemembered ? openFolder() : Promise.resolve(null);
+}
+
+export function pickFile(): Promise<string | null> {
+  return Promise.resolve(LOOSE_FILE);
 }
 
 export function openFolder(): Promise<Folder | null> {
