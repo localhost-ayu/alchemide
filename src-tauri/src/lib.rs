@@ -48,6 +48,7 @@ pub fn run() {
             git::git_branches,
             git::git_commit,
             git::git_diff,
+            git::git_file_versions,
             git::git_log,
             git::git_show,
             git::git_stage,

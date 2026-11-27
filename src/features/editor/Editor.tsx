@@ -9,6 +9,7 @@ import { t as translateNow, useT } from "../../lib/i18n";
 import { gitBlame, onCloseRequested, onWorkspaceChange, pickFile } from "../../lib/ipc";
 import { useLanguageServerStore } from "../../lib/languageServerStore";
 import { joinLines } from "../../lib/lineEndings";
+import { ChangesView } from "./ChangesView";
 import {
   createEditorState,
   indentation,
@@ -22,6 +23,7 @@ import { languageServerExtension, stopLanguageServers } from "./languageServers"
 import { requestCloseTab } from "./requestCloseTab";
 import { saveMessage } from "./saveMessage";
 import { Tabs } from "./Tabs";
+import { useChangesStore } from "./useChangesStore";
 import "./Editor.css";
 
 type Session = {
@@ -42,6 +44,7 @@ function reportCursor(state: EditorState): void {
 
 export function Editor() {
   const t = useT();
+  const changesOpen = useChangesStore((state) => state.open);
   const activePath = useEditorStore((state) => state.activePath);
   const tabs = useEditorStore((state) => state.tabs);
   const error = useEditorStore((state) => state.error);
@@ -116,6 +119,12 @@ export function Editor() {
   };
   const createSessionRef = useRef(createSession);
   createSessionRef.current = createSession;
+
+  useEffect(() => {
+    if (activePath) {
+      useChangesStore.getState().hide();
+    }
+  }, [activePath]);
 
   useEffect(() => {
     const view = viewRef.current;
@@ -283,6 +292,11 @@ export function Editor() {
       setGlow((current) => (current === "a" ? "b" : "a"));
     };
     return registerCommands([
+      {
+        id: "editor.showChanges",
+        title: t("changes.show"),
+        run: () => useChangesStore.getState().show(),
+      },
       { id: "editor.save", title: t("editor.save"), keys: "Ctrl+S", run: save },
       {
         id: "editor.openFile",
@@ -326,8 +340,9 @@ export function Editor() {
           {error}
         </p>
       )}
-      {!activePath && <p className="editor__empty">{t("editor.empty")}</p>}
-      <div ref={containerRef} className="editor__view" hidden={!activePath} />
+      {changesOpen && <ChangesView />}
+      {!activePath && !changesOpen && <p className="editor__empty">{t("editor.empty")}</p>}
+      <div ref={containerRef} className="editor__view" hidden={!activePath || changesOpen} />
     </div>
   );
 }

@@ -11,6 +11,7 @@ import type {
   Entry,
   Environment,
   FileContent,
+  FileVersions,
   Folder,
   GitStatus,
   LspMessage,
@@ -281,4 +282,8 @@ export function renameEntry(path: string, newName: string): Promise<string> {
 
 export function deleteEntry(path: string): Promise<void> {
   return invoke<void>("delete_entry", { path });
+}
+
+export function gitFileVersions(path: string): Promise<FileVersions> {
+  return invoke<FileVersions>("git_file_versions", { path });
 }

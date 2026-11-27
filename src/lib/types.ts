@@ -127,9 +127,17 @@ export type ChangedFile = {
   originalPath: string | null;
   staged: string | null;
   unstaged: string | null;
+  added: number;
+  removed: number;
+};
+
+export type FileVersions = {
+  before: string;
+  after: string;
 };
 
 export type GitStatus = {
+  root: string;
   branch: string | null;
   files: ChangedFile[];
 };

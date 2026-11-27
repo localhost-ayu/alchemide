@@ -34,6 +34,7 @@
     "@codemirror/lang-sql": "^6.10.0",
     "@codemirror/language": "^6.13.1",
     "@codemirror/lsp-client": "6.3.1",
+    "@codemirror/merge": "6.13.0",
     "@codemirror/state": "^6.7.6",
     "@codemirror/view": "^6.44.0",
     "@fontsource/adwaita-mono": "5.3.0",

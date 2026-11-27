@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { registerCommands } from "../../lib/commands";
+import { registerCommands, runCommand } from "../../lib/commands";
 import { type MessageKey, useT } from "../../lib/i18n";
 import { onFsChange } from "../../lib/ipc";
 import type { ChangedFile } from "../../lib/types";
@@ -32,6 +32,10 @@ function FileRow({ file, staged }: { file: ChangedFile; staged: boolean }) {
           {code}
         </span>
         <span title={file.path}>{file.path}</span>
+        <span className="git-dock__counts">
+          <span className="git-dock__added">+{file.added}</span>{" "}
+          <span className="git-dock__removed">−{file.removed}</span>
+        </span>
       </button>
       <button
         type="button"
@@ -62,6 +66,15 @@ function Changes() {
   return (
     <div className="git-dock__changes">
       {files.length === 0 && <p className="git-dock__empty">{t("git.noChanges")}</p>}
+      {files.length > 0 && (
+        <button
+          type="button"
+          className="git-dock__view-changes"
+          onClick={() => runCommand("editor.showChanges")}
+        >
+          ± {t("git.viewChanges")}
+        </button>
+      )}
       {staged.length > 0 && (
         <section aria-label={t("git.stagedChanges")}>
           <h3>{t("git.stagedCount", { count: staged.length })}</h3>

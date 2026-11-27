@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Uncommitted changes tab: every changed file with its diff side by side or unified, syntax highlighting, collapsed unchanged lines, scrolling both ways, `+N −M` per file, Open file, Stage/Unstage, Stage all and Commit. The Git dock shows `+N −M` per file and a "View changes" button
+
 ### Changed
 
 - The whole interface is available in Brazilian Portuguese: menus, commands, panels, settings, the theme editor, the Git dock, Docker, search, the terminal and messages
