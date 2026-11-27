@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.2] - 2026-11-27
+
+Patch release: select fields are readable in every theme on Linux and WSL.
+
 ### Fixed
 
 - Select fields (theme, tab size, zoom, new terminal) are readable in every theme on Linux: they get an opaque background and a text color chosen for contrast, and native widgets follow the theme's light or dark scheme
@@ -144,7 +148,8 @@ First release: a lightweight editor for Windows and Linux (including WSL) with m
 
 - Browser mode with a mocked backend (`pnpm dev:web`) and a Linux dev container
 
-[Unreleased]: https://github.com/localhost-ayu/alchemide/compare/v0.6.1...HEAD
+[Unreleased]: https://github.com/localhost-ayu/alchemide/compare/v0.6.2...HEAD
+[0.6.2]: https://github.com/localhost-ayu/alchemide/compare/v0.6.1...v0.6.2
 [0.6.1]: https://github.com/localhost-ayu/alchemide/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/localhost-ayu/alchemide/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/localhost-ayu/alchemide/compare/v0.4.0...v0.5.0
