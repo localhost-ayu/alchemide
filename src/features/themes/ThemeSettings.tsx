@@ -1,5 +1,12 @@
+import { runCommand } from "../../lib/commands";
 import { BUILTIN_THEMES } from "./builtinThemes";
 import type { Effects } from "./theme";
+import {
+  deleteCurrentTheme,
+  duplicateCurrentTheme,
+  exportCurrentTheme,
+  importThemeFile,
+} from "./themeLibrary";
 import { findTheme, useThemeStore } from "./useThemeStore";
 
 const FLAGS: { key: "background" | "mascot" | "animations"; label: string }[] = [
@@ -12,6 +19,8 @@ export function ThemeSettings() {
   const theme = useThemeStore((state) => state.theme);
   const effects = useThemeStore((state) => state.effects);
   const commit = useThemeStore((state) => state.commit);
+  const userThemes = useThemeStore((state) => state.userThemes);
+  const isUserTheme = userThemes.some((userTheme) => userTheme.theme.name === theme.name);
   const setEffect = (changes: Partial<Effects>) => commit(theme, { ...effects, ...changes });
 
   return (
@@ -28,13 +37,44 @@ export function ThemeSettings() {
             }
           }}
         >
-          {BUILTIN_THEMES.map((option) => (
-            <option key={option.name} value={option.name}>
-              {option.name}
-            </option>
-          ))}
+          <optgroup label="Built-in">
+            {BUILTIN_THEMES.map((option) => (
+              <option key={option.name} value={option.name}>
+                {option.name}
+              </option>
+            ))}
+          </optgroup>
+          {userThemes.length > 0 && (
+            <optgroup label="Your themes">
+              {userThemes.map(({ file, theme: option }) => (
+                <option key={file} value={option.name}>
+                  {option.name}
+                </option>
+              ))}
+            </optgroup>
+          )}
         </select>
       </label>
+      <div className="settings__actions">
+        <button type="button" onClick={() => runCommand("themes.edit")}>
+          Edit…
+        </button>
+        <button type="button" onClick={duplicateCurrentTheme}>
+          Duplicate
+        </button>
+        <button type="button" onClick={importThemeFile}>
+          Import…
+        </button>
+        <button type="button" onClick={() => runCommand("themes.importVscode")}>
+          From VS Code…
+        </button>
+        <button type="button" onClick={exportCurrentTheme}>
+          Export…
+        </button>
+        <button type="button" onClick={deleteCurrentTheme} disabled={!isUserTheme}>
+          Delete
+        </button>
+      </div>
       <label className="settings__field">
         <span>Glass panels</span>
         <input

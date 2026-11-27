@@ -5,9 +5,17 @@ import { playfulTouchesEnabled, useActivityStore } from "../../lib/activityStore
 import { registerCommands } from "../../lib/commands";
 import { useEditorSettings } from "../../lib/editorSettings";
 import { hasUnsavedTabs, selectActiveTab, type Tab, useEditorStore } from "../../lib/editorStore";
-import { onCloseRequested } from "../../lib/ipc";
+import { onCloseRequested, onWorkspaceChange } from "../../lib/ipc";
+import { useLanguageServerStore } from "../../lib/languageServerStore";
 import { joinLines } from "../../lib/lineEndings";
-import { createEditorState, indentation, indentationFor } from "./createEditorState";
+import {
+  createEditorState,
+  indentation,
+  indentationFor,
+  languageServer,
+} from "./createEditorState";
+import { setShowFile } from "./editorWorkspace";
+import { languageServerExtension, stopLanguageServers } from "./languageServers";
 import { requestCloseTab } from "./requestCloseTab";
 import { saveMessage } from "./saveMessage";
 import { Tabs } from "./Tabs";
@@ -58,6 +66,23 @@ export function Editor() {
     };
   }, []);
 
+  const attachLanguageServer = async (tab: Tab) => {
+    const extension = await languageServerExtension(tab.path, tab.language);
+    const session = sessionsRef.current.get(tab.path);
+    if (!session) {
+      return;
+    }
+    const effects = languageServer.reconfigure(extension ?? []);
+    const view = viewRef.current;
+    if (view && view.state === session.state) {
+      view.dispatch({ effects });
+      return;
+    }
+    session.state = session.state.update({ effects }).state;
+  };
+  const attachRef = useRef(attachLanguageServer);
+  attachRef.current = attachLanguageServer;
+
   const createSession = (tab: Tab): Session => {
     const sessions = sessionsRef.current;
     const path = tab.path;
@@ -81,6 +106,7 @@ export function Editor() {
     const state = createEditorState(tab, onUpdate, useEditorSettings.getState().tabSize);
     const session = { state, saved: state.doc, revision: tab.revision };
     sessions.set(path, session);
+    void attachRef.current(tab);
     return session;
   };
   const createSessionRef = useRef(createSession);
@@ -120,6 +146,53 @@ export function Editor() {
     }
     viewRef.current?.dispatch({ effects });
   }, [tabSize]);
+
+  useEffect(() => {
+    setShowFile(async (path) => {
+      await useEditorStore.getState().openFile(path);
+      for (let frame = 0; frame < 30; frame++) {
+        const view = viewRef.current;
+        const session = sessionsRef.current.get(path);
+        if (view && session && view.state === session.state) {
+          return view;
+        }
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+      }
+      return null;
+    });
+    return () => setShowFile(null);
+  }, []);
+
+  const generation = useLanguageServerStore((state) => state.generation);
+  useEffect(() => {
+    if (generation === 0) {
+      return;
+    }
+    for (const tab of useEditorStore.getState().tabs) {
+      if (sessionsRef.current.has(tab.path)) {
+        void attachRef.current(tab);
+      }
+    }
+  }, [generation]);
+
+  useEffect(() => {
+    const subscription = onWorkspaceChange(() => {
+      void stopLanguageServers();
+    });
+    const unregister = registerCommands([
+      {
+        id: "editor.restartLanguageServers",
+        title: "Restart language servers",
+        run: () => {
+          void stopLanguageServers();
+        },
+      },
+    ]);
+    return () => {
+      unregister();
+      subscription.then((unsubscribe) => unsubscribe());
+    };
+  }, []);
 
   const reveal = useEditorStore((state) => state.reveal);
   useEffect(() => {

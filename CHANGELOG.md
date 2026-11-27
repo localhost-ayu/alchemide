@@ -11,6 +11,65 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Docker panel (`Ctrl+Shift+D`): running and stopped containers grouped by Compose project, with start, stop and restart, and logs followed in a new terminal tab; refreshes every 5 seconds while visible and shows a short notice when Docker is missing or not running
 
+## [0.5.0] - 2026-11-27
+
+VS Code bridge: import VS Code themes, bundled code fonts and interface zoom, Rust, Python and Go, snippets in the VS Code format with built-in packs, and more control over the look.
+
+### Added
+
+- Six bundled code fonts licensed under the SIL OFL: Maple Mono (now the default), JetBrains Mono,
+  Adwaita Mono, Fira Code, Cascadia Code and IBM Plex Mono, plus "Installed font…" for any font on
+  the system
+- Terminal font size, line height, ligatures on or off and interface zoom in the settings, with a
+  live font sample
+- Zoom in, zoom out and reset zoom: `Ctrl+=`, `Ctrl+-`, `Ctrl+0`
+- Snippets in the VS Code format in the autocomplete, with tab stops, choices, variables and
+  transforms. Your files go in the `snippets` config folder; "Import snippets from VS Code" copies
+  VS Code's user snippets without overwriting anything
+- Built-in snippet packs for PHP, JavaScript/TypeScript, Rust, Python and Go (on by default) and
+  Node.js, React, Next.js, Laravel, CodeIgniter 3 and CodeIgniter 4 (turned on in the settings)
+- Rust, Python and Go: syntax highlighting in the editor (`.rs`, `.py`, `.pyw`, `.pyi`, `.go`) and
+  in Markdown code blocks
+
+## [0.4.0] - 2026-11-27
+
+Language servers: autocomplete, hover, inline errors and go to definition for PHP, JavaScript/TypeScript and SQL, when the servers are installed.
+
+### Added
+
+- Language servers: autocomplete, hover, inline errors and go to definition (`F12`, also across
+  files) for PHP (Intelephense), JavaScript/TypeScript/JSX/TSX (`typescript-language-server`)
+  and SQL (`sqls`). Servers are found on `PATH`; when one is missing, the status bar shows how to
+  install it instead of an error
+- "Restart language servers" in the command palette
+
+## [0.3.0] - 2026-11-27
+
+Theme editor release: your own themes, a theme library, a visual theme editor with live preview and sliders for glass, background and mascot.
+
+### Added
+
+- Your own themes: JSON theme files in the `themes` folder of the config folder appear in the mood picker and in the settings next to the built-in themes; broken files are skipped with a warning, and "Reload your themes" picks up new files
+- Theme editor (`Ctrl+K E`): color pickers for every interface and syntax color with a live preview, contrast hints against the background, and saving built-in themes as a new theme of yours
+- Sliders in the theme editor for panel opacity and glass blur, background dim, blur and fit, and mascot opacity, size and corner, all previewed live
+- Duplicate, import, export and delete themes from the command palette or the settings; imported themes are validated and get a numbered name when theirs is taken
+- Theme editor: starting points from the built-in themes, corner roundness with presets, an interface font (System, Rounded, Editorial or Terminal), and a suggested panel opacity when a background image makes the text hard to read
+- Theme editor: "Undo changes" and "Defaults" buttons, and your last saved colors offered in every color picker
+- Import VS Code color themes: pick one of the themes installed in VS Code or any VS Code theme file, and it becomes a theme of yours with the closest interface and syntax colors
+
+## [0.2.1] - 2026-11-27
+
+Patch release: palettes follow the highlighted item, and the README explains the two Windows installers.
+
+### Changed
+
+- The README explains the two Windows installers and recommends the MSI (per machine, in
+  `Program Files`) on work machines with endpoint protection
+
+### Fixed
+
+- Quick open, the command palette and the mood picker scroll with the highlighted item when you move past the visible list with the arrow keys
+
 ## [0.2.0] - 2026-11-26
 
 Productivity release. From this version on, Alchemide updates itself; users of 0.1.0 install 0.2.0 by hand once.
@@ -66,6 +125,10 @@ First release: a lightweight editor for Windows and Linux (including WSL) with m
 
 - Browser mode with a mocked backend (`pnpm dev:web`) and a Linux dev container
 
-[Unreleased]: https://github.com/localhost-ayu/alchemide/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/localhost-ayu/alchemide/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/localhost-ayu/alchemide/compare/v0.4.0...v0.5.0
+[0.4.0]: https://github.com/localhost-ayu/alchemide/compare/v0.3.0...v0.4.0
+[0.3.0]: https://github.com/localhost-ayu/alchemide/compare/v0.2.1...v0.3.0
+[0.2.1]: https://github.com/localhost-ayu/alchemide/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/localhost-ayu/alchemide/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/localhost-ayu/alchemide/releases/tag/v0.1.0

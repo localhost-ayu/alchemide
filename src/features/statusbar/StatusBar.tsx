@@ -3,6 +3,7 @@ import { languageLabel } from "../../lib/languages";
 import { ActivityIndicator } from "./ActivityIndicator";
 import { EnvironmentBadge } from "./EnvironmentBadge";
 import { formatEncoding, formatLineCount, formatPosition } from "./formatStatus";
+import { LanguageServerBadge } from "./LanguageServerBadge";
 import "./StatusBar.css";
 
 export function StatusBar() {
@@ -22,6 +23,7 @@ export function StatusBar() {
           <span>{formatEncoding(tab.hasBom)}</span>
           <span>{tab.lineEnding}</span>
           <span>{languageLabel(tab.language)}</span>
+          <LanguageServerBadge language={tab.language} />
         </div>
       )}
     </div>

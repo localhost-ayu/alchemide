@@ -1,0 +1,99 @@
+{
+  "name": "Node.js",
+  "languages": ["javascript", "typescript"],
+  "snippets": {
+    "Node import": {
+      "prefix": "nimp",
+      "body": "import ${2:name} from \"node:${1|fs/promises,path,url,os,child_process,crypto|}\";",
+      "description": "Import a built-in module"
+    },
+    "Dirname in ES modules": {
+      "prefix": "dirname",
+      "body": [
+        "import { dirname } from \"node:path\";",
+        "import { fileURLToPath } from \"node:url\";",
+        "",
+        "const __dirname = dirname(fileURLToPath(import.meta.url));"
+      ],
+      "description": "__dirname for ES modules"
+    },
+    "Read file": {
+      "prefix": "readfile",
+      "body": "const ${1:text} = await readFile(${2:path}, \"utf8\");",
+      "description": "Read a text file"
+    },
+    "Write file": {
+      "prefix": "writefile",
+      "body": "await writeFile(${1:path}, ${2:text}, \"utf8\");",
+      "description": "Write a text file"
+    },
+    "Environment variable": {
+      "prefix": "env",
+      "body": "process.env.${1:NAME}",
+      "description": "process.env"
+    },
+    "Async main": {
+      "prefix": "amain",
+      "body": [
+        "async function main() {",
+        "\t$0",
+        "}",
+        "",
+        "main().catch((error) => {",
+        "\tconsole.error(error);",
+        "\tprocess.exitCode = 1;",
+        "});"
+      ],
+      "description": "Async entry point"
+    },
+    "HTTP server": {
+      "prefix": "httpserver",
+      "body": [
+        "import { createServer } from \"node:http\";",
+        "",
+        "const server = createServer((request, response) => {",
+        "\tresponse.writeHead(200, { \"content-type\": \"text/plain\" });",
+        "\tresponse.end(\"${1:ok}\");",
+        "});",
+        "",
+        "server.listen(${2:3000});"
+      ],
+      "description": "node:http server"
+    },
+    "Express app": {
+      "prefix": "express",
+      "body": [
+        "import express from \"express\";",
+        "",
+        "const app = express();",
+        "app.use(express.json());",
+        "",
+        "$0",
+        "",
+        "app.listen(${1:3000}, () => console.log(\"Listening on ${1:3000}\"));"
+      ],
+      "description": "Express application"
+    },
+    "Express route": {
+      "prefix": "route",
+      "body": [
+        "app.${1|get,post,put,patch,delete|}(\"${2:/path}\", async (req, res) => {",
+        "\t$0",
+        "});"
+      ],
+      "description": "Express route"
+    },
+    "Node test": {
+      "prefix": "ntest",
+      "body": [
+        "import assert from \"node:assert/strict\";",
+        "import { test } from \"node:test\";",
+        "",
+        "test(\"${1:does something}\", () => {",
+        "\t$0",
+        "});"
+      ],
+      "description": "node:test case"
+    }
+  }
+}
