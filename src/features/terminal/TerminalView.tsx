@@ -6,13 +6,20 @@ import { keyBelongsToApp } from "../../lib/commands";
 import { fontStack, useEditorSettings } from "../../lib/editorSettings";
 import { loadBundledFont } from "../../lib/fonts";
 import { onTerminalOutput, terminalResize, terminalWrite } from "../../lib/ipc";
-import { readRootVariable, terminalTheme } from "./terminalTheme";
+import { readRootVariable, resolveTerminalTheme } from "./terminalTheme";
+import { useTerminalSettings } from "./useTerminalSettings";
 import "@xterm/xterm/css/xterm.css";
 
 type TerminalViewProps = {
   id: number;
   isActive: boolean;
 };
+
+function paint(terminal: Terminal, container: HTMLElement, palette: string): void {
+  const theme = resolveTerminalTheme(palette, readRootVariable, playfulTouchesEnabled());
+  terminal.options.theme = theme;
+  container.style.backgroundColor = theme.background ?? "";
+}
 
 export function TerminalView({ id, isActive }: TerminalViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -24,16 +31,19 @@ export function TerminalView({ id, isActive }: TerminalViewProps) {
     if (!container) {
       return;
     }
+    const settings = useTerminalSettings.getState();
     const terminal = new Terminal({
-      cursorBlink: true,
-      fontFamily: fontStack(useEditorSettings.getState().fontFamily),
+      cursorBlink: settings.cursorBlink,
+      cursorStyle: settings.cursorStyle,
+      scrollback: settings.scrollback,
+      lineHeight: settings.lineHeight,
+      fontFamily: fontStack(settings.fontFamily || useEditorSettings.getState().fontFamily),
       fontSize: useEditorSettings.getState().terminalFontSize,
-      allowTransparency: true,
-      theme: terminalTheme(readRootVariable, playfulTouchesEnabled()),
     });
     const fit = new FitAddon();
     terminal.loadAddon(fit);
     terminal.open(container);
+    paint(terminal, container, settings.palette);
     terminal.attachCustomKeyEventHandler(
       (event) => event.type !== "keydown" || !keyBelongsToApp(event),
     );
@@ -45,6 +55,13 @@ export function TerminalView({ id, isActive }: TerminalViewProps) {
     });
     const resize = terminal.onResize(({ cols, rows }) => {
       terminalResize(id, cols, rows).catch(() => {});
+    });
+    const bell = terminal.onBell(() => {
+      if (!useTerminalSettings.getState().visualBell) {
+        return;
+      }
+      container.dataset.bell = "true";
+      setTimeout(() => delete container.dataset.bell, 150);
     });
     const output = onTerminalOutput((event) => {
       if (event.id === id) {
@@ -58,7 +75,7 @@ export function TerminalView({ id, isActive }: TerminalViewProps) {
     });
     observer.observe(container);
     const themeObserver = new MutationObserver(() => {
-      terminal.options.theme = terminalTheme(readRootVariable, playfulTouchesEnabled());
+      paint(terminal, container, useTerminalSettings.getState().palette);
     });
     themeObserver.observe(document.documentElement, {
       attributes: true,
@@ -69,6 +86,7 @@ export function TerminalView({ id, isActive }: TerminalViewProps) {
       observer.disconnect();
       themeObserver.disconnect();
       input.dispose();
+      bell.dispose();
       resize.dispose();
       output.then((unsubscribe) => unsubscribe());
       terminal.dispose();
@@ -77,7 +95,9 @@ export function TerminalView({ id, isActive }: TerminalViewProps) {
     };
   }, [id]);
 
-  const fontFamily = useEditorSettings((state) => state.fontFamily);
+  const editorFont = useEditorSettings((state) => state.fontFamily);
+  const ownFont = useTerminalSettings((state) => state.fontFamily);
+  const fontFamily = ownFont || editorFont;
   const fontSize = useEditorSettings((state) => state.terminalFontSize);
   useEffect(() => {
     let current = true;
@@ -97,6 +117,28 @@ export function TerminalView({ id, isActive }: TerminalViewProps) {
     };
   }, [fontFamily, fontSize]);
 
+  const palette = useTerminalSettings((state) => state.palette);
+  const cursorStyle = useTerminalSettings((state) => state.cursorStyle);
+  const cursorBlink = useTerminalSettings((state) => state.cursorBlink);
+  const scrollback = useTerminalSettings((state) => state.scrollback);
+  const lineHeight = useTerminalSettings((state) => state.lineHeight);
+  const padding = useTerminalSettings((state) => state.padding);
+  useEffect(() => {
+    const terminal = terminalRef.current;
+    const container = containerRef.current;
+    if (!terminal || !container) {
+      return;
+    }
+    paint(terminal, container, palette);
+    terminal.options.cursorStyle = cursorStyle;
+    terminal.options.cursorBlink = cursorBlink;
+    terminal.options.scrollback = scrollback;
+    terminal.options.lineHeight = lineHeight;
+    if (containerRef.current?.offsetParent) {
+      fitRef.current?.fit();
+    }
+  }, [palette, cursorStyle, cursorBlink, scrollback, lineHeight]);
+
   useEffect(() => {
     if (isActive) {
       fitRef.current?.fit();
@@ -108,6 +150,7 @@ export function TerminalView({ id, isActive }: TerminalViewProps) {
     <div
       ref={containerRef}
       className="terminal-view"
+      style={{ padding: `${padding}px` }}
       hidden={!isActive}
       data-testid={`terminal-${id}`}
     />

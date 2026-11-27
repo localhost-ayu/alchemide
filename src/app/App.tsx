@@ -11,6 +11,7 @@ import { SnippetCommands } from "../features/snippets/SnippetCommands";
 import { SnippetSettings } from "../features/snippets/SnippetSettings";
 import { StatusBar } from "../features/statusbar/StatusBar";
 import { TerminalPanel } from "../features/terminal/TerminalPanel";
+import { TerminalSettings } from "../features/terminal/TerminalSettings";
 import { Backdrop } from "../features/themes/Backdrop";
 import { Mascot } from "../features/themes/Mascot";
 import { MoodPicker } from "../features/themes/MoodPicker";
@@ -154,6 +155,7 @@ export function App() {
       <SettingsScreen>
         <ThemeSettings />
         <LayoutSettings />
+        <TerminalSettings />
         <SnippetSettings />
         <UpdateSettings />
       </SettingsScreen>

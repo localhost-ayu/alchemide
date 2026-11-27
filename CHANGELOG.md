@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Terminal settings: follow the theme or use one of four palettes (Reagent, Midnight ink, Paper, Ember), its own font and line height, cursor shape and blinking, padding, scrollback lines and a visual bell; changes apply to open terminals right away
+
 ### Changed
 
 - `Esc` closes the open panel (settings, theme editor, palettes and pickers) from anywhere, not only when the focus is inside it; with no panel open, `Esc` still reaches the editor and the terminal

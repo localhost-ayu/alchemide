@@ -229,3 +229,18 @@ test("Esc closes the settings even when the focus is not inside them", async ({ 
 
   await expect(settings).toBeHidden();
 });
+
+test("customizes the terminal colors and cursor from the settings", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("complementary").first()).toBeVisible();
+
+  await page.keyboard.press("Control+,");
+  const terminalSection = page.getByRole("region", { name: "Terminal" });
+  await terminalSection.getByRole("combobox", { name: "Colors" }).selectOption("Paper");
+  await terminalSection.getByRole("combobox", { name: "Cursor" }).selectOption("bar");
+  await page.keyboard.press("Escape");
+
+  await page.keyboard.press("Control+Backquote");
+  const view = page.locator(".terminal-view").first();
+  await expect(view).toHaveCSS("background-color", "rgb(250, 247, 240)");
+});
