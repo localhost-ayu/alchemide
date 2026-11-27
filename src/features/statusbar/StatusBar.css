@@ -11,6 +11,29 @@
   gap: 16px;
 }
 
+.statusbar__right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.statusbar__terminal {
+  display: grid;
+  place-items: center;
+  padding: 2px 4px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--color-muted);
+  cursor: pointer;
+}
+
+.statusbar__terminal:hover {
+  color: var(--color-accent);
+  background: var(--color-hover);
+}
+
 .environment-badge {
   padding: 0 6px;
   border-radius: var(--radius-sm);
