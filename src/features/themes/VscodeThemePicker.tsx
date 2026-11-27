@@ -56,7 +56,7 @@ export function VscodeThemePicker() {
   );
 
   const close = () => setThemes(null);
-  useDismiss(themes !== null, close);
+  const panelRef = useDismiss(themes !== null, close);
 
   if (!themes) {
     return null;
@@ -86,7 +86,12 @@ export function VscodeThemePicker() {
 
   return (
     <div className="mood-picker__overlay">
-      <div className="mood-picker panel" role="dialog" aria-label="Import a VS Code theme">
+      <div
+        ref={panelRef}
+        className="mood-picker panel"
+        role="dialog"
+        aria-label="Import a VS Code theme"
+      >
         <input
           className="mood-picker__search"
           role="combobox"
