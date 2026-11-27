@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-11-27
+
+Git view and projects: an uncommitted changes tab with side-by-side diffs, a branch picker with details, search and create, history badges, and a recent projects switcher.
+
 ### Added
 
 - Recent projects: the project name at the top of the explorer (or `Ctrl+Alt+O`) opens a searchable list of recent folders and "Open folder…"; with no folder open, the explorer lists them under the open button
@@ -239,7 +243,8 @@ First release: a lightweight editor for Windows and Linux (including WSL) with m
 
 - Browser mode with a mocked backend (`pnpm dev:web`) and a Linux dev container
 
-[Unreleased]: https://github.com/localhost-ayu/alchemide/compare/v0.9.0...HEAD
+[Unreleased]: https://github.com/localhost-ayu/alchemide/compare/v0.11.0...HEAD
+[0.11.0]: https://github.com/localhost-ayu/alchemide/compare/v0.9.0...v0.11.0
 [0.9.0]: https://github.com/localhost-ayu/alchemide/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/localhost-ayu/alchemide/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/localhost-ayu/alchemide/compare/v0.6.2...v0.7.0
