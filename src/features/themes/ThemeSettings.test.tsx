@@ -51,3 +51,17 @@ test("offers your themes after the built-in ones", async () => {
 
   expect(root.dataset.theme).toBe("Noite");
 });
+
+test("duplicates the theme from the settings and only lets you delete your own", async () => {
+  render(<ThemeSettings />);
+  const remove = screen.getByRole("button", { name: "Delete" });
+  expect((remove as HTMLButtonElement).disabled).toBe(true);
+
+  await act(async () => {
+    fireEvent.click(screen.getByRole("button", { name: "Duplicate" }));
+  });
+
+  const select = screen.getByRole("combobox", { name: "Theme" }) as HTMLSelectElement;
+  expect(select.value).toBe("Catalisador copy");
+  expect((remove as HTMLButtonElement).disabled).toBe(false);
+});

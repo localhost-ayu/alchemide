@@ -1,7 +1,7 @@
 import { expect, test } from "vitest";
 import { userThemeSource } from "../../test/themes";
 import { BUILTIN_THEMES } from "./builtinThemes";
-import { readUserThemes } from "./userThemes";
+import { readUserThemes, uniqueName } from "./userThemes";
 
 const { ui, syntax } = userThemeSource("unused");
 const colors = { ui, syntax };
@@ -64,4 +64,10 @@ test("keeps a theme with invalid optional fields and reports them", () => {
 
   expect(themes[0]?.theme.mascot).toBeNull();
   expect(warnings).toEqual(["a.json: mascot is invalid; hiding it"]);
+});
+
+test("numbers a name until it is free, ignoring case", () => {
+  expect(uniqueName("Noite", ["Dia"])).toBe("Noite");
+  expect(uniqueName(" Noite ", ["noite"])).toBe("Noite 2");
+  expect(uniqueName("Noite", ["Noite", "noite 2", "Noite 3"])).toBe("Noite 4");
 });

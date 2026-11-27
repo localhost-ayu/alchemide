@@ -113,3 +113,17 @@ in the mood picker and under "Your themes" in the settings, next to the built-in
 - Names must be unique, ignoring case. A theme named like a built-in theme, or like a theme in an
   earlier file (files are read in alphabetical order), is skipped with a warning.
 - Built-in themes are read-only.
+
+### Duplicate, import, export and delete
+
+These actions are in the command palette (`Ctrl+Shift+P`) and next to the theme in the settings
+(`Ctrl+,`). All of them act on the current theme, except import.
+
+| Action                  | What it does                                                                                           |
+| ----------------------- | ------------------------------------------------------------------------------------------------------ |
+| Duplicate current theme | Saves a copy named `<name> copy` as your theme and switches to it                                      |
+| Import theme…           | Picks a `.json` file (up to 1 MB), validates it and saves it as your theme; a taken name gets a number |
+| Export current theme…   | Saves the current theme as a `.json` file wherever you choose                                          |
+| Delete current theme    | After confirming, removes your theme's file and switches to the default theme                          |
+
+Your custom background and mascot are not part of a theme, so they are not exported.

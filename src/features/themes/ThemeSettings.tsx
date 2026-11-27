@@ -1,5 +1,11 @@
 import { BUILTIN_THEMES } from "./builtinThemes";
 import type { Effects } from "./theme";
+import {
+  deleteCurrentTheme,
+  duplicateCurrentTheme,
+  exportCurrentTheme,
+  importThemeFile,
+} from "./themeLibrary";
 import { findTheme, useThemeStore } from "./useThemeStore";
 
 const FLAGS: { key: "background" | "mascot" | "animations"; label: string }[] = [
@@ -13,6 +19,7 @@ export function ThemeSettings() {
   const effects = useThemeStore((state) => state.effects);
   const commit = useThemeStore((state) => state.commit);
   const userThemes = useThemeStore((state) => state.userThemes);
+  const isUserTheme = userThemes.some((userTheme) => userTheme.theme.name === theme.name);
   const setEffect = (changes: Partial<Effects>) => commit(theme, { ...effects, ...changes });
 
   return (
@@ -47,6 +54,20 @@ export function ThemeSettings() {
           )}
         </select>
       </label>
+      <div className="settings__actions">
+        <button type="button" onClick={duplicateCurrentTheme}>
+          Duplicate
+        </button>
+        <button type="button" onClick={importThemeFile}>
+          Import…
+        </button>
+        <button type="button" onClick={exportCurrentTheme}>
+          Export…
+        </button>
+        <button type="button" onClick={deleteCurrentTheme} disabled={!isUserTheme}>
+          Delete
+        </button>
+      </div>
       <label className="settings__field">
         <span>Glass panels</span>
         <input

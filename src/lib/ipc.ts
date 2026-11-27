@@ -140,6 +140,14 @@ export function deleteUserTheme(file: string): Promise<void> {
   return invoke<void>("delete_user_theme", { file });
 }
 
+export function importTheme(): Promise<unknown | null> {
+  return invoke<unknown | null>("import_theme");
+}
+
+export function exportTheme(theme: unknown): Promise<boolean> {
+  return invoke<boolean>("export_theme", { theme });
+}
+
 export function checkUpdate(): Promise<UpdateInfo | null> {
   return invoke<UpdateInfo | null>("check_update");
 }

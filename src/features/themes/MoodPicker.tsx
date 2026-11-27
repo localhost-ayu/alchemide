@@ -10,7 +10,7 @@ import { useKeepInView } from "../../lib/useKeepInView";
 import { filterOptions, type MoodOption, moodOptions } from "./moodOptions";
 import { runLookAction } from "./runLookAction";
 import type { Effects, Theme } from "./theme";
-import { reloadUserThemes, useThemeStore } from "./useThemeStore";
+import { useThemeStore } from "./useThemeStore";
 
 type Choice = { theme: Theme; effects: Effects };
 
@@ -61,11 +61,6 @@ export function MoodPicker() {
             setIndex(0);
             setOpen(true);
           },
-        },
-        {
-          id: "themes.reload",
-          title: "Reload your themes",
-          run: () => reloadUserThemes(),
         },
       ]),
     [],
