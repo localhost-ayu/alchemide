@@ -42,7 +42,8 @@ const SYNTAX_FIELDS: [keyof ThemeSyntax, string][] = [
 ];
 
 function startSession(): Session {
-  const { theme, custom, userThemes } = useThemeStore.getState();
+  const { theme: chosen, effects, custom, userThemes } = useThemeStore.getState();
+  const theme = { ...chosen, effects: { ...chosen.effects, surface: effects.surface } };
   const userTheme = currentUserTheme();
   const taken = allThemes(userThemes)
     .map(({ name }) => name)
@@ -58,7 +59,7 @@ function startSession(): Session {
 
 function preview({ theme, custom }: Look): void {
   const { effects } = useThemeStore.getState();
-  useThemeStore.getState().preview(theme, effects, custom);
+  useThemeStore.getState().preview(theme, { ...effects, surface: theme.effects.surface }, custom);
 }
 
 export function ThemeEditor() {
@@ -114,6 +115,10 @@ export function ThemeEditor() {
     await addRecentColors(changedColors(original.theme, draft)).catch(() => undefined);
     if (look.custom !== original.custom) {
       await useThemeStore.getState().setCustom(look.custom);
+    }
+    const { theme, effects, commit } = useThemeStore.getState();
+    if (effects.surface !== draft.effects.surface) {
+      await commit(theme, { ...effects, surface: draft.effects.surface });
     }
   };
 

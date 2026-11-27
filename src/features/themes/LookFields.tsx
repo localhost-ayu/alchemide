@@ -47,6 +47,15 @@ export function LookFields({ look, onChange }: LookFieldsProps) {
   const { glass } = look.theme;
   const background = shownBackground(look);
   const mascot = shownMascot(look);
+  const surface = look.theme.effects.surface;
+  const setSurface = (glassy: boolean) =>
+    onChange({
+      ...look,
+      theme: {
+        ...look.theme,
+        effects: { ...look.theme.effects, surface: glassy ? "glass" : "solid" },
+      },
+    });
   const editorBackdrop = background?.editor ?? DEFAULT_EDITOR_BACKDROP;
   const setEditorBackdrop = (changes: Partial<EditorBackdrop>) =>
     onChange(changeBackground(look, { editor: { ...editorBackdrop, ...changes } }));
@@ -64,6 +73,14 @@ export function LookFields({ look, onChange }: LookFieldsProps) {
   return (
     <>
       <h3>Glass</h3>
+      <label className="settings__field theme-editor__switch">
+        <span>Glass panels</span>
+        <input
+          type="checkbox"
+          checked={surface === "glass"}
+          onChange={(event) => setSurface(event.target.checked)}
+        />
+      </label>
       <RangeField
         label="Panel opacity"
         value={glass.panelOpacity}

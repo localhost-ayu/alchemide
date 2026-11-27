@@ -188,6 +188,29 @@ test("adjusts your own background and mascot live and keeps them in the settings
   expect(root.style.getPropertyValue("--mascot-size")).toBe("120px");
 });
 
+test("turns glass panels off with a live preview, undone by cancel and kept by save", async () => {
+  render(<ThemeEditor />);
+  openEditor();
+  const glass = () => screen.getByRole("checkbox", { name: "Glass panels" });
+  expect(glass()).toHaveProperty("checked", true);
+
+  fireEvent.click(glass());
+  expect(root.dataset.surface).toBe("solid");
+  fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+  expect(root.dataset.surface).toBe("glass");
+
+  openEditor();
+  fireEvent.click(glass());
+  await act(async () => {
+    fireEvent.click(screen.getByRole("button", { name: "Save as new theme" }));
+  });
+  expect(root.dataset.surface).toBe("solid");
+  expect(await loadSettings()).toMatchObject({ effects: { surface: "solid" } });
+  expect(mockUserThemes()["catalisador-copy.json"]).toMatchObject({
+    effects: { surface: "solid" },
+  });
+});
+
 test("chooses what sits behind open files and tunes the layer", async () => {
   await saveSettings({
     background: { type: "image", path: "backgrounds/sample-lab.svg", dim: 0.55 },

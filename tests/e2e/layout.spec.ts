@@ -146,10 +146,16 @@ test("changes theme and effects from the settings screen", async ({ page }) => {
   await page.keyboard.press("Control+,");
   const settings = page.getByRole("dialog", { name: "Settings" });
   await settings.getByRole("combobox", { name: "Theme" }).selectOption("Aço");
-  await settings.getByRole("checkbox", { name: "Glass panels" }).uncheck();
-
   await expect(page.locator("html")).toHaveAttribute("data-theme", "Aço");
+  await page.keyboard.press("Escape");
+
+  await page.keyboard.press("Control+k");
+  await page.keyboard.press("e");
+  const editor = page.getByRole("complementary", { name: "Theme editor" });
+  await editor.getByRole("checkbox", { name: "Glass panels" }).uncheck();
   await expect(explorer).toHaveCSS("backdrop-filter", "none");
+  await editor.getByRole("button", { name: "Save as new theme" }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-surface", "solid");
 });
 
 test("switches side bar views from the activity bar and hides bars", async ({ page }) => {
