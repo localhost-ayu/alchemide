@@ -1,5 +1,6 @@
 import { useEditorStore } from "../../lib/editorStore";
 import { requestCloseTab } from "./requestCloseTab";
+import { tabDetails } from "./tabLabels";
 
 export function Tabs() {
   const tabs = useEditorStore((state) => state.tabs);
@@ -9,6 +10,7 @@ export function Tabs() {
   if (tabs.length === 0) {
     return null;
   }
+  const details = tabDetails(tabs.map((tab) => tab.path));
   return (
     <div className="tabs" role="tablist" aria-label="Open files">
       {tabs.map((tab) => (
@@ -22,6 +24,7 @@ export function Tabs() {
             onClick={() => activate(tab.path)}
           >
             {tab.name}
+            {details.has(tab.path) && <span className="tabs__detail">{details.get(tab.path)}</span>}
             {tab.dirty && (
               <span className="tabs__dirty" role="img" aria-label="unsaved">
                 ●
@@ -31,7 +34,7 @@ export function Tabs() {
           <button
             type="button"
             className="tabs__close"
-            aria-label={`Close ${tab.name}`}
+            aria-label={`Close ${tab.name}${details.has(tab.path) ? ` (${details.get(tab.path)})` : ""}`}
             onClick={() => requestCloseTab(tab.path)}
           >
             ×

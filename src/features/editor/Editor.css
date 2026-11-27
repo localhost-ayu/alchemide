@@ -67,6 +67,12 @@
   white-space: nowrap;
 }
 
+.tabs__detail {
+  margin-left: 6px;
+  color: var(--color-muted);
+  font-size: 0.9em;
+}
+
 .tabs__dirty {
   color: var(--color-warning);
   font-size: 10px;
