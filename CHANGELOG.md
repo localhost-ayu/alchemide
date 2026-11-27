@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-11-27
+
+VS Code bridge: import VS Code themes, bundled code fonts and interface zoom, Rust, Python and Go, snippets in the VS Code format with built-in packs, and more control over the look.
+
 ### Added
 
 - Six bundled code fonts licensed under the SIL OFL: Maple Mono (now the default), JetBrains Mono,
@@ -117,7 +121,8 @@ First release: a lightweight editor for Windows and Linux (including WSL) with m
 
 - Browser mode with a mocked backend (`pnpm dev:web`) and a Linux dev container
 
-[Unreleased]: https://github.com/localhost-ayu/alchemide/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/localhost-ayu/alchemide/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/localhost-ayu/alchemide/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/localhost-ayu/alchemide/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/localhost-ayu/alchemide/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/localhost-ayu/alchemide/compare/v0.2.0...v0.2.1
