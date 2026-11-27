@@ -6,6 +6,7 @@ import {
   shownBackground,
   shownMascot,
 } from "./customLook";
+import { setMascotLocked, useMascotLock } from "./mascotLock";
 import { RangeField } from "./RangeField";
 import type { Corner, Fit } from "./theme";
 
@@ -32,6 +33,7 @@ export function LookFields({ look, onChange }: LookFieldsProps) {
   const { glass } = look.theme;
   const background = shownBackground(look);
   const mascot = shownMascot(look);
+  const locked = useMascotLock((state) => state.locked);
   const setGlass = (changes: Partial<typeof glass>) =>
     onChange({ ...look, theme: { ...look.theme, glass: { ...glass, ...changes } } });
   const suggested =
@@ -142,7 +144,9 @@ export function LookFields({ look, onChange }: LookFieldsProps) {
             <select
               value={mascot.corner}
               onChange={(event) =>
-                onChange(changeMascot(look, { corner: toCorner(event.target.value) }))
+                onChange(
+                  changeMascot(look, { corner: toCorner(event.target.value), position: undefined }),
+                )
               }
             >
               {CORNERS.map(([corner, label]) => (
@@ -152,6 +156,39 @@ export function LookFields({ look, onChange }: LookFieldsProps) {
               ))}
             </select>
           </label>
+          <label className="theme-editor__select">
+            <span>Layer</span>
+            <select
+              value={mascot.layer ?? "behind"}
+              onChange={(event) =>
+                onChange(
+                  changeMascot(look, {
+                    layer: event.target.value === "front" ? "front" : "behind",
+                  }),
+                )
+              }
+            >
+              <option value="behind">Behind the code</option>
+              <option value="front">In front of the code</option>
+            </select>
+          </label>
+          <label className="settings__field theme-editor__switch">
+            <span>Locked (clicks pass through)</span>
+            <input
+              type="checkbox"
+              checked={locked}
+              onChange={(event) => setMascotLocked(event.target.checked)}
+            />
+          </label>
+          {mascot.position && (
+            <button
+              type="button"
+              className="theme-editor__secondary"
+              onClick={() => onChange(changeMascot(look, { position: undefined }))}
+            >
+              Back to the corner
+            </button>
+          )}
         </>
       ) : (
         <p className="theme-editor__hint">Choose a mascot image with Ctrl+K M to adjust it.</p>

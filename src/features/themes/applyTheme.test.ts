@@ -104,3 +104,21 @@ test("each effect works on its own: solid surface keeps the background", () => {
     animations: "false",
   });
 });
+
+test("applyTheme places a moved mascot freely and on its layer", () => {
+  const root = document.createElement("html");
+  const mascot = { path: "m.png", corner: "top-left" as const, opacity: 0.4, size: 200 };
+
+  applyTheme({ ...FALLBACK_THEME, mascot }, root);
+  expect(root.dataset.mascotCorner).toBe("top-left");
+  expect(root.dataset.mascotLayer).toBe("behind");
+
+  applyTheme(
+    { ...FALLBACK_THEME, mascot: { ...mascot, layer: "front", position: { x: 0.25, y: 1 } } },
+    root,
+  );
+  expect(root.dataset.mascotCorner).toBe("free");
+  expect(root.dataset.mascotLayer).toBe("front");
+  expect(root.style.getPropertyValue("--mascot-x")).toBe("0.25");
+  expect(root.style.getPropertyValue("--mascot-y")).toBe("1");
+});

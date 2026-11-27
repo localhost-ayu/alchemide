@@ -354,3 +354,33 @@ test("settings switches follow the theme accent", async ({ page }) => {
     `rgb(${[1, 3, 5].map((i) => Number.parseInt(hex.slice(i, i + 2), 16)).join(", ")})`;
   expect(background).toBe(toRgb(accent));
 });
+
+test("unlocks the mascot and drags it anywhere", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("complementary").first()).toBeVisible();
+  await page.keyboard.press("Control+k");
+  await page.keyboard.press("m");
+  const search = page.getByRole("combobox", { name: "Search themes and effects" });
+  await search.fill("choose mascot");
+  await search.press("Enter");
+  const mascot = page.locator(".mascot");
+  await expect(mascot).toBeVisible();
+  await expect(mascot).toHaveCSS("pointer-events", "none");
+
+  await page.keyboard.press("Control+Shift+P");
+  await page.getByRole("combobox", { name: "Run a command" }).fill("unlock the mascot");
+  await page.keyboard.press("Enter");
+  await expect(mascot).toHaveCSS("pointer-events", "auto");
+
+  const box = await mascot.boundingBox();
+  expect(box).not.toBeNull();
+  const start = { x: (box?.x ?? 0) + 5, y: (box?.y ?? 0) + 5 };
+  await page.mouse.move(start.x, start.y);
+  await page.mouse.down();
+  await page.mouse.move(start.x - 300, start.y - 200, { steps: 5 });
+  await page.mouse.up();
+
+  await expect(page.locator("html")).toHaveAttribute("data-mascot-corner", "free");
+  const moved = await mascot.boundingBox();
+  expect(moved?.x ?? 0).toBeLessThan((box?.x ?? 0) - 100);
+});
