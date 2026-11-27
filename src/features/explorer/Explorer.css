@@ -79,3 +79,62 @@
   width: 12px;
   color: var(--color-muted);
 }
+
+.explorer__header {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.explorer__header .explorer__title {
+  flex: 1;
+  min-width: 0;
+}
+
+.explorer__action {
+  display: grid;
+  place-items: center;
+  padding: 3px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--color-muted);
+  cursor: pointer;
+}
+
+.explorer__action:hover,
+.explorer__action:focus-visible {
+  color: var(--color-accent);
+  background: var(--color-hover);
+}
+
+.tree__new {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 1px 8px 1px 0;
+  list-style: none;
+}
+
+.tree__new input {
+  flex: 1;
+  min-width: 0;
+  padding: 1px 4px;
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-sm);
+  background-color: var(--control-bg);
+  color: var(--control-text);
+  font: inherit;
+  font-size: 13px;
+}
+
+.tree__new input[aria-invalid="true"] {
+  border-color: var(--color-error);
+}
+
+.tree__new-error {
+  flex-basis: 100%;
+  margin: 2px 0 0 16px;
+  color: var(--color-error);
+  font-size: 12px;
+}

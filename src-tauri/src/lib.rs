@@ -32,6 +32,7 @@ pub fn run() {
             docker::docker_action,
             docker::docker_containers,
             env::get_environment,
+            fs::create_entry,
             fs::list_dir,
             fs::list_files,
             fs::open_folder,

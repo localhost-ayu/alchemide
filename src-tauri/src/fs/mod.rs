@@ -292,10 +292,124 @@ pub async fn write_file(
     Ok(())
 }
 
+const FORBIDDEN_IN_NAMES: [char; 7] = ['<', '>', ':', '"', '|', '?', '*'];
+
+pub fn child_path(parent: &Path, name: &str) -> Option<PathBuf> {
+    let parts: Vec<&str> = name.trim().split(['/', '\\']).collect();
+    let valid = parts.iter().all(|part| {
+        !part.is_empty()
+            && *part != "."
+            && *part != ".."
+            && !part.ends_with(' ')
+            && !part.ends_with('.')
+            && !part
+                .chars()
+                .any(|c| c.is_control() || FORBIDDEN_IN_NAMES.contains(&c))
+    });
+    valid.then(|| {
+        parts
+            .iter()
+            .fold(parent.to_path_buf(), |path, part| path.join(part))
+    })
+}
+
+pub fn create(parent: &Path, name: &str, is_dir: bool) -> Result<PathBuf> {
+    if !parent.is_dir() {
+        return Err(Error::InvalidName);
+    }
+    let target = child_path(parent, name).ok_or(Error::InvalidName)?;
+    if target.exists() {
+        return Err(Error::AlreadyExists);
+    }
+    if is_dir {
+        std::fs::create_dir_all(&target)?;
+        return Ok(target);
+    }
+    if let Some(folder) = target.parent() {
+        std::fs::create_dir_all(folder)?;
+    }
+    std::fs::OpenOptions::new()
+        .write(true)
+        .create_new(true)
+        .open(&target)
+        .map_err(|error| match error.kind() {
+            std::io::ErrorKind::AlreadyExists => Error::AlreadyExists,
+            _ => Error::Io(error),
+        })?;
+    Ok(target)
+}
+
+#[tauri::command]
+pub async fn create_entry(
+    parent: String,
+    name: String,
+    is_dir: bool,
+    workspace: State<'_, Workspace>,
+) -> Result<String> {
+    let parent = Path::new(&parent);
+    workspace.check(parent)?;
+    let created = create(parent, &name, is_dir)?;
+    Ok(created.to_string_lossy().into_owned())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use tempfile::TempDir;
+
+    #[test]
+    fn builds_child_paths_only_from_plain_names() {
+        let parent = Path::new("/project/src");
+        assert_eq!(
+            child_path(parent, " utils/date.ts "),
+            Some(PathBuf::from("/project/src/utils/date.ts"))
+        );
+        assert_eq!(
+            child_path(parent, "a\\b.php"),
+            Some(PathBuf::from("/project/src/a/b.php"))
+        );
+        for bad in [
+            "",
+            "  ",
+            "..",
+            "../x",
+            "a/../b",
+            "/etc/passwd",
+            "a//b",
+            "con:x",
+            "what?",
+            "dot.",
+            "a\u{7}",
+        ] {
+            assert_eq!(child_path(parent, bad), None, "{bad:?} should be rejected");
+        }
+    }
+
+    #[test]
+    fn creates_files_and_folders_without_overwriting() {
+        let root = TempDir::new().expect("temp dir");
+        let file = create(root.path(), "src/utils/date.ts", false).expect("file");
+        assert!(file.is_file());
+        assert_eq!(std::fs::read_to_string(&file).expect("read"), "");
+
+        std::fs::write(&file, "keep").expect("write");
+        assert!(matches!(
+            create(root.path(), "src/utils/date.ts", false),
+            Err(Error::AlreadyExists)
+        ));
+        assert_eq!(std::fs::read_to_string(&file).expect("read"), "keep");
+
+        let folder = create(root.path(), "docs/notes", true).expect("folder");
+        assert!(folder.is_dir());
+        assert!(matches!(
+            create(root.path(), "docs", true),
+            Err(Error::AlreadyExists)
+        ));
+        assert!(matches!(
+            create(&file, "inside", false),
+            Err(Error::InvalidName)
+        ));
+    }
 
     #[test]
     fn allows_files_picked_outside_the_open_folder() {

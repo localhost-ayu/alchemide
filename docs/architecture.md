@@ -73,6 +73,11 @@ regular browser without compiling Rust, and the end-to-end tests run against tha
   The only exception is a file picked with "Open file…" (`Ctrl+O`, the `pick_file` command):
   its canonical path is added to an allow list for the session, so that one file can be read and
   saved; nothing else outside the folder becomes reachable.
+- Creating files and folders (`create_entry`) takes an existing parent folder that passes the
+  same check plus a typed name. `child_path` accepts only plain names joined by `/` or `\\` (no
+  `.`, `..`, empty parts, absolute paths or characters Windows forbids), so the result stays under
+  the parent; missing folders are created, and an existing file is never overwritten
+  (`create_new`).
 - The last opened folder is remembered in `state.json`, which only Rust writes, not in
   `settings.json` (the webview can rewrite that one). `reopen_last_folder` reads it on start, so
   the webview never names a folder to open.

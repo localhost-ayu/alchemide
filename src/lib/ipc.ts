@@ -270,3 +270,7 @@ export function gitBranches(): Promise<Branch[]> {
 export function gitSwitch(branch: string): Promise<void> {
   return invoke<void>("git_switch", { branch });
 }
+
+export function createEntry(parent: string, name: string, isDir: boolean): Promise<string> {
+  return invoke<string>("create_entry", { parent, name, isDir });
+}

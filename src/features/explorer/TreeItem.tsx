@@ -1,5 +1,6 @@
 import { useEditorStore } from "../../lib/editorStore";
 import type { Entry } from "../../lib/types";
+import { NewEntryInput } from "./NewEntryInput";
 import { useWorkspaceStore } from "./useWorkspaceStore";
 
 type TreeItemProps = {
@@ -11,6 +12,7 @@ export function TreeItem({ entry, depth }: TreeItemProps) {
   const isOpen = useWorkspaceStore((state) => state.expanded[entry.path] ?? false);
   const isSelected = useWorkspaceStore((state) => state.selected === entry.path);
   const children = useWorkspaceStore((state) => state.children[entry.path]);
+  const creatingHere = useWorkspaceStore((state) => state.creating?.parent === entry.path);
   const toggleDir = useWorkspaceStore((state) => state.toggleDir);
   const select = useWorkspaceStore((state) => state.select);
   const openFile = useEditorStore((state) => state.openFile);
@@ -42,6 +44,7 @@ export function TreeItem({ entry, depth }: TreeItemProps) {
       </button>
       {entry.isDir && isOpen && children && (
         <ul className="tree">
+          {creatingHere && <NewEntryInput depth={depth + 1} />}
           {children.map((child) => (
             <TreeItem key={child.path} entry={child} depth={depth + 1} />
           ))}
