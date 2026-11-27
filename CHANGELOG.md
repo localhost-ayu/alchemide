@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- A button at the end of the tab bar opens and closes the preview of Markdown files
+
+### Added
+
 - Tabs of files that share a name show the folder that tells them apart (`conexao.php · beer`)
 
 ### Changed
