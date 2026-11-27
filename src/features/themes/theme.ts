@@ -34,6 +34,13 @@ export type ThemeMascot = {
   size: number;
 };
 
+export type UiFont = "system" | "rounded" | "serif" | "mono";
+
+export type ThemeShape = {
+  radius: number;
+  font: UiFont;
+};
+
 export type Effects = {
   surface: "glass" | "solid";
   background: boolean;
@@ -48,6 +55,7 @@ export type Theme = {
   syntax: ThemeSyntax;
   background: ThemeBackground;
   glass: { panelOpacity: number; blur: number };
+  shape: ThemeShape;
   mascot: ThemeMascot | null;
   effects: Effects;
 };

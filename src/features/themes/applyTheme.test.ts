@@ -18,6 +18,13 @@ describe("toCssVariables", () => {
     expect(variables["--glass-blur"]).toBe("10px");
   });
 
+  test("turns the shape into corner and interface font variables", () => {
+    const variables = toCssVariables({ ...FALLBACK_THEME, shape: { radius: 13, font: "mono" } });
+    expect(variables["--radius"]).toBe("13px");
+    expect(variables["--radius-sm"]).toBe("7px");
+    expect(variables["--font-ui"]).toBe("var(--font-code)");
+  });
+
   test("describes each kind of background", () => {
     const gradient = toCssVariables({
       ...FALLBACK_THEME,

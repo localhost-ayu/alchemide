@@ -48,6 +48,7 @@ live in the `themes/` folder of the app config folder (see [Your own themes](#yo
 | `syntax`     | yes      | Hex colors: `keyword`, `string`, `function`, `comment`, `variable`; optional `type` (defaults to `ui.accent2`) and `number` (defaults to `ui.accent`) |
 | `background` | no       | See below. Defaults to a solid `ui.bg`                                                                                                                |
 | `glass`      | no       | `panelOpacity` from 0.2 to 1 (default 0.78), `blur` in px from 0 to 40 (default 12)                                                                   |
+| `shape`      | no       | `radius` in px from 0 to 16 (default 8; small corners use half), `font` for the interface: `system`, `rounded`, `serif` or `mono` (default `system`)  |
 | `mascot`     | no       | `path`, `corner` (`top-left`, `top-right`, `bottom-left`, `bottom-right`), `opacity` 0–1, `size` 32–1024 px                                           |
 | `effects`    | no       | Initial effects when the theme is chosen                                                                                                              |
 
@@ -133,6 +134,18 @@ as you make it; Cancel or `Esc` brings back the theme as it was.
   mascot (opacity, size and corner). Background and mascot sliders change what is on screen: your
   own background or mascot when you chose one (saved in the settings, kept across themes), otherwise
   the theme's. They appear once there is an image or video background or a mascot.
+- **Starting points** copy the colors, glass and shape of a built-in theme into the one you are
+  editing, keeping its name and any background image, so you can start from a look and adjust it.
+- **Shape** sets the corners of every panel, button and field (with Square, Soft, Default and Round
+  presets) and the **interface font**: System, Rounded, Editorial (serif) or Terminal (the code
+  font). These use fonts already on the system; nothing is downloaded.
+- With an image or video background, the editor checks the panel text against the darkest and
+  brightest parts the image could have (after its dim). When the panel opacity is too low for 4.5:1,
+  it suggests the lowest opacity that passes, with a button to use it.
+- **Undo changes** brings back the theme as it was when the editor opened, without closing it.
+  **Defaults** applies the default theme's look (colors, glass and shape) to the one you are editing.
+- Every color picker offers the last eight colors you saved in any theme (stored as `recentColors`
+  in `settings.json`), shown as swatches by the system color picker.
 
 ### Duplicate, import, export and delete
 

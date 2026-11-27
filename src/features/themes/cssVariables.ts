@@ -1,4 +1,12 @@
-import type { Theme } from "./theme";
+import type { Theme, UiFont } from "./theme";
+
+const UI_FONT_STACKS: Record<UiFont, string> = {
+  system: "system-ui, sans-serif",
+  rounded:
+    'ui-rounded, "SF Pro Rounded", "Segoe UI Variable Display", "Nunito", system-ui, sans-serif',
+  serif: 'ui-serif, "Iowan Old Style", Georgia, "Times New Roman", serif',
+  mono: "var(--font-code)",
+};
 
 function backgroundImage(theme: Theme): string {
   switch (theme.background.type) {
@@ -25,7 +33,7 @@ function blurOf(theme: Theme): number {
 }
 
 export function toCssVariables(theme: Theme): Record<string, string> {
-  const { ui, syntax, glass, background, mascot } = theme;
+  const { ui, syntax, glass, background, mascot, shape } = theme;
   return {
     "--color-bg": ui.bg,
     "--color-panel": ui.panel,
@@ -47,5 +55,8 @@ export function toCssVariables(theme: Theme): Record<string, string> {
     "--backdrop-blur": hasMedia(theme) ? `${blurOf(theme)}px` : "0px",
     "--mascot-size": `${mascot?.size ?? 0}px`,
     "--mascot-opacity": String(mascot?.opacity ?? 0),
+    "--radius": `${shape.radius}px`,
+    "--radius-sm": `${Math.round(shape.radius / 2)}px`,
+    "--font-ui": UI_FONT_STACKS[shape.font],
   };
 }
