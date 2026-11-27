@@ -1,5 +1,6 @@
-import { render, screen } from "@testing-library/react";
-import { beforeEach, expect, test } from "vitest";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { beforeEach, expect, test, vi } from "vitest";
+import { registerCommands } from "../../lib/commands";
 import { useEditorStore } from "../../lib/editorStore";
 import { StatusBar } from "./StatusBar";
 
@@ -46,4 +47,15 @@ test("describes the active file and the cursor", async () => {
     expect(screen.getByText(text)).toBeTruthy();
   }
   expect(await screen.findByText("Linux")).toBeTruthy();
+});
+
+test("the terminal button runs the terminal command", () => {
+  const run = vi.fn();
+  const unregister = registerCommands([{ id: "terminal.toggle", title: "Toggle terminal", run }]);
+  render(<StatusBar />);
+
+  fireEvent.click(screen.getByRole("button", { name: "Toggle terminal" }));
+
+  expect(run).toHaveBeenCalledOnce();
+  unregister();
 });

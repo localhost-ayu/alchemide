@@ -1,0 +1,117 @@
+{
+  "name": "SQL Server",
+  "languages": ["sql"],
+  "snippets": {
+    "Select top": {
+      "prefix": "top",
+      "body": ["SELECT TOP (${1:100}) ${2:*}", "FROM ${3:table}", "ORDER BY ${4:column} DESC;"],
+      "description": "SELECT TOP (n)"
+    },
+    "Offset fetch": {
+      "prefix": "page",
+      "body": ["ORDER BY ${1:column}", "OFFSET ${2:0} ROWS", "FETCH NEXT ${3:50} ROWS ONLY"],
+      "description": "Paging with OFFSET … FETCH"
+    },
+    "Last hours": {
+      "prefix": "lasth",
+      "body": ["DATEADD(hour, -${1:48}, GETDATE())"],
+      "description": "DATEADD(hour, -n, GETDATE())"
+    },
+    "Date difference": {
+      "prefix": "ddiff",
+      "body": ["DATEDIFF(${1:day}, ${2:start_date}, ${3:GETDATE()})"],
+      "description": "DATEDIFF(unit, start, end)"
+    },
+    "Format date": {
+      "prefix": "fdate",
+      "body": ["CONVERT(varchar(10), ${1:column}, ${2:103})"],
+      "description": "CONVERT a date to text (103 = dd/mm/yyyy)"
+    },
+    "Is null": {
+      "prefix": "isnull",
+      "body": ["ISNULL(${1:column}, ${2:default})"],
+      "description": "ISNULL(value, default)"
+    },
+    "Variable": {
+      "prefix": "decl",
+      "body": ["DECLARE @${1:name} ${2:INT} = ${3:0};"],
+      "description": "DECLARE @variable"
+    },
+    "Try catch": {
+      "prefix": "trycatch",
+      "body": [
+        "BEGIN TRY",
+        "\tBEGIN TRANSACTION;",
+        "\t$0",
+        "\tCOMMIT TRANSACTION;",
+        "END TRY",
+        "BEGIN CATCH",
+        "\tIF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;",
+        "\tTHROW;",
+        "END CATCH;"
+      ],
+      "description": "TRY/CATCH with a transaction"
+    },
+    "If exists": {
+      "prefix": "ifex",
+      "body": ["IF EXISTS (SELECT 1 FROM ${1:table} WHERE ${2:condition})", "BEGIN", "\t$0", "END"],
+      "description": "IF EXISTS … BEGIN … END"
+    },
+    "Merge": {
+      "prefix": "merge",
+      "body": [
+        "MERGE ${1:target} AS t",
+        "USING ${2:source} AS s",
+        "\tON t.${3:id} = s.${3:id}",
+        "WHEN MATCHED THEN",
+        "\tUPDATE SET t.${4:column} = s.${4:column}",
+        "WHEN NOT MATCHED BY TARGET THEN",
+        "\tINSERT (${3:id}, ${4:column}) VALUES (s.${3:id}, s.${4:column});"
+      ],
+      "description": "MERGE (upsert)"
+    },
+    "Temp table": {
+      "prefix": "temp",
+      "body": [
+        "IF OBJECT_ID('tempdb..#${1:temp}') IS NOT NULL DROP TABLE #${1:temp};",
+        "",
+        "SELECT ${2:*}",
+        "INTO #${1:temp}",
+        "FROM ${3:table}",
+        "WHERE ${4:condition};"
+      ],
+      "description": "SELECT INTO a temporary table"
+    },
+    "Cross apply": {
+      "prefix": "capply",
+      "body": [
+        "CROSS APPLY (",
+        "\tSELECT TOP (1) ${1:*}",
+        "\tFROM ${2:table} ${3:x}",
+        "\tWHERE ${3:x}.${4:id} = ${5:outer}.${4:id}",
+        "\tORDER BY ${3:x}.${6:created_at} DESC",
+        ") AS ${7:latest}"
+      ],
+      "description": "CROSS APPLY for the latest related row"
+    },
+    "String aggregate": {
+      "prefix": "stragg",
+      "body": ["STRING_AGG(${1:column}, '${2:, }') WITHIN GROUP (ORDER BY ${1:column})"],
+      "description": "STRING_AGG with order"
+    },
+    "Stored procedure": {
+      "prefix": "proc",
+      "body": [
+        "CREATE OR ALTER PROCEDURE ${1:dbo}.${2:name}",
+        "\t@${3:id} ${4:INT}",
+        "AS",
+        "BEGIN",
+        "\tSET NOCOUNT ON;",
+        "",
+        "\t$0",
+        "END;"
+      ],
+      "description": "CREATE OR ALTER PROCEDURE"
+    }
+  }
+}

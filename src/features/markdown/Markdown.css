@@ -137,3 +137,26 @@
 .preview-image__placeholder {
   color: var(--color-muted);
 }
+
+.markdown-toggle {
+  position: absolute;
+  top: 2px;
+  right: 6px;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--panel-bg);
+  color: var(--color-muted);
+  cursor: pointer;
+}
+
+.markdown-toggle:hover,
+.markdown-toggle[aria-pressed="true"] {
+  color: var(--color-accent);
+  background: var(--color-hover);
+}

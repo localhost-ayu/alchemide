@@ -8,19 +8,24 @@ press `Tab` and `Shift+Tab` to move between its fields.
 Each pack is turned on or off in the settings (`Ctrl+,`, **Snippets**). The language packs are on
 by default; the framework packs start off so their prefixes do not crowd the list.
 
-| Pack                      | Languages        | Example prefixes                                           | On by default |
-| ------------------------- | ---------------- | ---------------------------------------------------------- | ------------- |
-| PHP                       | PHP              | `php`, `class`, `pubf`, `ctor`, `foreach`, `match`, `try`  | yes           |
-| JavaScript and TypeScript | JS, TS, JSX, TSX | `log`, `fn`, `arrow`, `imp`, `forof`, `fetchj`, `test`     | yes           |
-| Rust                      | Rust             | `main`, `fn`, `fnr`, `struct`, `match`, `tmod`             | yes           |
-| Python                    | Python           | `main`, `def`, `class`, `dc`, `with`, `test`               | yes           |
-| Go                        | Go               | `main`, `fn`, `meth`, `iferr`, `forr`, `test`              | yes           |
-| Node.js                   | JS, TS           | `nimp`, `dirname`, `readfile`, `amain`, `express`          | no            |
-| React                     | JSX, TSX         | `rfc`, `rfcp`, `us`, `ue`, `um`, `rmap`                    | no            |
-| Next.js                   | JS, TS, JSX, TSX | `npage`, `nlayout`, `nroute`, `nuc`, `nsa`, `nerror`       | no            |
-| Laravel                   | PHP (and Blade)  | `lr-controller`, `lr-route`, `lr-model`, `lr-validate`     | no            |
-| CodeIgniter 3             | PHP              | `ci3-controller`, `ci3-model`, `ci3-view`, `ci3-get`       | no            |
-| CodeIgniter 4             | PHP              | `ci4-controller`, `ci4-model`, `ci4-route`, `ci4-validate` | no            |
+| Pack                      | Languages        | Example prefixes                                            | On by default |
+| ------------------------- | ---------------- | ----------------------------------------------------------- | ------------- |
+| PHP                       | PHP              | `php`, `class`, `pubf`, `ctor`, `foreach`, `match`, `try`   | yes           |
+| JavaScript and TypeScript | JS, TS, JSX, TSX | `log`, `fn`, `arrow`, `imp`, `forof`, `fetchj`, `test`      | yes           |
+| Rust                      | Rust             | `main`, `fn`, `fnr`, `struct`, `match`, `tmod`              | yes           |
+| Python                    | Python           | `main`, `def`, `class`, `dc`, `with`, `test`                | yes           |
+| Go                        | Go               | `main`, `fn`, `meth`, `iferr`, `forr`, `test`               | yes           |
+| SQL                       | SQL              | `sel`, `ij`, `lj`, `cte`, `ins`, `upd`, `case`, `rownum`    | yes           |
+| Node.js                   | JS, TS           | `nimp`, `dirname`, `readfile`, `amain`, `express`           | no            |
+| React                     | JSX, TSX         | `rfc`, `rfcp`, `us`, `ue`, `um`, `rmap`                     | no            |
+| Next.js                   | JS, TS, JSX, TSX | `npage`, `nlayout`, `nroute`, `nuc`, `nsa`, `nerror`        | no            |
+| Laravel                   | PHP (and Blade)  | `lr-controller`, `lr-route`, `lr-model`, `lr-validate`      | no            |
+| CodeIgniter 3             | PHP              | `ci3-controller`, `ci3-model`, `ci3-view`, `ci3-get`        | no            |
+| CodeIgniter 4             | PHP              | `ci4-controller`, `ci4-model`, `ci4-route`, `ci4-validate`  | no            |
+| SQL Server                | SQL              | `top`, `page`, `lasth`, `decl`, `trycatch`, `merge`, `temp` | no            |
+
+Packs added in a new version start on or off as in this table, except when you already changed
+which packs are on: then turn the new ones on in the settings.
 
 The packs live in `src/lib/snippetPacks/` in the same format as your own snippets.
 

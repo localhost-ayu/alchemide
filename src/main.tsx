@@ -4,6 +4,7 @@ import { App } from "./app/App";
 import { useWorkspaceStore } from "./features/explorer/useWorkspaceStore";
 import { initGeneralSettings } from "./features/settings/useGeneralSettings";
 import { initTerminalSettings } from "./features/terminal/useTerminalSettings";
+import { initMascotLock } from "./features/themes/mascotLock";
 import { initThemes } from "./features/themes/useThemeStore";
 import { initEditorSettings } from "./lib/editorSettings";
 import { initKeybindings } from "./lib/keybindings";
@@ -12,6 +13,7 @@ import { useSnippetStore } from "./lib/snippetStore";
 import "./styles/global.css";
 
 initThemes();
+initMascotLock();
 initKeybindings();
 initGeneralSettings().then(({ reopenLastFolder }) => {
   if (reopenLastFolder) {

@@ -19,7 +19,7 @@ A lightweight, mood-themed code editor built with Tauri, React and CodeMirror.
   IBM Plex Mono) or any installed font; separate sizes for the editor and the terminal, line
   height, ligatures and interface zoom (`Ctrl+=`, `Ctrl+-`, `Ctrl+0`)
 - Snippets in the VS Code format: your own files, an import from VS Code and built-in packs for
-  PHP, Laravel, CodeIgniter 3 and 4, JS/TS, Node.js, React, Next.js, Rust, Python and Go
+  PHP, Laravel, CodeIgniter 3 and 4, JS/TS, Node.js, React, Next.js, Rust, Python, Go, SQL and SQL Server
   ([docs/snippets.md](docs/snippets.md))
 - Themes by mood, custom backgrounds and independent visual effects
 

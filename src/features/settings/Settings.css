@@ -233,6 +233,12 @@
   display: none;
 }
 
+.settings__hint {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 12px;
+}
+
 .settings__empty {
   margin: 0;
   padding: 16px;

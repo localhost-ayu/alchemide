@@ -326,10 +326,16 @@ export function importAsset(kind: AssetKind): Promise<string | null> {
 }
 
 const sampleVideo = "backgrounds/sample-loop.webm";
+const sampleGif = "mascots/sample-dance.gif";
+const ONE_PIXEL_GIF =
+  "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==";
 
 export function assetUrl(relative: string): Promise<string> {
   if (relative === sampleVideo) {
     return Promise.resolve("data:video/webm;base64,");
+  }
+  if (relative === sampleGif) {
+    return Promise.resolve(ONE_PIXEL_GIF);
   }
   const asset = Object.values(sampleAssets).find((candidate) => candidate.path === relative);
   if (!asset) {
