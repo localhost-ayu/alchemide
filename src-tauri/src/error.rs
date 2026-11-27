@@ -74,10 +74,108 @@ pub enum Error {
     Watch(#[from] notify::Error),
 }
 
+impl Error {
+    pub fn code(&self) -> &'static str {
+        match self {
+            Error::Dialog => "Dialog",
+            Error::NotLocalFolder => "NotLocalFolder",
+            Error::NoWorkspace => "NoWorkspace",
+            Error::OutsideWorkspace => "OutsideWorkspace",
+            Error::NotUtf8 => "NotUtf8",
+            Error::TooLarge => "TooLarge",
+            Error::NoConfigDir => "NoConfigDir",
+            Error::InvalidSettings => "InvalidSettings",
+            Error::UnsupportedAsset => "UnsupportedAsset",
+            Error::InvalidAssetPath => "InvalidAssetPath",
+            Error::NoLanguageServerSession => "NoLanguageServerSession",
+            Error::InvalidTheme => "InvalidTheme",
+            Error::InvalidThemeFile => "InvalidThemeFile",
+            Error::NoTerminal => "NoTerminal",
+            Error::NoProfile => "NoProfile",
+            Error::UnsupportedLink => "UnsupportedLink",
+            Error::EmptySearch => "EmptySearch",
+            Error::NoUpdate => "NoUpdate",
+            Error::InvalidName => "InvalidName",
+            Error::AlreadyExists => "AlreadyExists",
+            Error::WorkspaceRoot => "WorkspaceRoot",
+            Error::GitMissing => "GitMissing",
+            Error::NotARepository => "NotARepository",
+            Error::DockerMissing => "DockerMissing",
+            Error::LanguageServer(_) => "LanguageServer",
+            Error::Terminal(_) => "Terminal",
+            Error::OpenLink(_) => "OpenLink",
+            Error::InvalidPattern(_) => "InvalidPattern",
+            Error::Update(_) => "Update",
+            Error::Trash(_) => "Trash",
+            Error::Git(_) => "Git",
+            Error::Docker(_) => "Docker",
+            Error::Zoom(_) => "Zoom",
+            Error::Io(_) => "Io",
+            Error::Watch(_) => "Watch",
+        }
+    }
+
+    pub fn detail(&self) -> Option<String> {
+        match self {
+            Error::LanguageServer(detail)
+            | Error::Terminal(detail)
+            | Error::OpenLink(detail)
+            | Error::InvalidPattern(detail)
+            | Error::Update(detail)
+            | Error::Trash(detail)
+            | Error::Git(detail)
+            | Error::Docker(detail)
+            | Error::Zoom(detail) => Some(detail.clone()),
+            Error::Io(error) => Some(error.to_string()),
+            Error::Watch(error) => Some(error.to_string()),
+            _ => None,
+        }
+    }
+}
+
+#[derive(Serialize)]
+struct Payload {
+    code: &'static str,
+    message: String,
+    detail: Option<String>,
+}
+
 impl Serialize for Error {
     fn serialize<S: Serializer>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error> {
-        serializer.serialize_str(&self.to_string())
+        Payload {
+            code: self.code(),
+            message: self.to_string(),
+            detail: self.detail(),
+        }
+        .serialize(serializer)
     }
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn serializes_a_code_the_english_message_and_the_detail() {
+        let plain = serde_json::to_value(Error::AlreadyExists).expect("json");
+        assert_eq!(plain["code"], "AlreadyExists");
+        assert_eq!(
+            plain["message"],
+            "a file or folder with that name already exists"
+        );
+        assert!(plain["detail"].is_null());
+
+        let detailed = serde_json::to_value(Error::Git("bad ref".into())).expect("json");
+        assert_eq!(detailed["code"], "Git");
+        assert_eq!(detailed["message"], "git: bad ref");
+        assert_eq!(detailed["detail"], "bad ref");
+
+        let io = std::io::Error::new(std::io::ErrorKind::NotFound, "missing");
+        assert_eq!(
+            serde_json::to_value(Error::Io(io)).expect("json")["code"],
+            "Io"
+        );
+    }
+}

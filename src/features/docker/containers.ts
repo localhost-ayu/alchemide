@@ -40,7 +40,7 @@ export function logsCommand(container: DockerContainer): string {
 }
 
 export function dockerNotice(error: string): string {
-  if (/not installed|not on the PATH/i.test(error)) {
+  if (/not installed|not on the PATH|não está instalado/i.test(error)) {
     return t("docker.missing");
   }
   if (/error during connect|cannot connect|daemon|pipe/i.test(error)) {

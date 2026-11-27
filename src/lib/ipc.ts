@@ -1,6 +1,7 @@
-import { convertFileSrc, invoke } from "@tauri-apps/api/core";
+import { convertFileSrc, invoke as invokeCommand } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import { errorMessage } from "./errors";
 import type {
   AssetKind,
   Blame,
@@ -30,6 +31,14 @@ import type {
   UserThemeFile,
   VscodeTheme,
 } from "./types";
+
+async function invoke<T>(command: string, args?: Record<string, unknown>): Promise<T> {
+  try {
+    return await invokeCommand<T>(command, args);
+  } catch (error) {
+    throw new Error(errorMessage(error));
+  }
+}
 
 export function getEnvironment(): Promise<Environment> {
   return invoke<Environment>("get_environment");

@@ -50,7 +50,8 @@ regular browser without compiling Rust, and the end-to-end tests run against tha
   pure function from its module and returns the result. The logic stays testable with
   `cargo test`, without a window.
 - Errors go through a single type in `src/error.rs` (`thiserror`), serialized for the frontend
-  as a plain message string.
+  as `{ code, message, detail }`; `src/lib/ipc.ts` turns them into translated `Error`s
+  (`docs/decisions/0013-languages.md`).
 - The open folder is chosen by Rust through the dialog plugin's Rust API and kept in the
   `fs::Workspace` state. The frontend never sends the root path, and the webview gets no
   dialog permission.
