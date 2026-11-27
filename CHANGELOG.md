@@ -11,8 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The first line of a code block in the Markdown preview no longer stays without colors on a slow or busy machine
 
+## [0.6.0] - 2026-11-27
+
+Layout and Docker: a containers panel, an activity bar, hideable bars and zen mode.
+
 ### Added
 
+- Activity bar to switch between Explorer, Search and Docker; clicking the open view collapses the side bar
+- Hide the activity bar, status bar or editor tabs from the command palette or Settings → Layout; the layout and the open side bar view are remembered
+- Zen mode (`Ctrl+K Z`) hides everything but the editor until you press it again
 - Docker panel (`Ctrl+Shift+D`): running and stopped containers grouped by Compose project, with start, stop and restart, and logs followed in a new terminal tab; refreshes every 5 seconds while visible and shows a short notice when Docker is missing or not running
 
 ## [0.5.0] - 2026-11-27
@@ -129,7 +136,8 @@ First release: a lightweight editor for Windows and Linux (including WSL) with m
 
 - Browser mode with a mocked backend (`pnpm dev:web`) and a Linux dev container
 
-[Unreleased]: https://github.com/localhost-ayu/alchemide/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/localhost-ayu/alchemide/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/localhost-ayu/alchemide/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/localhost-ayu/alchemide/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/localhost-ayu/alchemide/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/localhost-ayu/alchemide/compare/v0.2.1...v0.3.0
