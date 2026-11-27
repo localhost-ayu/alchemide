@@ -336,6 +336,25 @@ test("searches the settings", async ({ page }) => {
   ).toBeHidden();
 });
 
+test("clicking outside closes the settings only when turned on", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("complementary").first()).toBeVisible();
+  const settings = page.getByRole("dialog", { name: "Settings" });
+  const clickOutside = async () => {
+    const box = await settings.boundingBox();
+    expect(box).not.toBeNull();
+    await page.mouse.click(4, (box?.y ?? 0) + 4);
+  };
+
+  await page.keyboard.press("Control+,");
+  await clickOutside();
+  await expect(settings).toBeVisible();
+
+  await settings.getByRole("checkbox", { name: "Close panels when clicking outside them" }).check();
+  await clickOutside();
+  await expect(settings).toBeHidden();
+});
+
 test("settings switches follow the theme accent", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("complementary").first()).toBeVisible();

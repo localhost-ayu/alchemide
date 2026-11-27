@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Option in Settings → General to close panels by clicking outside them (off by default)
 - Tabs of files that share a name show the folder that tells them apart (`conexao.php · beer`)
 
 ### Changed
