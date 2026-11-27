@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { type CSSProperties, useEffect } from "react";
 import { DockerPanel } from "../features/docker/DockerPanel";
 import { Editor } from "../features/editor/Editor";
 import { Explorer } from "../features/explorer/Explorer";
@@ -11,6 +11,7 @@ import { SnippetCommands } from "../features/snippets/SnippetCommands";
 import { SnippetSettings } from "../features/snippets/SnippetSettings";
 import { StatusBar } from "../features/statusbar/StatusBar";
 import { TerminalPanel } from "../features/terminal/TerminalPanel";
+import { TerminalSettings } from "../features/terminal/TerminalSettings";
 import { Backdrop } from "../features/themes/Backdrop";
 import { Mascot } from "../features/themes/Mascot";
 import { MoodPicker } from "../features/themes/MoodPicker";
@@ -22,10 +23,11 @@ import { VscodeThemePicker } from "../features/themes/VscodeThemePicker";
 import { UpdateNotice } from "../features/updater/UpdateNotice";
 import { UpdateSettings } from "../features/updater/UpdateSettings";
 import { registerCommands } from "../lib/commands";
-import { useLayoutStore } from "../lib/layoutStore";
+import { clampSize, SIDEBAR_WIDTH, TERMINAL_HEIGHT, useLayoutStore } from "../lib/layoutStore";
 import { ActivityBar } from "./ActivityBar";
 import "./App.css";
 import { LayoutSettings } from "./LayoutSettings";
+import { ResizeHandle } from "./ResizeHandle";
 
 const SIDEBAR_LABELS = { explorer: "Explorer", search: "Search", docker: "Docker" };
 
@@ -42,6 +44,15 @@ export function App() {
   const statusBar = useLayoutStore((state) => state.statusBar);
   const tabs = useLayoutStore((state) => state.tabs);
   const zen = useLayoutStore((state) => state.zen);
+  const sidebarWidth = useLayoutStore((state) => state.sidebarWidth);
+  const terminalHeight = useLayoutStore((state) => state.terminalHeight);
+  const resize = (key: "sidebarWidth" | "terminalHeight", limits: typeof SIDEBAR_WIDTH) => ({
+    onPreview: (size: number) =>
+      useLayoutStore.getState().preview({ [key]: clampSize(size, limits) }),
+    onCommit: (size: number) =>
+      useLayoutStore.getState().update({ [key]: clampSize(size, limits) }),
+    onReset: () => useLayoutStore.getState().update({ [key]: limits.default }),
+  });
   const isSidebarOpen = sidebarOpen && !zen;
 
   useEffect(() => {
@@ -112,6 +123,12 @@ export function App() {
         data-statusbar={statusBar && !zen ? "shown" : "hidden"}
         data-tabs={tabs && !zen ? "shown" : "hidden"}
         data-zen={zen}
+        style={
+          {
+            "--sidebar-size": `${sidebarWidth}px`,
+            "--terminal-size": `${terminalHeight}px`,
+          } as CSSProperties
+        }
       >
         <div className="app__activity" hidden={!activityBar || zen}>
           <ActivityBar />
@@ -130,6 +147,15 @@ export function App() {
           <div className="app__sidebar-view" hidden={sidebar !== "docker"}>
             <DockerPanel visible={isSidebarOpen && sidebar === "docker"} />
           </div>
+          <ResizeHandle
+            label="Resize sidebar"
+            orientation="vertical"
+            size={sidebarWidth}
+            min={SIDEBAR_WIDTH.min}
+            max={SIDEBAR_WIDTH.max}
+            grow={1}
+            {...resize("sidebarWidth", SIDEBAR_WIDTH)}
+          />
         </aside>
         <main className="app__editor" aria-label="Editor">
           <div className="app__workspace">
@@ -139,6 +165,15 @@ export function App() {
           <Mascot />
         </main>
         <div className="app__terminal">
+          <ResizeHandle
+            label="Resize terminal"
+            orientation="horizontal"
+            size={terminalHeight}
+            min={TERMINAL_HEIGHT.min}
+            max={TERMINAL_HEIGHT.max}
+            grow={-1}
+            {...resize("terminalHeight", TERMINAL_HEIGHT)}
+          />
           <TerminalPanel />
         </div>
         <footer className="app__statusbar" hidden={!statusBar || zen}>
@@ -154,6 +189,7 @@ export function App() {
       <SettingsScreen>
         <ThemeSettings />
         <LayoutSettings />
+        <TerminalSettings />
         <SnippetSettings />
         <UpdateSettings />
       </SettingsScreen>

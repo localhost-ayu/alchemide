@@ -34,6 +34,7 @@ pub fn run() {
             fs::open_folder,
             fs::pick_file,
             fs::read_file,
+            fs::reopen_last_folder,
             fs::replace_matches,
             fs::search_start,
             fs::write_file,

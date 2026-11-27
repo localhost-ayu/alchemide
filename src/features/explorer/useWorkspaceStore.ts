@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { useActivityStore } from "../../lib/activityStore";
-import { listDir, openFolder } from "../../lib/ipc";
+import { listDir, openFolder, reopenLastFolder } from "../../lib/ipc";
 import type { Entry, Folder } from "../../lib/types";
 
 type WorkspaceState = {
@@ -10,6 +10,7 @@ type WorkspaceState = {
   selected: string | null;
   error: string | null;
   pickFolder: () => Promise<void>;
+  restoreLastFolder: () => Promise<void>;
   loadDir: (path: string) => Promise<void>;
   toggleDir: (path: string) => Promise<void>;
   select: (path: string) => void;
@@ -22,18 +23,8 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
   expanded: {},
   selected: null,
   error: null,
-  pickFolder: async () => {
-    try {
-      const folder = await openFolder();
-      if (!folder) {
-        return;
-      }
-      set({ folder, children: {}, expanded: {}, selected: null, error: null });
-      await get().loadDir(folder.path);
-    } catch (error) {
-      set({ error: String(error) });
-    }
-  },
+  pickFolder: () => showFolder(openFolder),
+  restoreLastFolder: () => showFolder(reopenLastFolder),
   loadDir: async (path) => {
     try {
       const entries = await useActivityStore.getState().track(listDir(path));
@@ -65,5 +56,18 @@ async function refreshDir(path: string): Promise<void> {
       const { [path]: _removed, ...children } = state.children;
       return { children };
     });
+  }
+}
+
+async function showFolder(open: () => Promise<Folder | null>): Promise<void> {
+  try {
+    const folder = await open();
+    if (!folder) {
+      return;
+    }
+    useWorkspaceStore.setState({ folder, children: {}, expanded: {}, selected: null, error: null });
+    await useWorkspaceStore.getState().loadDir(folder.path);
+  } catch (error) {
+    useWorkspaceStore.setState({ error: String(error) });
   }
 }

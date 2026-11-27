@@ -73,6 +73,9 @@ regular browser without compiling Rust, and the end-to-end tests run against tha
   The only exception is a file picked with "Open file…" (`Ctrl+O`, the `pick_file` command):
   its canonical path is added to an allow list for the session, so that one file can be read and
   saved; nothing else outside the folder becomes reachable.
+- The last opened folder is remembered in `state.json`, which only Rust writes, not in
+  `settings.json` (the webview can rewrite that one). `reopen_last_folder` reads it on start, so
+  the webview never names a folder to open.
 - The asset protocol is enabled only for `backgrounds/*` and `mascots/*` inside the app config
   folder, so the webview can show the user's background and mascot and nothing else on disk.
   `asset_path` also rejects any path outside those two folders.
