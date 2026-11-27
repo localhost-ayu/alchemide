@@ -1,4 +1,5 @@
 import type { ITheme } from "@xterm/xterm";
+import { TERMINAL_PALETTES } from "./terminalPalettes";
 
 export const REAGENT_GREEN = "#8dff5a";
 
@@ -49,4 +50,8 @@ export function terminalTheme(read: Read, playful: boolean): ITheme {
 
 export function readRootVariable(variable: string): string {
   return getComputedStyle(document.documentElement).getPropertyValue(variable).trim();
+}
+
+export function resolveTerminalTheme(palette: string, read: Read, playful: boolean): ITheme {
+  return TERMINAL_PALETTES[palette] ?? terminalTheme(read, playful);
 }
