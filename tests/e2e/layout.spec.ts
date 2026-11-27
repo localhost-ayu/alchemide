@@ -354,3 +354,22 @@ test("clicking outside closes the settings only when turned on", async ({ page }
   await clickOutside();
   await expect(settings).toBeHidden();
 });
+
+test("settings switches follow the theme accent", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("complementary").first()).toBeVisible();
+
+  await page.keyboard.press("Control+,");
+  const toggle = page
+    .getByRole("dialog", { name: "Settings" })
+    .getByRole("checkbox", { name: "Status bar" });
+  await expect(toggle).toBeChecked();
+  await expect(toggle).toHaveCSS("width", "34px");
+  const accent = await page.evaluate(() =>
+    getComputedStyle(document.documentElement).getPropertyValue("--color-accent").trim(),
+  );
+  const background = await toggle.evaluate((element) => getComputedStyle(element).backgroundColor);
+  const toRgb = (hex: string) =>
+    `rgb(${[1, 3, 5].map((i) => Number.parseInt(hex.slice(i, i + 2), 16)).join(", ")})`;
+  expect(background).toBe(toRgb(accent));
+});
