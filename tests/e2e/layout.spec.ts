@@ -380,6 +380,31 @@ test("settings switches follow the theme accent", async ({ page }) => {
   expect(background).toBe(toRgb(accent));
 });
 
+test("the menu bar appears with Alt and runs a command by category", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("complementary").first()).toBeVisible();
+  const bar = page.getByRole("menubar", { name: "Menu bar" });
+  await expect(bar).toBeHidden();
+
+  await page.keyboard.press("Alt");
+  await expect(bar).toBeVisible();
+  await bar.getByRole("menuitem", { name: "Terminal" }).click();
+  await page
+    .getByRole("menu", { name: "Terminal" })
+    .getByRole("menuitem", { name: /Toggle terminal/ })
+    .click();
+
+  await expect(page.getByRole("region", { name: "Terminal" })).toBeVisible();
+  await expect(bar).toBeHidden();
+});
+
+test("the settings button lists the menus", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Settings and menus" }).click();
+  await page.getByRole("menuitem", { name: /Settings…/ }).click();
+  await expect(page.getByRole("dialog", { name: "Settings" })).toBeVisible();
+});
+
 test("switches branches from the Git dock", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("complementary").first()).toBeVisible();

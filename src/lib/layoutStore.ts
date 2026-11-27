@@ -5,6 +5,10 @@ export const SIDEBAR_VIEWS = ["explorer", "search", "docker"] as const;
 
 export type SidebarView = (typeof SIDEBAR_VIEWS)[number];
 
+export const MENU_BAR_MODES = ["auto", "always", "never"] as const;
+
+export type MenuBarMode = (typeof MENU_BAR_MODES)[number];
+
 export type Layout = {
   sidebar: SidebarView;
   sidebarOpen: boolean;
@@ -13,6 +17,7 @@ export type Layout = {
   tabs: boolean;
   sidebarWidth: number;
   terminalHeight: number;
+  menuBar: MenuBarMode;
 };
 
 export const SIDEBAR_WIDTH = { min: 160, max: 600, default: 260 };
@@ -30,6 +35,7 @@ export const DEFAULT_LAYOUT: Layout = {
   tabs: true,
   sidebarWidth: SIDEBAR_WIDTH.default,
   terminalHeight: TERMINAL_HEIGHT.default,
+  menuBar: "auto",
 };
 
 export function readLayout(raw: unknown): Layout {
@@ -48,6 +54,7 @@ export function readLayout(raw: unknown): Layout {
     tabs: flag("tabs"),
     sidebarWidth: size("sidebarWidth", SIDEBAR_WIDTH),
     terminalHeight: size("terminalHeight", TERMINAL_HEIGHT),
+    menuBar: MENU_BAR_MODES.find((mode) => mode === fields.menuBar) ?? DEFAULT_LAYOUT.menuBar,
   };
 }
 

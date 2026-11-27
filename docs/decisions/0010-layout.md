@@ -23,6 +23,13 @@ side bar, and status bar and tabs that can be hidden, all remembered.
 - Icons are inline SVG in `ActivityBar.tsx` instead of an icon package: four icons do not justify a
   dependency.
 
+- Menu bar (added in v0.8, issue #124): the menus are built from the command registry, grouped
+  by the command id prefix (`themes.` → Theme, `git.` → Git, …) in `src/app/menus.ts`, so a new
+  command shows up in a menu without a second list. `layout.menuBar` is `auto` (default: a lone Alt
+  tap or the pointer at the top edge shows it, it hides after use), `always` (it takes 28 px at the
+  top) or `never`. The settings button in the activity bar opens the same menus as a vertical
+  list, rendered in a portal because the bar's `backdrop-filter` would clip it.
+
 ## Consequences
 
 - New side bar views only need an entry in `SIDEBAR_VIEWS`, an icon and a panel in `App`.
