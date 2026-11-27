@@ -1,4 +1,5 @@
 import { useEditorStore } from "../../lib/editorStore";
+import { t } from "../../lib/i18n";
 
 export function requestCloseTab(path: string): void {
   const { tabs, closeTab } = useEditorStore.getState();
@@ -6,7 +7,7 @@ export function requestCloseTab(path: string): void {
   if (!tab) {
     return;
   }
-  if (tab.dirty && !window.confirm(`${tab.name} has unsaved changes. Close it anyway?`)) {
+  if (tab.dirty && !window.confirm(t("editor.confirmCloseTab", { name: tab.name }))) {
     return;
   }
   closeTab(path);

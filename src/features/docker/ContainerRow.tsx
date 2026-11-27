@@ -1,11 +1,19 @@
+import { type MessageKey, useT } from "../../lib/i18n";
 import { requestTerminal } from "../../lib/terminalRequests";
-import type { DockerContainer } from "../../lib/types";
+import type { ContainerAction, DockerContainer } from "../../lib/types";
 import { isActive, logsCommand } from "./containers";
 import { useDockerStore } from "./useDockerStore";
 
 type Props = { container: DockerContainer };
 
+const PENDING_KEYS: Record<ContainerAction, MessageKey> = {
+  start: "docker.starting",
+  stop: "docker.stopping",
+  restart: "docker.restarting",
+};
+
 export function ContainerRow({ container }: Props) {
+  const t = useT();
   const pending = useDockerStore((state) => state.pending[container.id]);
   const run = useDockerStore((state) => state.run);
   const active = isActive(container);
@@ -19,7 +27,7 @@ export function ContainerRow({ container }: Props) {
           {name}
         </span>
         <span className="docker__meta">
-          {pending ? `${pending}ing…` : container.status}
+          {pending ? t(PENDING_KEYS[pending]) : container.status}
           {container.ports && ` · ${container.ports}`}
         </span>
       </div>
@@ -27,8 +35,8 @@ export function ContainerRow({ container }: Props) {
         {active ? (
           <button
             type="button"
-            aria-label={`Stop ${name}`}
-            title="Stop"
+            aria-label={t("docker.stopNamed", { name })}
+            title={t("docker.stop")}
             disabled={Boolean(pending)}
             onClick={() => run(container.id, "stop")}
           >
@@ -37,8 +45,8 @@ export function ContainerRow({ container }: Props) {
         ) : (
           <button
             type="button"
-            aria-label={`Start ${name}`}
-            title="Start"
+            aria-label={t("docker.startNamed", { name })}
+            title={t("docker.start")}
             disabled={Boolean(pending)}
             onClick={() => run(container.id, "start")}
           >
@@ -47,8 +55,8 @@ export function ContainerRow({ container }: Props) {
         )}
         <button
           type="button"
-          aria-label={`Restart ${name}`}
-          title="Restart"
+          aria-label={t("docker.restartNamed", { name })}
+          title={t("docker.restart")}
           disabled={Boolean(pending) || !active}
           onClick={() => run(container.id, "restart")}
         >
@@ -56,8 +64,8 @@ export function ContainerRow({ container }: Props) {
         </button>
         <button
           type="button"
-          aria-label={`Logs of ${name}`}
-          title="Logs in the terminal"
+          aria-label={t("docker.logsOf", { name })}
+          title={t("docker.logsInTerminal")}
           onClick={() => requestTerminal({ label: name, command: logsCommand(container) })}
         >
           ≡

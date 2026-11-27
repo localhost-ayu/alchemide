@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { useActivityStore } from "../../lib/activityStore";
 import { useEditorStore } from "../../lib/editorStore";
+import { t } from "../../lib/i18n";
 import {
   createEntry,
   deleteEntry,
@@ -109,7 +110,9 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
     const affected = editor.tabs.filter((tab) => isUnder(tab.path, renaming.path));
     const dirty = affected.find((tab) => tab.dirty);
     if (dirty) {
-      set({ renaming: { ...renaming, error: `Save or close ${dirty.name} first` } });
+      set({
+        renaming: { ...renaming, error: t("explorer.saveOrCloseFirst", { name: dirty.name }) },
+      });
       return;
     }
     try {
@@ -150,9 +153,9 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
         .some((entry) => entry.path === path && entry.isDir);
     const affected = useEditorStore.getState().tabs.filter((tab) => isUnder(tab.path, path));
     const question = [
-      `Move ${nameOf(path)} to the trash?`,
-      isDir ? "Everything inside it goes too." : "",
-      affected.some((tab) => tab.dirty) ? "Unsaved changes in its open tabs will be lost." : "",
+      t("explorer.confirmTrash", { name: nameOf(path) }),
+      isDir ? t("explorer.confirmTrashFolder") : "",
+      affected.some((tab) => tab.dirty) ? t("explorer.confirmTrashUnsaved") : "",
     ]
       .filter(Boolean)
       .join(" ");

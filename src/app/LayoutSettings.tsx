@@ -1,27 +1,31 @@
+import { type MessageKey, useT } from "../lib/i18n";
 import { type Layout, type MenuBarMode, useLayoutStore } from "../lib/layoutStore";
 
-const MENU_BAR_LABELS: [MenuBarMode, string][] = [
-  ["auto", "Shows with Alt or at the top edge"],
-  ["always", "Always visible"],
-  ["never", "Hidden (menus stay in the settings button)"],
+const MENU_BAR_LABELS: [MenuBarMode, MessageKey][] = [
+  ["auto", "settings.menuBarAuto"],
+  ["always", "settings.menuBarAlways"],
+  ["never", "settings.menuBarNever"],
 ];
 
-const OPTIONS: { key: keyof Pick<Layout, "activityBar" | "statusBar" | "tabs">; label: string }[] =
-  [
-    { key: "activityBar", label: "Activity bar" },
-    { key: "statusBar", label: "Status bar" },
-    { key: "tabs", label: "Editor tabs" },
-  ];
+const OPTIONS: {
+  key: keyof Pick<Layout, "activityBar" | "statusBar" | "tabs">;
+  label: MessageKey;
+}[] = [
+  { key: "activityBar", label: "settings.activityBar" },
+  { key: "statusBar", label: "settings.statusBar" },
+  { key: "tabs", label: "settings.editorTabs" },
+];
 
 export function LayoutSettings() {
+  const t = useT();
   const layout = useLayoutStore();
 
   return (
     <section className="settings__section">
-      <h3>Layout</h3>
+      <h3>{t("settings.layout")}</h3>
       {OPTIONS.map(({ key, label }) => (
         <label key={key} className="settings__field">
-          <span>{label}</span>
+          <span>{t(label)}</span>
           <input
             type="checkbox"
             checked={layout[key]}
@@ -30,7 +34,7 @@ export function LayoutSettings() {
         </label>
       ))}
       <label className="settings__field">
-        <span>Menu bar</span>
+        <span>{t("settings.menuBar")}</span>
         <select
           value={layout.menuBar}
           onChange={(event) =>
@@ -41,7 +45,7 @@ export function LayoutSettings() {
         >
           {MENU_BAR_LABELS.map(([mode, label]) => (
             <option key={mode} value={mode}>
-              {label}
+              {t(label)}
             </option>
           ))}
         </select>

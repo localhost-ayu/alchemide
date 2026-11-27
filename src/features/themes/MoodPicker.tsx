@@ -7,6 +7,7 @@ import {
 } from "react";
 import { registerCommands } from "../../lib/commands";
 import { useDismiss } from "../../lib/dismiss";
+import { useT } from "../../lib/i18n";
 import { useKeepInView } from "../../lib/useKeepInView";
 import { filterOptions, type MoodOption, moodOptions } from "./moodOptions";
 import { runLookAction } from "./runLookAction";
@@ -27,6 +28,7 @@ function choiceFor(option: MoodOption, base: Choice): Choice {
 }
 
 export function MoodPicker() {
+  const t = useT();
   const [isOpen, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [index, setIndex] = useState(0);
@@ -53,7 +55,7 @@ export function MoodPicker() {
       registerCommands([
         {
           id: "themes.pickMood",
-          title: "Choose theme or effects",
+          title: t("themes.pickMood"),
           keys: "Ctrl+K M",
           run: () => {
             const { theme, effects } = useThemeStore.getState();
@@ -64,7 +66,7 @@ export function MoodPicker() {
           },
         },
       ]),
-    [],
+    [t],
   );
 
   useEffect(() => {
@@ -119,15 +121,20 @@ export function MoodPicker() {
 
   return (
     <div className="mood-picker__overlay">
-      <div ref={panelRef} className="mood-picker panel" role="dialog" aria-label="Choose a mood">
+      <div
+        ref={panelRef}
+        className="mood-picker panel"
+        role="dialog"
+        aria-label={t("themes.chooseMood")}
+      >
         <input
           className="mood-picker__search"
           role="combobox"
           aria-expanded="true"
           aria-controls="mood-options"
           aria-activedescendant={highlighted?.id}
-          aria-label="Search themes and effects"
-          placeholder="Theme or effects preset"
+          aria-label={t("themes.searchMoods")}
+          placeholder={t("themes.moodPlaceholder")}
           value={query}
           onChange={(event) => {
             setQuery(event.target.value);
@@ -157,7 +164,7 @@ export function MoodPicker() {
               <span className="mood-picker__group">{option.group}</span>
             </div>
           ))}
-          {options.length === 0 && <p className="mood-picker__empty">No match</p>}
+          {options.length === 0 && <p className="mood-picker__empty">{t("common.noMatch")}</p>}
         </div>
       </div>
     </div>

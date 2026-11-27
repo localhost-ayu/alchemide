@@ -18,6 +18,7 @@ import {
   lineNumbers,
 } from "@codemirror/view";
 import type { Tab } from "../../lib/editorStore";
+import { t } from "../../lib/i18n";
 import { editorTheme } from "./editorTheme";
 import { highlightStyle } from "./highlightStyle";
 import { blameField, showInlineBlame } from "./inlineBlame";
@@ -60,7 +61,7 @@ export function createEditorState(
       blameField,
       inlineBlame.of(showBlame ? showInlineBlame() : []),
       editorTheme,
-      EditorView.contentAttributes.of({ "aria-label": `Editing ${file.name}` }),
+      EditorView.contentAttributes.of({ "aria-label": t("editor.editing", { name: file.name }) }),
       onUpdate,
     ],
   });

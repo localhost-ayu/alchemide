@@ -1,14 +1,17 @@
 import { type KeyboardEvent, useEffect, useRef, useState } from "react";
 import { runCommand } from "../lib/commands";
 import { useDismiss } from "../lib/dismiss";
+import { useT } from "../lib/i18n";
 import { useLayoutStore } from "../lib/layoutStore";
 import { MenuPopup } from "./MenuPopup";
+import { menuKey } from "./menus";
 import { useMenus } from "./useMenus";
 
 const TOP_EDGE = 3;
 const LEAVE_DISTANCE = 80;
 
 export function MenuBar() {
+  const t = useT();
   const mode = useLayoutStore((state) => state.menuBar);
   const menus = useMenus();
   const [revealed, setRevealed] = useState(false);
@@ -138,7 +141,7 @@ export function MenuBar() {
       ref={barRef}
       className="menu-bar panel"
       role="menubar"
-      aria-label="Menu bar"
+      aria-label={t("app.menuBar")}
       data-mode={mode}
       onPointerLeave={() => {
         if (mode === "auto" && open === null && !fromKeyboard) {
@@ -158,11 +161,11 @@ export function MenuBar() {
             onPointerEnter={() => open !== null && setOpen(index)}
             onKeyDown={(event) => onTitleKey(event, index)}
           >
-            {menu.label}
+            {t(menuKey(menu.label))}
           </button>
           {open === index && (
             <MenuPopup
-              label={menu.label}
+              label={t(menuKey(menu.label))}
               items={menu.items}
               onRun={run}
               onClose={() => setOpen(null)}

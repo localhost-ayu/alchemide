@@ -6,6 +6,7 @@ import {
   strokeOf,
   useCommandStore,
 } from "../../lib/commands";
+import { useT } from "../../lib/i18n";
 import { resetShortcut, setShortcut } from "../../lib/keybindings";
 
 const MODIFIERS = ["Control", "Shift", "Alt", "Meta"];
@@ -55,6 +56,7 @@ function useShortcutRecorder(id: string | null, onDone: () => void): void {
 }
 
 export function ShortcutSettings() {
+  const t = useT();
   const commands = useCommandStore((state) => state.commands);
   const overrides = useCommandStore((state) => state.overrides);
   const [recordingId, setRecordingId] = useState<string | null>(null);
@@ -67,8 +69,8 @@ export function ShortcutSettings() {
   useShortcutRecorder(recordingId, stopRecording);
 
   return (
-    <section className="settings__section" aria-label="Keyboard shortcuts">
-      <h3>Keyboard shortcuts</h3>
+    <section className="settings__section" aria-label={t("settings.shortcuts")}>
+      <h3>{t("settings.shortcuts")}</h3>
       {sorted.map((command) => {
         const keys = effectiveKeys(command, overrides);
         const others = keys ? (conflicts[keys] ?? []).filter((id) => id !== command.id) : [];
@@ -80,36 +82,38 @@ export function ShortcutSettings() {
               {others.length > 0 && (
                 <span className="settings__problem">
                   {" "}
-                  · also used by {others.map((id) => commands[id]?.title ?? id).join(", ")}
+                  {t("settings.alsoUsedBy", {
+                    commands: others.map((id) => commands[id]?.title ?? id).join(", "),
+                  })}
                 </span>
               )}
             </span>
             <span className="settings__shortcut-keys">
-              <kbd aria-label={`Shortcut for ${command.title}`}>
-                {recording ? "Press keys…" : (keys ?? "—")}
+              <kbd aria-label={t("settings.shortcutFor", { command: command.title })}>
+                {recording ? t("settings.pressKeys") : (keys ?? "—")}
               </kbd>
               <button
                 type="button"
-                aria-label={`Change shortcut for ${command.title}`}
+                aria-label={t("settings.changeShortcut", { command: command.title })}
                 onClick={() => setRecordingId(command.id)}
               >
-                Change
+                {t("settings.change")}
               </button>
               <button
                 type="button"
-                aria-label={`Remove shortcut for ${command.title}`}
+                aria-label={t("settings.removeShortcut", { command: command.title })}
                 disabled={!keys}
                 onClick={() => setShortcut(command.id, null)}
               >
-                Remove
+                {t("settings.remove")}
               </button>
               <button
                 type="button"
-                aria-label={`Reset shortcut for ${command.title}`}
+                aria-label={t("settings.resetShortcut", { command: command.title })}
                 disabled={!(command.id in overrides)}
                 onClick={() => resetShortcut(command.id)}
               >
-                Reset
+                {t("settings.reset")}
               </button>
             </span>
           </div>

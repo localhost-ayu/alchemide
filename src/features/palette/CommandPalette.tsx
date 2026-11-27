@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { registerCommands, useCommandStore } from "../../lib/commands";
+import { useT } from "../../lib/i18n";
 import { rankByFuzzy } from "./fuzzyMatch";
 import { Palette } from "./Palette";
 import "./palette.css";
@@ -7,6 +8,7 @@ import "./palette.css";
 const OWN_ID = "palette.commands";
 
 export function CommandPalette() {
+  const t = useT();
   const [isOpen, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const commands = useCommandStore((state) => state.commands);
@@ -16,7 +18,7 @@ export function CommandPalette() {
       registerCommands([
         {
           id: OWN_ID,
-          title: "Show all commands",
+          title: t("palette.showCommands"),
           keys: "Ctrl+Shift+P",
           run: () => {
             setQuery("");
@@ -24,7 +26,7 @@ export function CommandPalette() {
           },
         },
       ]),
-    [],
+    [t],
   );
 
   const items = useMemo(() => {
@@ -43,11 +45,11 @@ export function CommandPalette() {
   }
   return (
     <Palette
-      label="Run a command"
-      placeholder="Type a command"
+      label={t("palette.runCommand")}
+      placeholder={t("palette.typeCommand")}
       query={query}
       items={items}
-      emptyText="No matching command"
+      emptyText={t("palette.noCommand")}
       onQueryChange={setQuery}
       onClose={() => setOpen(false)}
       onChoose={(item) => {

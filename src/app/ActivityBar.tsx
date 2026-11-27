@@ -1,12 +1,13 @@
 import { type ReactNode, useCallback, useState } from "react";
+import { type MessageKey, useT } from "../lib/i18n";
 import { type SidebarView, useLayoutStore } from "../lib/layoutStore";
 import { Icon } from "./Icon";
 import { SettingsMenu } from "./SettingsMenu";
 
-const VIEWS: { view: SidebarView; label: string; keys: string; icon: ReactNode }[] = [
+const VIEWS: { view: SidebarView; label: MessageKey; keys: string; icon: ReactNode }[] = [
   {
     view: "explorer",
-    label: "Explorer",
+    label: "app.explorer",
     keys: "Ctrl+Shift+E",
     icon: (
       <Icon>
@@ -17,7 +18,7 @@ const VIEWS: { view: SidebarView; label: string; keys: string; icon: ReactNode }
   },
   {
     view: "search",
-    label: "Search",
+    label: "app.search",
     keys: "Ctrl+Shift+F",
     icon: (
       <Icon>
@@ -28,7 +29,7 @@ const VIEWS: { view: SidebarView; label: string; keys: string; icon: ReactNode }
   },
   {
     view: "docker",
-    label: "Docker",
+    label: "app.docker",
     keys: "Ctrl+Shift+D",
     icon: (
       <Icon>
@@ -40,6 +41,7 @@ const VIEWS: { view: SidebarView; label: string; keys: string; icon: ReactNode }
 ];
 
 export function ActivityBar() {
+  const t = useT();
   const sidebar = useLayoutStore((state) => state.sidebar);
   const sidebarOpen = useLayoutStore((state) => state.sidebarOpen);
   const toggleView = useLayoutStore((state) => state.toggleView);
@@ -47,15 +49,15 @@ export function ActivityBar() {
   const closeMenu = useCallback(() => setMenuOpen(false), []);
 
   return (
-    <nav className="activity-bar" aria-label="Activity bar">
+    <nav className="activity-bar" aria-label={t("app.activityBar")}>
       {VIEWS.map(({ view, label, keys, icon }) => (
         <button
           key={view}
           type="button"
           className="activity-bar__item"
-          aria-label={label}
+          aria-label={t(label)}
           aria-pressed={sidebarOpen && sidebar === view}
-          title={`${label} (${keys})`}
+          title={`${t(label)} (${keys})`}
           onClick={() => toggleView(view)}
         >
           {icon}
@@ -64,10 +66,10 @@ export function ActivityBar() {
       <button
         type="button"
         className="activity-bar__item activity-bar__settings"
-        aria-label="Settings and menus"
+        aria-label={t("app.settingsAndMenus")}
         aria-haspopup="menu"
         aria-expanded={menuOpen}
-        title="Settings and menus"
+        title={t("app.settingsAndMenus")}
         onClick={() => setMenuOpen((open) => !open)}
       >
         <Icon>

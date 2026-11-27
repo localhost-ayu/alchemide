@@ -1,3 +1,4 @@
+import { t } from "../../lib/i18n";
 import {
   type Corner,
   DEFAULT_EDITOR_BACKDROP,
@@ -91,7 +92,7 @@ function readSyntax(section: Fields, ui: ThemeUi, warnings: string[]): ThemeSynt
     if (isColor(section[key])) {
       return section[key];
     }
-    warnings.push(`syntax.${key} is not a hex color; using a default`);
+    warnings.push(t("theme.warnSyntaxColor", { key }));
     return fallback;
   };
   return { ...required, type: optional("type", ui.accent2), number: optional("number", ui.accent) };
@@ -104,7 +105,7 @@ export function readEditorBackdrop(value: unknown, warnings: string[]): EditorBa
     return null;
   }
   if (!isFields(value)) {
-    warnings.push("background.editor is not an object; using the default");
+    warnings.push(t("theme.warnEditorBackdrop"));
     return null;
   }
   const mode = EDITOR_MODES.find((candidate) => candidate === value.mode);
@@ -121,7 +122,7 @@ export function readBackground(value: unknown, ui: ThemeUi, warnings: string[]):
     return fallback;
   }
   if (!isFields(value)) {
-    warnings.push("background is not an object; using a solid background");
+    warnings.push(t("theme.warnBackgroundObject"));
     return fallback;
   }
   if (value.type === "solid" && isColor(value.color)) {
@@ -144,7 +145,7 @@ export function readBackground(value: unknown, ui: ThemeUi, warnings: string[]):
       ...(editor ? { editor } : {}),
     };
   }
-  warnings.push("background is invalid; using a solid background");
+  warnings.push(t("theme.warnBackgroundInvalid"));
   return fallback;
 }
 
@@ -162,7 +163,7 @@ export function readMascot(value: unknown, warnings: string[]): ThemeMascot | nu
     return null;
   }
   if (!isFields(value) || !isRelativePath(value.path)) {
-    warnings.push("mascot is invalid; hiding it");
+    warnings.push(t("theme.warnMascot"));
     return null;
   }
   const corner = CORNERS.find((candidate) => candidate === value.corner) ?? "bottom-right";
@@ -200,19 +201,21 @@ export type ReadTheme = {
 export function readTheme(input: unknown): ReadTheme {
   const reject = (reason: string): ReadTheme => ({ theme: null, warnings: [reason] });
   if (!isFields(input)) {
-    return reject("the theme is not a JSON object");
+    return reject(t("theme.notObject"));
   }
   if (typeof input.name !== "string" || input.name.trim() === "") {
-    return reject("the theme has no name");
+    return reject(t("theme.noName"));
   }
   const ui = readColors(input.ui, UI_KEYS);
   if (!ui) {
-    return reject(`${input.name}: ui needs hex colors for ${UI_KEYS.join(", ")}`);
+    return reject(t("theme.uiColors", { name: String(input.name), keys: UI_KEYS.join(", ") }));
   }
   const warnings: string[] = [];
   const syntax = isFields(input.syntax) ? readSyntax(input.syntax, ui, warnings) : null;
   if (!syntax) {
-    return reject(`${input.name}: syntax needs hex colors for ${SYNTAX_KEYS.join(", ")}`);
+    return reject(
+      t("theme.syntaxColors", { name: String(input.name), keys: SYNTAX_KEYS.join(", ") }),
+    );
   }
   const glass = isFields(input.glass) ? input.glass : {};
   return {

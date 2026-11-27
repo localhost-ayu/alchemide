@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- The whole interface is available in Brazilian Portuguese: menus, commands, panels, settings, the theme editor, the Git dock, Docker, search, the terminal and messages
+
+### Fixed
+
+- A Docker container being stopped showed "stoping…"
+- The mood picker showed some group names in Portuguese while the rest was in English
+
 ## [0.9.0] - 2026-11-27
 
 File operations: create, rename and delete files and folders from the explorer.

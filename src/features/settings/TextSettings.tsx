@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { LIMITS, useEditorSettings, ZOOM_LEVELS } from "../../lib/editorSettings";
 import { BUNDLED_FONTS, isBundledFont } from "../../lib/fonts";
+import { useT } from "../../lib/i18n";
 
 const INSTALLED = "installed";
 const SAMPLE = "const flask = 0xBEEF; // => !== <= -> ===";
 
 export function TextSettings() {
+  const t = useT();
   const fontFamily = useEditorSettings((state) => state.fontFamily);
   const fontSize = useEditorSettings((state) => state.fontSize);
   const terminalFontSize = useEditorSettings((state) => state.terminalFontSize);
@@ -24,9 +26,9 @@ export function TextSettings() {
 
   return (
     <section className="settings__section">
-      <h3>Text</h3>
+      <h3>{t("settings.text")}</h3>
       <label className="settings__field">
-        <span>Font</span>
+        <span>{t("settings.font")}</span>
         <select
           value={usesInstalled ? INSTALLED : fontFamily}
           onChange={(event) => {
@@ -42,12 +44,12 @@ export function TextSettings() {
               {font}
             </option>
           ))}
-          <option value={INSTALLED}>Installed font…</option>
+          <option value={INSTALLED}>{t("settings.installedFont")}</option>
         </select>
       </label>
       {usesInstalled && (
         <label className="settings__field">
-          <span>Installed font name</span>
+          <span>{t("settings.installedFontName")}</span>
           <input
             value={fontDraft}
             placeholder="Consolas"
@@ -68,10 +70,10 @@ export function TextSettings() {
           checked={ligatures}
           onChange={(event) => update({ ligatures: event.target.checked })}
         />
-        <span>Ligatures</span>
+        <span>{t("settings.ligatures")}</span>
       </label>
       <label className="settings__field">
-        <span>Font size</span>
+        <span>{t("settings.fontSize")}</span>
         <input
           type="number"
           {...LIMITS.fontSize}
@@ -80,7 +82,7 @@ export function TextSettings() {
         />
       </label>
       <label className="settings__field">
-        <span>Terminal font size</span>
+        <span>{t("settings.terminalFontSize")}</span>
         <input
           type="number"
           {...LIMITS.terminalFontSize}
@@ -89,7 +91,7 @@ export function TextSettings() {
         />
       </label>
       <label className="settings__field">
-        <span>Line height</span>
+        <span>{t("settings.lineHeight")}</span>
         <input
           type="number"
           {...LIMITS.lineHeight}
@@ -98,7 +100,7 @@ export function TextSettings() {
         />
       </label>
       <label className="settings__field">
-        <span>Interface zoom</span>
+        <span>{t("settings.zoom")}</span>
         <select value={zoom} onChange={(event) => update({ zoom: Number(event.target.value) })}>
           {ZOOM_LEVELS.map((level) => (
             <option key={level} value={level}>

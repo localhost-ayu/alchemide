@@ -1,9 +1,11 @@
 import { useActivityStore } from "../../lib/activityStore";
+import { useT } from "../../lib/i18n";
 import { SNIPPET_PACKS } from "../../lib/snippetPacks";
 import { useSnippetStore } from "../../lib/snippetStore";
 import { importMessage } from "./importMessage";
 
 export function SnippetSettings() {
+  const t = useT();
   const enabledPacks = useSnippetStore((state) => state.enabledPacks);
   const userSnippets = useSnippetStore((state) => state.userSnippets);
   const problems = useSnippetStore((state) => state.problems);
@@ -16,7 +18,7 @@ export function SnippetSettings() {
 
   return (
     <section className="settings__section">
-      <h3>Snippets</h3>
+      <h3>{t("settings.snippets")}</h3>
       {SNIPPET_PACKS.map((pack) => (
         <label key={pack.id} className="settings__field settings__field--check">
           <input
@@ -32,11 +34,11 @@ export function SnippetSettings() {
       <div className="settings__field">
         <span>
           {userSnippets.length === 1
-            ? "1 snippet of yours"
-            : `${userSnippets.length} snippets of yours`}
+            ? t("settings.userSnippetsOne")
+            : t("settings.userSnippetsMany", { count: userSnippets.length })}
         </span>
         <button type="button" onClick={importFromVscode}>
-          Import from VS Code
+          {t("settings.importVscodeSnippets")}
         </button>
       </div>
       {problems.map((problem) => (

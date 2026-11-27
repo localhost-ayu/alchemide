@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { useActivityStore } from "../../lib/activityStore";
+import { t } from "../../lib/i18n";
 import {
   gitBranches,
   gitCommit,
@@ -115,7 +116,7 @@ export const useGitStore = create<GitState>((set, get) => {
       set({ selection: null, diff: null });
       await act(async () => {
         await gitSwitch(name);
-        useActivityStore.getState().notify(`Switched to ${name}`);
+        useActivityStore.getState().notify(t("git.switchedTo", { name }));
       });
     },
     commit: async () => {
@@ -123,7 +124,7 @@ export const useGitStore = create<GitState>((set, get) => {
       await act(async () => {
         const hash = await gitCommit(message);
         set({ message: "", selection: null, diff: null });
-        useActivityStore.getState().notify(`Committed ${hash}`);
+        useActivityStore.getState().notify(t("git.committed", { hash }));
       });
     },
   };

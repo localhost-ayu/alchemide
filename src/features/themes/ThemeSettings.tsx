@@ -1,4 +1,5 @@
 import { runCommand } from "../../lib/commands";
+import { type MessageKey, useT } from "../../lib/i18n";
 import { BUILTIN_THEMES } from "./builtinThemes";
 import type { Effects } from "./theme";
 import {
@@ -9,13 +10,14 @@ import {
 } from "./themeLibrary";
 import { findTheme, useThemeStore } from "./useThemeStore";
 
-const FLAGS: { key: "background" | "mascot" | "animations"; label: string }[] = [
-  { key: "background", label: "Background" },
-  { key: "mascot", label: "Mascot" },
-  { key: "animations", label: "Animations" },
+const FLAGS: { key: "background" | "mascot" | "animations"; label: MessageKey }[] = [
+  { key: "background", label: "themes.effectBackground" },
+  { key: "mascot", label: "themes.effectMascot" },
+  { key: "animations", label: "themes.effectAnimations" },
 ];
 
 export function ThemeSettings() {
+  const t = useT();
   const theme = useThemeStore((state) => state.theme);
   const effects = useThemeStore((state) => state.effects);
   const commit = useThemeStore((state) => state.commit);
@@ -25,9 +27,9 @@ export function ThemeSettings() {
 
   return (
     <section className="settings__section">
-      <h3>Look</h3>
+      <h3>{t("themes.look")}</h3>
       <label className="settings__field">
-        <span>Theme</span>
+        <span>{t("themes.theme")}</span>
         <select
           value={theme.name}
           onChange={(event) => {
@@ -37,7 +39,7 @@ export function ThemeSettings() {
             }
           }}
         >
-          <optgroup label="Built-in">
+          <optgroup label={t("themes.builtIn")}>
             {BUILTIN_THEMES.map((option) => (
               <option key={option.name} value={option.name}>
                 {option.name}
@@ -45,7 +47,7 @@ export function ThemeSettings() {
             ))}
           </optgroup>
           {userThemes.length > 0 && (
-            <optgroup label="Your themes">
+            <optgroup label={t("themes.yourThemes")}>
               {userThemes.map(({ file, theme: option }) => (
                 <option key={file} value={option.name}>
                   {option.name}
@@ -57,30 +59,28 @@ export function ThemeSettings() {
       </label>
       <div className="settings__actions">
         <button type="button" onClick={() => runCommand("themes.edit")}>
-          Edit…
+          {t("themes.edit")}
         </button>
         <button type="button" onClick={duplicateCurrentTheme}>
-          Duplicate
+          {t("themes.duplicate")}
         </button>
         <button type="button" onClick={importThemeFile}>
-          Import…
+          {t("themes.import")}
         </button>
         <button type="button" onClick={() => runCommand("themes.importVscode")}>
-          From VS Code…
+          {t("themes.fromVscode")}
         </button>
         <button type="button" onClick={exportCurrentTheme}>
-          Export…
+          {t("themes.export")}
         </button>
         <button type="button" onClick={deleteCurrentTheme} disabled={!isUserTheme}>
-          Delete
+          {t("themes.delete")}
         </button>
       </div>
-      <p className="settings__hint">
-        Glass panels, colors and the wallpaper are in the theme editor.
-      </p>
+      <p className="settings__hint">{t("themes.editorHint")}</p>
       {FLAGS.map((flag) => (
         <label key={flag.key} className="settings__field">
-          <span>{flag.label}</span>
+          <span>{t(flag.label)}</span>
           <input
             type="checkbox"
             checked={effects[flag.key]}

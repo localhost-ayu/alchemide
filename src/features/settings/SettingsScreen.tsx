@@ -37,7 +37,7 @@ export function SettingsScreen({ children }: SettingsScreenProps) {
       registerCommands([
         {
           id: "settings.open",
-          title: "Open settings",
+          title: t("settings.open"),
           keys: "Ctrl+,",
           run: () => {
             setQuery("");
@@ -46,24 +46,24 @@ export function SettingsScreen({ children }: SettingsScreenProps) {
         },
         {
           id: "view.zoomIn",
-          title: "Zoom in",
+          title: t("settings.zoomIn"),
           keys: "Ctrl+=",
           run: () => changeZoom(1),
         },
         {
           id: "view.zoomOut",
-          title: "Zoom out",
+          title: t("settings.zoomOut"),
           keys: "Ctrl+-",
           run: () => changeZoom(-1),
         },
         {
           id: "view.zoomReset",
-          title: "Reset zoom",
+          title: t("settings.zoomReset"),
           keys: "Ctrl+0",
           run: () => useEditorSettings.getState().update({ zoom: 1 }),
         },
       ]),
-    [],
+    [t],
   );
 
   useDismiss(isOpen, () => setOpen(false), dialogRef);
@@ -79,24 +79,29 @@ export function SettingsScreen({ children }: SettingsScreenProps) {
   }
   return (
     <div className="settings__overlay">
-      <div ref={dialogRef} className="settings panel" role="dialog" aria-label="Settings">
+      <div
+        ref={dialogRef}
+        className="settings panel"
+        role="dialog"
+        aria-label={t("settings.title")}
+      >
         <header className="settings__header">
-          <h2>Settings</h2>
+          <h2>{t("settings.title")}</h2>
           <input
             className="settings__search"
             type="search"
-            aria-label="Search settings"
-            placeholder="Search settings"
+            aria-label={t("settings.search")}
+            placeholder={t("settings.search")}
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             // biome-ignore lint/a11y/noAutofocus: the settings open from a shortcut and searching is the first thing to do
             autoFocus
           />
-          <button type="button" aria-label="Close settings" onClick={() => setOpen(false)}>
+          <button type="button" aria-label={t("settings.close")} onClick={() => setOpen(false)}>
             ×
           </button>
         </header>
-        {matches === 0 && <p className="settings__empty">No setting matches “{query}”</p>}
+        {matches === 0 && <p className="settings__empty">{t("settings.noMatch", { query })}</p>}
         <section className="settings__section">
           <h3>{t("settings.general")}</h3>
           <label className="settings__field">
@@ -139,22 +144,22 @@ export function SettingsScreen({ children }: SettingsScreenProps) {
         </section>
         <TextSettings />
         <section className="settings__section">
-          <h3>Editor</h3>
+          <h3>{t("settings.editor")}</h3>
           <label className="settings__field">
-            <span>Tab size</span>
+            <span>{t("settings.tabSize")}</span>
             <select
               value={tabSize}
               onChange={(event) => update({ tabSize: Number(event.target.value) })}
             >
               {TAB_SIZES.map((size) => (
                 <option key={size} value={size}>
-                  {size} spaces
+                  {t("settings.tabSizeOption", { size })}
                 </option>
               ))}
             </select>
           </label>
           <label className="settings__field">
-            <span>Show who last changed the cursor line (git blame)</span>
+            <span>{t("settings.inlineBlame")}</span>
             <input
               type="checkbox"
               checked={inlineBlame}

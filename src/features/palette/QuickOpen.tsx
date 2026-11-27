@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { registerCommands } from "../../lib/commands";
 import { useEditorStore } from "../../lib/editorStore";
+import { useT } from "../../lib/i18n";
 import { listFiles } from "../../lib/ipc";
 import type { ProjectFile } from "../../lib/types";
 import { rankByFuzzy } from "./fuzzyMatch";
@@ -17,6 +18,7 @@ function splitPath(relative: string): { name: string; folder: string } {
 }
 
 export function QuickOpen() {
+  const t = useT();
   const [isOpen, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [files, setFiles] = useState<ProjectFile[]>([]);
@@ -27,7 +29,7 @@ export function QuickOpen() {
       registerCommands([
         {
           id: "palette.quickOpen",
-          title: "Go to file",
+          title: t("palette.goToFile"),
           keys: "Ctrl+P",
           run: () => {
             setQuery("");
@@ -42,7 +44,7 @@ export function QuickOpen() {
           },
         },
       ]),
-    [],
+    [t],
   );
 
   const items = useMemo(
@@ -61,11 +63,11 @@ export function QuickOpen() {
   }
   return (
     <Palette
-      label="Go to file"
-      placeholder="Search files by name"
+      label={t("palette.goToFile")}
+      placeholder={t("palette.searchFiles")}
       query={query}
       items={items}
-      emptyText={error ? "Open a folder first" : "No matching file"}
+      emptyText={error ? t("palette.openFolderFirst") : t("palette.noFile")}
       onQueryChange={setQuery}
       onClose={() => setOpen(false)}
       onChoose={(item) => {

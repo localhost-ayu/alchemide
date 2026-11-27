@@ -1,3 +1,4 @@
+import { t } from "../../lib/i18n";
 import {
   deleteUserTheme,
   exportTheme,
@@ -69,12 +70,12 @@ export function duplicateCurrentTheme(): Promise<void> {
 async function addImported(source: unknown): Promise<void> {
   const { theme, warnings } = readTheme(source);
   if (!theme) {
-    report(`could not import the theme: ${warnings.join("; ")}`);
+    report(t("themes.importFailed", { warnings: warnings.join("; ") }));
     return;
   }
   const name = await addUserTheme(theme);
   if (name !== theme.name) {
-    report(`"${theme.name}" already exists; imported as "${name}"`);
+    report(t("themes.importedAs", { name: theme.name, newName: name }));
   }
 }
 
@@ -113,10 +114,10 @@ export function deleteCurrentTheme(): Promise<void> {
   return attempt(async () => {
     const userTheme = currentUserTheme();
     if (!userTheme) {
-      report("built-in themes cannot be deleted");
+      report(t("themes.builtInNoDelete"));
       return;
     }
-    const question = `Delete the theme "${userTheme.theme.name}"? Its file is removed from the themes folder.`;
+    const question = t("themes.confirmDelete", { name: userTheme.theme.name });
     if (!window.confirm(question)) {
       return;
     }

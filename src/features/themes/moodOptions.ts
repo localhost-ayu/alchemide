@@ -1,3 +1,4 @@
+import { type MessageKey, t } from "../../lib/i18n";
 import { BUILTIN_THEMES } from "./builtinThemes";
 import type { CustomLook } from "./customLook";
 import { PRESETS, type Preset } from "./presets";
@@ -17,11 +18,11 @@ const GROUPS: Record<string, string> = {
   pasteis: "Pastéis",
 };
 
-const ACTION_LABELS: Record<LookAction, string> = {
-  "pick-background": "Choose background image or video…",
-  "pick-mascot": "Choose mascot image…",
-  "clear-background": "Remove custom background",
-  "clear-mascot": "Remove mascot",
+const ACTION_LABELS: Record<LookAction, MessageKey> = {
+  "pick-background": "themes.actionPickBackground",
+  "pick-mascot": "themes.actionPickMascot",
+  "clear-background": "themes.actionClearBackground",
+  "clear-mascot": "themes.actionClearMascot",
 };
 
 function actionOptions(custom: CustomLook): MoodOption[] {
@@ -35,13 +36,11 @@ function actionOptions(custom: CustomLook): MoodOption[] {
   return actions.map((action) => ({
     kind: "action",
     id: `action:${action}`,
-    label: ACTION_LABELS[action],
-    group: "Personalizar",
+    label: t(ACTION_LABELS[action]),
+    group: t("themes.groupCustomize"),
     action,
   }));
 }
-
-const USER_GROUP = "Meus temas";
 
 function themeOption(theme: Theme, group: string): MoodOption {
   return { kind: "theme", id: `theme:${theme.name}`, label: theme.name, group, theme };
@@ -53,14 +52,14 @@ export function moodOptions(
   userThemes: Theme[] = [],
 ): MoodOption[] {
   const themeOptions: MoodOption[] = [
-    ...themes.map((theme) => themeOption(theme, GROUPS[theme.mood] ?? "Outros")),
-    ...userThemes.map((theme) => themeOption(theme, USER_GROUP)),
+    ...themes.map((theme) => themeOption(theme, GROUPS[theme.mood] ?? t("themes.groupOther"))),
+    ...userThemes.map((theme) => themeOption(theme, t("themes.groupMine"))),
   ];
   const presetOptions: MoodOption[] = PRESETS.map((preset) => ({
     kind: "preset",
     id: `preset:${preset.name}`,
     label: preset.name,
-    group: "Efeitos",
+    group: t("themes.groupEffects"),
     preset,
   }));
   return [...themeOptions, ...presetOptions, ...actionOptions(custom)];

@@ -1,5 +1,6 @@
 import { runCommand } from "../../lib/commands";
 import { selectActiveTab, useEditorStore } from "../../lib/editorStore";
+import { useT } from "../../lib/i18n";
 import { languageLabel } from "../../lib/languages";
 import { ActivityIndicator } from "./ActivityIndicator";
 import { EnvironmentBadge } from "./EnvironmentBadge";
@@ -8,6 +9,7 @@ import { LanguageServerBadge } from "./LanguageServerBadge";
 import "./StatusBar.css";
 
 export function StatusBar() {
+  const t = useT();
   const tab = useEditorStore(selectActiveTab);
   const cursor = useEditorStore((state) => state.cursor);
 
@@ -31,7 +33,7 @@ export function StatusBar() {
         <button
           type="button"
           className="statusbar__terminal"
-          aria-label="Toggle terminal"
+          aria-label={t("status.toggleTerminal")}
           title="Terminal (Ctrl+`)"
           onClick={() => runCommand("terminal.toggle")}
         >

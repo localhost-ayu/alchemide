@@ -1,9 +1,11 @@
 import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useDismiss } from "../../lib/dismiss";
+import { useT } from "../../lib/i18n";
 import { useWorkspaceStore } from "./useWorkspaceStore";
 
 export function ExplorerContextMenu() {
+  const t = useT();
   const menu = useWorkspaceStore((state) => state.contextMenu);
   const isRoot = useWorkspaceStore((state) => state.contextMenu?.path === state.folder?.path);
   const { closeContextMenu, startCreate, startRename, deletePath } = useWorkspaceStore.getState();
@@ -38,7 +40,7 @@ export function ExplorerContextMenu() {
       ref={menuRef}
       className="explorer-menu panel"
       role="menu"
-      aria-label="File actions"
+      aria-label={t("explorer.fileActions")}
       style={{ left: menu.x, top: menu.y }}
       onKeyDown={(event) => {
         const items = [
@@ -53,25 +55,25 @@ export function ExplorerContextMenu() {
       }}
     >
       <button ref={firstRef} type="button" role="menuitem" onClick={run(() => startCreate(false))}>
-        New file
+        {t("explorer.newFile")}
       </button>
       <button type="button" role="menuitem" onClick={run(() => startCreate(true))}>
-        New folder
+        {t("explorer.newFolder")}
       </button>
       {!isRoot && (
         <>
           <button type="button" role="menuitem" onClick={run(() => startRename(menu.path))}>
-            <span>Rename</span>
+            <span>{t("explorer.rename")}</span>
             <kbd>F2</kbd>
           </button>
           <button type="button" role="menuitem" onClick={run(() => deletePath(menu.path))}>
-            <span>Delete</span>
+            <span>{t("explorer.delete")}</span>
             <kbd>Del</kbd>
           </button>
         </>
       )}
       <button type="button" role="menuitem" onClick={run(copyPath)}>
-        Copy path
+        {t("explorer.copyPath")}
       </button>
     </div>,
     document.body,

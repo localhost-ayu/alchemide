@@ -92,9 +92,9 @@ test("lists your themes under their own group and remembers the choice", async (
   render(<MoodPicker />);
   const search = openPicker();
 
-  fireEvent.change(search, { target: { value: "meus temas" } });
+  fireEvent.change(search, { target: { value: "my themes" } });
   expect(screen.getAllByRole("option").map((option) => option.textContent)).toEqual([
-    "NoiteMeus temas",
+    "NoiteMy themes",
   ]);
   await act(async () => {
     fireEvent.keyDown(search, { key: "Enter" });

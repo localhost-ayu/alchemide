@@ -1,4 +1,5 @@
 import { BUNDLED_FONTS } from "../../lib/fonts";
+import { type MessageKey, useT } from "../../lib/i18n";
 import { PALETTE_NAMES } from "./terminalPalettes";
 import {
   CURSOR_STYLES,
@@ -8,26 +9,27 @@ import {
   useTerminalSettings,
 } from "./useTerminalSettings";
 
-const CURSOR_LABELS: Record<CursorStyle, string> = {
-  block: "Block",
-  bar: "Bar",
-  underline: "Underline",
+const CURSOR_LABELS: Record<CursorStyle, MessageKey> = {
+  block: "terminal.cursorBlock",
+  bar: "terminal.cursorBar",
+  underline: "terminal.cursorUnderline",
 };
 
 export function TerminalSettings() {
+  const t = useT();
   const settings = useTerminalSettings();
   const { update } = settings;
 
   return (
-    <section className="settings__section" aria-label="Terminal">
-      <h3>Terminal</h3>
+    <section className="settings__section" aria-label={t("terminal.title")}>
+      <h3>{t("terminal.title")}</h3>
       <label className="settings__field">
-        <span>Colors</span>
+        <span>{t("terminal.colors")}</span>
         <select
           value={settings.palette}
           onChange={(event) => update({ palette: event.target.value })}
         >
-          <option value={FOLLOW_THEME}>Follow the theme</option>
+          <option value={FOLLOW_THEME}>{t("terminal.followTheme")}</option>
           {PALETTE_NAMES.map((name) => (
             <option key={name} value={name}>
               {name}
@@ -36,12 +38,12 @@ export function TerminalSettings() {
         </select>
       </label>
       <label className="settings__field">
-        <span>Terminal font</span>
+        <span>{t("terminal.font")}</span>
         <select
           value={settings.fontFamily}
           onChange={(event) => update({ fontFamily: event.target.value })}
         >
-          <option value="">Same as the editor</option>
+          <option value="">{t("terminal.sameAsEditor")}</option>
           {BUNDLED_FONTS.map((font) => (
             <option key={font} value={font}>
               {font}
@@ -50,7 +52,7 @@ export function TerminalSettings() {
         </select>
       </label>
       <label className="settings__field">
-        <span>Terminal line height</span>
+        <span>{t("terminal.lineHeight")}</span>
         <input
           type="number"
           min={TERMINAL_LIMITS.lineHeight.min}
@@ -61,20 +63,20 @@ export function TerminalSettings() {
         />
       </label>
       <label className="settings__field">
-        <span>Cursor</span>
+        <span>{t("terminal.cursor")}</span>
         <select
           value={settings.cursorStyle}
           onChange={(event) => update({ cursorStyle: event.target.value as CursorStyle })}
         >
           {CURSOR_STYLES.map((style) => (
             <option key={style} value={style}>
-              {CURSOR_LABELS[style]}
+              {t(CURSOR_LABELS[style])}
             </option>
           ))}
         </select>
       </label>
       <label className="settings__field">
-        <span>Blinking cursor</span>
+        <span>{t("terminal.cursorBlink")}</span>
         <input
           type="checkbox"
           checked={settings.cursorBlink}
@@ -82,7 +84,7 @@ export function TerminalSettings() {
         />
       </label>
       <label className="settings__field">
-        <span>Padding</span>
+        <span>{t("terminal.padding")}</span>
         <input
           type="number"
           min={TERMINAL_LIMITS.padding.min}
@@ -93,7 +95,7 @@ export function TerminalSettings() {
         />
       </label>
       <label className="settings__field">
-        <span>Scrollback lines</span>
+        <span>{t("terminal.scrollback")}</span>
         <input
           type="number"
           min={TERMINAL_LIMITS.scrollback.min}
@@ -104,7 +106,7 @@ export function TerminalSettings() {
         />
       </label>
       <label className="settings__field">
-        <span>Flash on bell</span>
+        <span>{t("terminal.bell")}</span>
         <input
           type="checkbox"
           checked={settings.visualBell}

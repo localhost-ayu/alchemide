@@ -1,6 +1,7 @@
 import { type KeyboardEvent as ReactKeyboardEvent, useEffect, useMemo, useState } from "react";
 import { registerCommands } from "../../lib/commands";
 import { useDismiss } from "../../lib/dismiss";
+import { useT } from "../../lib/i18n";
 import { listVscodeThemes } from "../../lib/ipc";
 import type { VscodeTheme } from "../../lib/types";
 import { importVscodeTheme, importVscodeThemeFile } from "./themeLibrary";
@@ -14,6 +15,7 @@ function matches(theme: VscodeTheme, query: string): boolean {
 }
 
 export function VscodeThemePicker() {
+  const t = useT();
   const [themes, setThemes] = useState<VscodeTheme[] | null>(null);
   const [query, setQuery] = useState("");
   const [index, setIndex] = useState(0);
@@ -28,7 +30,7 @@ export function VscodeThemePicker() {
       registerCommands([
         {
           id: "themes.importVscode",
-          title: "Import VS Code theme…",
+          title: t("themes.importVscode"),
           run: async () => {
             try {
               const found = await listVscodeThemes();
@@ -48,11 +50,11 @@ export function VscodeThemePicker() {
         },
         {
           id: "themes.importVscodeFile",
-          title: "Import VS Code theme file…",
+          title: t("themes.importVscodeFile"),
           run: importVscodeThemeFile,
         },
       ]),
-    [],
+    [t],
   );
 
   const close = () => setThemes(null);
@@ -90,7 +92,7 @@ export function VscodeThemePicker() {
         ref={panelRef}
         className="mood-picker panel"
         role="dialog"
-        aria-label="Import a VS Code theme"
+        aria-label={t("themes.importVscodeDialog")}
       >
         <input
           className="mood-picker__search"
@@ -98,8 +100,8 @@ export function VscodeThemePicker() {
           aria-expanded="true"
           aria-controls="vscode-theme-options"
           aria-activedescendant={highlighted ? `vscode-theme-${index}` : undefined}
-          aria-label="Search VS Code themes"
-          placeholder="VS Code theme"
+          aria-label={t("themes.searchVscode")}
+          placeholder={t("themes.vscodePlaceholder")}
           value={query}
           onChange={(event) => {
             setQuery(event.target.value);
@@ -131,7 +133,7 @@ export function VscodeThemePicker() {
               </span>
             </div>
           ))}
-          {options.length === 0 && <p className="mood-picker__empty">No match</p>}
+          {options.length === 0 && <p className="mood-picker__empty">{t("common.noMatch")}</p>}
         </div>
       </div>
     </div>
