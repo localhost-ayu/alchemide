@@ -12,6 +12,9 @@ A lightweight, mood-themed code editor built with Tauri, React and CodeMirror.
 - Markdown preview
 - Autocomplete, hover, inline errors and go to definition (`F12`) through language servers you
   install: Intelephense (PHP), `typescript-language-server` (JS/TS/React) and `sqls` (SQL)
+- Six bundled code fonts (Maple Mono, JetBrains Mono, Adwaita Mono, Fira Code, Cascadia Code,
+  IBM Plex Mono) or any installed font; separate sizes for the editor and the terminal, line
+  height, ligatures and interface zoom (`Ctrl+=`, `Ctrl+-`, `Ctrl+0`)
 - Themes by mood, custom backgrounds and independent visual effects
 
 ## Install

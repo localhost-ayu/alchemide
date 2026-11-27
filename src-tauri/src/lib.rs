@@ -9,6 +9,7 @@ mod terminal;
 mod themes;
 mod updater;
 mod vscode_themes;
+mod zoom;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -51,7 +52,8 @@ pub fn run() {
             updater::install_update,
             vscode_themes::list_vscode_themes,
             vscode_themes::load_vscode_theme,
-            vscode_themes::pick_vscode_theme
+            vscode_themes::pick_vscode_theme,
+            zoom::set_zoom
         ])
         .run(tauri::generate_context!());
     if let Err(error) = result {

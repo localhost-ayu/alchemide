@@ -3,6 +3,8 @@ import { Terminal } from "@xterm/xterm";
 import { useEffect, useRef } from "react";
 import { playfulTouchesEnabled } from "../../lib/activityStore";
 import { keyBelongsToApp } from "../../lib/commands";
+import { fontStack, useEditorSettings } from "../../lib/editorSettings";
+import { loadBundledFont } from "../../lib/fonts";
 import { onTerminalOutput, terminalResize, terminalWrite } from "../../lib/ipc";
 import { readRootVariable, terminalTheme } from "./terminalTheme";
 import "@xterm/xterm/css/xterm.css";
@@ -24,8 +26,8 @@ export function TerminalView({ id, isActive }: TerminalViewProps) {
     }
     const terminal = new Terminal({
       cursorBlink: true,
-      fontFamily: getComputedStyle(document.documentElement).getPropertyValue("--font-code"),
-      fontSize: 13,
+      fontFamily: fontStack(useEditorSettings.getState().fontFamily),
+      fontSize: useEditorSettings.getState().terminalFontSize,
       allowTransparency: true,
       theme: terminalTheme(readRootVariable, playfulTouchesEnabled()),
     });
@@ -74,6 +76,26 @@ export function TerminalView({ id, isActive }: TerminalViewProps) {
       fitRef.current = null;
     };
   }, [id]);
+
+  const fontFamily = useEditorSettings((state) => state.fontFamily);
+  const fontSize = useEditorSettings((state) => state.terminalFontSize);
+  useEffect(() => {
+    let current = true;
+    loadBundledFont(fontFamily).then(() => {
+      const terminal = terminalRef.current;
+      if (!current || !terminal) {
+        return;
+      }
+      terminal.options.fontFamily = fontStack(fontFamily);
+      terminal.options.fontSize = fontSize;
+      if (containerRef.current?.offsetParent) {
+        fitRef.current?.fit();
+      }
+    });
+    return () => {
+      current = false;
+    };
+  }, [fontFamily, fontSize]);
 
   useEffect(() => {
     if (isActive) {

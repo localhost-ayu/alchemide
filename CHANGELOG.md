@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Six bundled code fonts licensed under the SIL OFL: Maple Mono (now the default), JetBrains Mono,
+  Adwaita Mono, Fira Code, Cascadia Code and IBM Plex Mono, plus "Installed font…" for any font on
+  the system
+- Terminal font size, line height, ligatures on or off and interface zoom in the settings, with a
+  live font sample
+- Zoom in, zoom out and reset zoom: `Ctrl+=`, `Ctrl+-`, `Ctrl+0`
+
 ## [0.4.0] - 2026-11-27
 
 Language servers: autocomplete, hover, inline errors and go to definition for PHP, JavaScript/TypeScript and SQL, when the servers are installed.

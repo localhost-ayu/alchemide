@@ -103,6 +103,10 @@ export function onTerminalExit(handler: (id: number) => void): Promise<() => voi
   return listen<number>("terminal-exit", (event) => handler(event.payload));
 }
 
+export function setZoom(scale: number): Promise<void> {
+  return invoke<void>("set_zoom", { scale });
+}
+
 export function openExternal(url: string): Promise<void> {
   return invoke<void>("open_external", { url });
 }

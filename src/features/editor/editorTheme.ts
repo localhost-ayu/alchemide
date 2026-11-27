@@ -8,7 +8,11 @@ export const editorTheme = EditorView.theme(
       backgroundColor: "transparent",
       fontSize: "var(--editor-font-size, 14px)",
     },
-    ".cm-scroller": { fontFamily: "var(--font-code)", lineHeight: "1.6" },
+    ".cm-scroller": {
+      fontFamily: "var(--font-code)",
+      lineHeight: "var(--editor-line-height, 1.6)",
+      fontVariantLigatures: "var(--code-ligatures, normal)",
+    },
     ".cm-content": { caretColor: "var(--color-accent)" },
     ".cm-cursor, .cm-dropCursor": { borderLeftColor: "var(--color-accent)" },
     "&.cm-focused > .cm-scroller > .cm-selectionLayer .cm-selectionBackground, .cm-selectionBackground":

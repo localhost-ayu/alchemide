@@ -103,7 +103,9 @@ built-in theme rules and skips invalid files with a warning
 Settings live in `settings.json` in the same folder (`config.rs`). Rust treats the file as an
 opaque JSON object, written atomically, and falls back to `{}` when it is missing or broken; the
 frontend validates each field it reads. Keys today: `theme`, `effects`, `background`, `mascot`
-and `editor` (`fontFamily`, `fontSize`, `tabSize`).
+and `editor` (`fontFamily`, `fontSize`, `terminalFontSize`, `lineHeight`, `ligatures`, `zoom`,
+`tabSize`). Bundled fonts are listed in `src/lib/fonts.ts` and loaded on demand; the zoom is
+applied to the whole webview by the `set_zoom` command ([decision 0006](decisions/0006-bundled-fonts-and-zoom.md)).
 
 The settings screen belongs to `features/settings`, but the look section comes from
 `features/themes`: `App` passes it in as a child, so the two features never import each other.
