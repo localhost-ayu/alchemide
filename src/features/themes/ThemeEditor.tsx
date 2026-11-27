@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { registerCommands } from "../../lib/commands";
 import { useDismiss } from "../../lib/dismiss";
+import { type MessageKey, useT } from "../../lib/i18n";
 import { DEFAULT_THEME } from "./builtinThemes";
 import { ColorField } from "./ColorField";
 import type { Look } from "./customLook";
@@ -23,22 +24,22 @@ type Session = {
 
 const SUGGESTIONS_ID = "theme-editor-colors";
 
-const UI_FIELDS: [keyof ThemeUi, string][] = [
-  ["bg", "Background"],
-  ["panel", "Panels"],
-  ["text", "Text"],
-  ["accent", "Accent"],
-  ["accent2", "Second accent"],
+const UI_FIELDS: [keyof ThemeUi, MessageKey][] = [
+  ["bg", "themes.ui.bg"],
+  ["panel", "themes.ui.panel"],
+  ["text", "themes.ui.text"],
+  ["accent", "themes.ui.accent"],
+  ["accent2", "themes.ui.accent2"],
 ];
 
-const SYNTAX_FIELDS: [keyof ThemeSyntax, string][] = [
-  ["keyword", "Keywords"],
-  ["string", "Strings"],
-  ["function", "Functions"],
-  ["variable", "Variables"],
-  ["type", "Types"],
-  ["number", "Numbers"],
-  ["comment", "Comments"],
+const SYNTAX_FIELDS: [keyof ThemeSyntax, MessageKey][] = [
+  ["keyword", "themes.syntax.keyword"],
+  ["string", "themes.syntax.string"],
+  ["function", "themes.syntax.function"],
+  ["variable", "themes.syntax.variable"],
+  ["type", "themes.syntax.type"],
+  ["number", "themes.syntax.number"],
+  ["comment", "themes.syntax.comment"],
 ];
 
 function startSession(): Session {
@@ -63,6 +64,7 @@ function preview({ theme, custom }: Look): void {
 }
 
 export function ThemeEditor() {
+  const t = useT();
   const [session, setSession] = useState<Session | null>(null);
   const [recentColors, setRecentColors] = useState<string[]>([]);
 
@@ -71,7 +73,7 @@ export function ThemeEditor() {
       registerCommands([
         {
           id: "themes.edit",
-          title: "Edit current theme",
+          title: t("themes.editCurrent"),
           keys: "Ctrl+K E",
           run: async () => {
             setSession(startSession());
@@ -79,7 +81,7 @@ export function ThemeEditor() {
           },
         },
       ]),
-    [],
+    [t],
   );
 
   const cancel = () => {
@@ -123,13 +125,15 @@ export function ThemeEditor() {
   };
 
   return (
-    <aside ref={panelRef} className="theme-editor panel" aria-label="Theme editor">
+    <aside ref={panelRef} className="theme-editor panel" aria-label={t("themes.editor")}>
       <header className="theme-editor__header">
-        <h2>{file ? "Edit theme" : `New theme from ${original.theme.name}`}</h2>
+        <h2>
+          {file ? t("themes.editTheme") : t("themes.newThemeFrom", { name: original.theme.name })}
+        </h2>
       </header>
       <div className="theme-editor__body">
         <label className="theme-editor__name">
-          <span>Name</span>
+          <span>{t("themes.name")}</span>
           <input
             value={draft.name}
             aria-invalid={problem !== null}
@@ -146,22 +150,22 @@ export function ThemeEditor() {
         <StartingPoints
           onPick={(start) => setLook({ ...look, theme: applyStartingPoint(draft, start) })}
         />
-        <h3>Interface</h3>
+        <h3>{t("themes.interface")}</h3>
         {UI_FIELDS.map(([key, label]) => (
           <ColorField
             key={key}
-            label={label}
+            label={t(label)}
             value={draft.ui[key]}
             background={key === "text" ? draft.ui.bg : undefined}
             suggestions={SUGGESTIONS_ID}
             onChange={(value) => update({ ui: { ...draft.ui, [key]: value } })}
           />
         ))}
-        <h3>Syntax</h3>
+        <h3>{t("themes.syntax")}</h3>
         {SYNTAX_FIELDS.map(([key, label]) => (
           <ColorField
             key={key}
-            label={label}
+            label={t(label)}
             value={draft.syntax[key]}
             background={draft.ui.bg}
             suggestions={SUGGESTIONS_ID}
@@ -183,20 +187,20 @@ export function ThemeEditor() {
       </datalist>
       <footer className="theme-editor__footer">
         <button type="button" className="theme-editor__secondary" onClick={undo}>
-          Undo changes
+          {t("themes.undoChanges")}
         </button>
         <button
           type="button"
           className="theme-editor__secondary theme-editor__defaults"
           onClick={restoreDefaults}
         >
-          Defaults
+          {t("themes.defaults")}
         </button>
         <button type="button" onClick={cancel}>
-          Cancel
+          {t("themes.cancel")}
         </button>
         <button type="button" className="theme-editor__save" onClick={save} disabled={!!problem}>
-          {file ? "Save" : "Save as new theme"}
+          {file ? t("themes.save") : t("themes.saveAsNew")}
         </button>
       </footer>
     </aside>

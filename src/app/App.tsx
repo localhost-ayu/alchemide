@@ -25,6 +25,7 @@ import { UpdateNotice } from "../features/updater/UpdateNotice";
 import { UpdateSettings } from "../features/updater/UpdateSettings";
 import { registerCommands } from "../lib/commands";
 import { useEditorStore } from "../lib/editorStore";
+import { useT } from "../lib/i18n";
 import { clampSize, SIDEBAR_WIDTH, TERMINAL_HEIGHT, useLayoutStore } from "../lib/layoutStore";
 import { ActivityBar } from "./ActivityBar";
 import "./App.css";
@@ -32,15 +33,18 @@ import { LayoutSettings } from "./LayoutSettings";
 import { MenuBar } from "./MenuBar";
 import { ResizeHandle } from "./ResizeHandle";
 
-const SIDEBAR_LABELS = { explorer: "Explorer", search: "Search", docker: "Docker" };
+const SIDEBAR_LABELS = {
+  explorer: "app.explorer",
+  search: "app.search",
+  docker: "app.docker",
+} as const;
 
 function focusSearch(): void {
-  requestAnimationFrame(() =>
-    document.querySelector<HTMLInputElement>('[aria-label="Search in files"]')?.focus(),
-  );
+  requestAnimationFrame(() => document.querySelector<HTMLInputElement>("#search-input")?.focus());
 }
 
 export function App() {
+  const t = useT();
   const fileOpen = useEditorStore((state) => state.activePath !== null);
   const sidebar = useLayoutStore((state) => state.sidebar);
   const menuBar = useLayoutStore((state) => state.menuBar);
@@ -65,7 +69,7 @@ export function App() {
     return registerCommands([
       {
         id: "view.toggleExplorer",
-        title: "Toggle side bar",
+        title: t("app.toggleSidebar"),
         keys: "Ctrl+B",
         run: () => {
           const { sidebarOpen, zen, update } = layout();
@@ -75,13 +79,13 @@ export function App() {
       },
       {
         id: "view.showExplorer",
-        title: "Show explorer",
+        title: t("app.showExplorer"),
         keys: "Ctrl+Shift+E",
         run: () => layout().showView("explorer"),
       },
       {
         id: "search.show",
-        title: "Search in files",
+        title: t("app.searchInFiles"),
         keys: "Ctrl+Shift+F",
         run: async () => {
           await layout().showView("search");
@@ -90,33 +94,33 @@ export function App() {
       },
       {
         id: "docker.show",
-        title: "Show Docker containers",
+        title: t("app.showDocker"),
         keys: "Ctrl+Shift+D",
         run: () => layout().showView("docker"),
       },
       {
         id: "view.toggleActivityBar",
-        title: "Toggle activity bar",
+        title: t("app.toggleActivityBar"),
         run: () => layout().update({ activityBar: !layout().activityBar }),
       },
       {
         id: "view.toggleStatusBar",
-        title: "Toggle status bar",
+        title: t("app.toggleStatusBar"),
         run: () => layout().update({ statusBar: !layout().statusBar }),
       },
       {
         id: "view.toggleTabs",
-        title: "Toggle editor tabs",
+        title: t("app.toggleTabs"),
         run: () => layout().update({ tabs: !layout().tabs }),
       },
       {
         id: "view.toggleZen",
-        title: "Toggle zen mode",
+        title: t("app.toggleZen"),
         keys: "Ctrl+K Z",
         run: () => layout().toggleZen(),
       },
     ]);
-  }, []);
+  }, [t]);
 
   return (
     <>
@@ -142,7 +146,7 @@ export function App() {
         </div>
         <aside
           className="app__explorer"
-          aria-label={SIDEBAR_LABELS[sidebar]}
+          aria-label={t(SIDEBAR_LABELS[sidebar])}
           hidden={!isSidebarOpen}
         >
           <div className="app__sidebar-view" hidden={sidebar !== "explorer"}>
@@ -155,7 +159,7 @@ export function App() {
             <DockerPanel visible={isSidebarOpen && sidebar === "docker"} />
           </div>
           <ResizeHandle
-            label="Resize sidebar"
+            label={t("app.resizeSidebar")}
             orientation="vertical"
             size={sidebarWidth}
             min={SIDEBAR_WIDTH.min}
@@ -164,7 +168,7 @@ export function App() {
             {...resize("sidebarWidth", SIDEBAR_WIDTH)}
           />
         </aside>
-        <main className="app__editor" aria-label="Editor" data-file-open={fileOpen}>
+        <main className="app__editor" aria-label={t("app.editor")} data-file-open={fileOpen}>
           <div className="app__workspace">
             <Editor />
             <MarkdownPane />
@@ -173,7 +177,7 @@ export function App() {
         </main>
         <div className="app__terminal">
           <ResizeHandle
-            label="Resize terminal"
+            label={t("app.resizeTerminal")}
             orientation="horizontal"
             size={terminalHeight}
             min={TERMINAL_HEIGHT.min}

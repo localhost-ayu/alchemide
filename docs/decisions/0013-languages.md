@@ -21,7 +21,12 @@ in English.
 - Settings → General → Language: System (default), Português (Brasil), English, saved as
   `general.language`. System picks Portuguese when any of the system languages starts with `pt`,
   English otherwise. The change is live, and `<html lang>` follows it.
-- Theme names, snippet descriptions and file contents are not translated.
+- Theme names (and the mood collections Laboratório, Férreas, Calmas, Pastéis), effect preset
+  names, snippet descriptions and file contents are not translated.
+- Command titles are translated where they are registered; each registering effect depends on
+  `t`, so menus, the palette and the shortcut list switch with the language. Effects that also
+  subscribe to events keep the commands in a separate effect, so a language change does not
+  resubscribe.
 
 ## Consequences
 

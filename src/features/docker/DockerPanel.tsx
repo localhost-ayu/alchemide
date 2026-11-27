@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useT } from "../../lib/i18n";
 import type { DockerContainer } from "../../lib/types";
 import { ContainerRow } from "./ContainerRow";
 import { dockerNotice, splitByState } from "./containers";
@@ -25,6 +26,7 @@ function Group({ title, containers }: { title: string; containers: DockerContain
 }
 
 export function DockerPanel({ visible }: Props) {
+  const t = useT();
   const containers = useDockerStore((state) => state.containers);
   const error = useDockerStore((state) => state.error);
   const loaded = useDockerStore((state) => state.loaded);
@@ -48,8 +50,8 @@ export function DockerPanel({ visible }: Props) {
         <button
           type="button"
           className="docker__refresh"
-          aria-label="Refresh containers"
-          title="Refresh"
+          aria-label={t("docker.refresh")}
+          title={t("docker.refreshShort")}
           onClick={() => refresh()}
         >
           ↻
@@ -61,10 +63,10 @@ export function DockerPanel({ visible }: Props) {
         </p>
       )}
       {loaded && !error && containers.length === 0 && (
-        <p className="docker__notice">No containers yet.</p>
+        <p className="docker__notice">{t("docker.none")}</p>
       )}
-      {active.length > 0 && <Group title="Running" containers={active} />}
-      {inactive.length > 0 && <Group title="Stopped" containers={inactive} />}
+      {active.length > 0 && <Group title={t("docker.running")} containers={active} />}
+      {inactive.length > 0 && <Group title={t("docker.stopped")} containers={inactive} />}
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import { type MessageKey, useT } from "../../lib/i18n";
 import { MAX_RADIUS } from "./parseTheme";
 import { RangeField } from "./RangeField";
 import type { ThemeShape, UiFont } from "./theme";
@@ -7,30 +8,31 @@ type Props = {
   onChange: (shape: ThemeShape) => void;
 };
 
-const CORNER_PRESETS: [string, number][] = [
-  ["Square", 0],
-  ["Soft", 4],
-  ["Default", 8],
-  ["Round", 14],
+const CORNER_PRESETS: [MessageKey, number][] = [
+  ["themes.cornersSquare", 0],
+  ["themes.cornersSoft", 4],
+  ["themes.cornersDefault", 8],
+  ["themes.cornersRound", 14],
 ];
 
-const FONTS: [UiFont, string, string][] = [
-  ["system", "System", "system-ui, sans-serif"],
+const FONTS: [UiFont, MessageKey, string][] = [
+  ["system", "themes.fontSystem", "system-ui, sans-serif"],
   [
     "rounded",
-    "Rounded",
+    "themes.fontRounded",
     'ui-rounded, "SF Pro Rounded", "Segoe UI Variable Display", "Nunito", system-ui',
   ],
-  ["serif", "Editorial", 'ui-serif, "Iowan Old Style", Georgia, serif'],
-  ["mono", "Terminal", "var(--font-code)"],
+  ["serif", "themes.fontEditorial", 'ui-serif, "Iowan Old Style", Georgia, serif'],
+  ["mono", "themes.fontTerminal", "var(--font-code)"],
 ];
 
 export function ShapeFields({ shape, onChange }: Props) {
+  const t = useT();
   return (
     <>
-      <h3>Shape</h3>
+      <h3>{t("themes.shape")}</h3>
       <RangeField
-        label="Corners"
+        label={t("themes.corners")}
         value={shape.radius}
         min={0}
         max={MAX_RADIUS}
@@ -48,12 +50,12 @@ export function ShapeFields({ shape, onChange }: Props) {
             style={{ borderRadius: radius }}
             onClick={() => onChange({ ...shape, radius })}
           >
-            {label}
+            {t(label)}
           </button>
         ))}
       </div>
       <fieldset className="theme-editor__group">
-        <legend>Interface font</legend>
+        <legend>{t("themes.interfaceFont")}</legend>
         <div className="theme-editor__fonts">
           {FONTS.map(([font, label, stack]) => (
             <label key={font} className="theme-editor__font">
@@ -64,7 +66,7 @@ export function ShapeFields({ shape, onChange }: Props) {
                 checked={shape.font === font}
                 onChange={() => onChange({ ...shape, font })}
               />
-              <span style={{ fontFamily: stack }}>{label}</span>
+              <span style={{ fontFamily: stack }}>{t(label)}</span>
               <small style={{ fontFamily: stack }}>Explorer · main.rs</small>
             </label>
           ))}

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useT } from "../../lib/i18n";
 import { useWorkspaceStore } from "./useWorkspaceStore";
 
 type NewEntryInputProps = {
@@ -6,6 +7,7 @@ type NewEntryInputProps = {
 };
 
 export function NewEntryInput({ depth }: NewEntryInputProps) {
+  const t = useT();
   const creating = useWorkspaceStore((state) => state.creating);
   const { confirmCreate, cancelCreate } = useWorkspaceStore.getState();
   const [name, setName] = useState("");
@@ -13,7 +15,7 @@ export function NewEntryInput({ depth }: NewEntryInputProps) {
   if (!creating) {
     return null;
   }
-  const label = creating.isDir ? "New folder name" : "New file name";
+  const label = t(creating.isDir ? "explorer.newFolderName" : "explorer.newFileName");
   return (
     <li className="tree__new" style={{ paddingLeft: `${8 + depth * 12}px` }}>
       <span className="tree__icon" aria-hidden="true">
@@ -23,7 +25,9 @@ export function NewEntryInput({ depth }: NewEntryInputProps) {
         // biome-ignore lint/a11y/noAutofocus: the input appears because the user asked to type a name
         autoFocus
         aria-label={label}
-        placeholder={creating.isDir ? "folder name" : "file name (folders/allowed.ts)"}
+        placeholder={t(
+          creating.isDir ? "explorer.folderNamePlaceholder" : "explorer.fileNamePlaceholder",
+        )}
         value={name}
         aria-invalid={creating.error !== null}
         onChange={(event) => setName(event.target.value)}

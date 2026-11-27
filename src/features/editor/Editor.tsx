@@ -5,6 +5,7 @@ import { playfulTouchesEnabled, useActivityStore } from "../../lib/activityStore
 import { registerCommands } from "../../lib/commands";
 import { useEditorSettings } from "../../lib/editorSettings";
 import { hasUnsavedTabs, selectActiveTab, type Tab, useEditorStore } from "../../lib/editorStore";
+import { t as translateNow, useT } from "../../lib/i18n";
 import { gitBlame, onCloseRequested, onWorkspaceChange, pickFile } from "../../lib/ipc";
 import { useLanguageServerStore } from "../../lib/languageServerStore";
 import { joinLines } from "../../lib/lineEndings";
@@ -40,6 +41,7 @@ function reportCursor(state: EditorState): void {
 }
 
 export function Editor() {
+  const t = useT();
   const activePath = useEditorStore((state) => state.activePath);
   const tabs = useEditorStore((state) => state.tabs);
   const error = useEditorStore((state) => state.error);
@@ -217,20 +219,24 @@ export function Editor() {
     const subscription = onWorkspaceChange(() => {
       void stopLanguageServers();
     });
-    const unregister = registerCommands([
-      {
-        id: "editor.restartLanguageServers",
-        title: "Restart language servers",
-        run: () => {
-          void stopLanguageServers();
-        },
-      },
-    ]);
     return () => {
-      unregister();
       subscription.then((unsubscribe) => unsubscribe());
     };
   }, []);
+
+  useEffect(
+    () =>
+      registerCommands([
+        {
+          id: "editor.restartLanguageServers",
+          title: t("editor.restartServers"),
+          run: () => {
+            void stopLanguageServers();
+          },
+        },
+      ]),
+    [t],
+  );
 
   const reveal = useEditorStore((state) => state.reveal);
   useEffect(() => {
@@ -277,10 +283,10 @@ export function Editor() {
       setGlow((current) => (current === "a" ? "b" : "a"));
     };
     return registerCommands([
-      { id: "editor.save", title: "Save file", keys: "Ctrl+S", run: save },
+      { id: "editor.save", title: t("editor.save"), keys: "Ctrl+S", run: save },
       {
         id: "editor.openFile",
-        title: "Open file…",
+        title: t("editor.openFile"),
         keys: "Ctrl+O",
         run: async () => {
           const path = await pickFile().catch(() => null);
@@ -291,7 +297,7 @@ export function Editor() {
       },
       {
         id: "editor.closeTab",
-        title: "Close tab",
+        title: t("editor.closeTab"),
         keys: "Ctrl+W",
         run: () => {
           const activePath = useEditorStore.getState().activePath;
@@ -301,11 +307,11 @@ export function Editor() {
         },
       },
     ]);
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     const subscription = onCloseRequested(
-      () => !hasUnsavedTabs() || window.confirm("There are unsaved changes. Close anyway?"),
+      () => !hasUnsavedTabs() || window.confirm(translateNow("editor.confirmQuit")),
     );
     return () => {
       subscription.then((unsubscribe) => unsubscribe());
@@ -320,7 +326,7 @@ export function Editor() {
           {error}
         </p>
       )}
-      {!activePath && <p className="editor__empty">Open a file from the explorer</p>}
+      {!activePath && <p className="editor__empty">{t("editor.empty")}</p>}
       <div ref={containerRef} className="editor__view" hidden={!activePath} />
     </div>
   );

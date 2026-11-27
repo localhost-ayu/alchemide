@@ -2,7 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { runCommand } from "../lib/commands";
 import { useDismiss } from "../lib/dismiss";
+import { useT } from "../lib/i18n";
 import { MenuPopup } from "./MenuPopup";
+import { menuKey } from "./menus";
 import { useMenus } from "./useMenus";
 
 type SettingsMenuProps = {
@@ -10,6 +12,7 @@ type SettingsMenuProps = {
 };
 
 export function SettingsMenu({ onClose }: SettingsMenuProps) {
+  const t = useT();
   const menus = useMenus();
   const [open, setOpen] = useState<string | null>(null);
   const rootRef = useDismiss(true, onClose);
@@ -35,7 +38,7 @@ export function SettingsMenu({ onClose }: SettingsMenuProps) {
 
   return createPortal(
     <div ref={rootRef} className="settings-menu">
-      <div className="menu-popup panel" role="menu" aria-label="Settings and menus">
+      <div className="menu-popup panel" role="menu" aria-label={t("app.settingsAndMenus")}>
         <button
           ref={firstRef}
           type="button"
@@ -43,7 +46,7 @@ export function SettingsMenu({ onClose }: SettingsMenuProps) {
           className="menu-popup__item"
           onClick={() => run("settings.open")}
         >
-          <span>Settings…</span>
+          <span>{t("app.settingsItem")}</span>
           <kbd>Ctrl+,</kbd>
         </button>
         <hr className="menu-popup__separator" />
@@ -64,14 +67,14 @@ export function SettingsMenu({ onClose }: SettingsMenuProps) {
               }
             }}
           >
-            <span>{menu.label}</span>
+            <span>{t(menuKey(menu.label))}</span>
             <span aria-hidden="true">›</span>
           </button>
         ))}
       </div>
       {shown && (
         <MenuPopup
-          label={shown.label}
+          label={t(menuKey(shown.label))}
           items={shown.items}
           onRun={run}
           onClose={() => setOpen(null)}

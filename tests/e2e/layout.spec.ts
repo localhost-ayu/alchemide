@@ -471,9 +471,31 @@ test("switches the interface to Portuguese and back", async ({ page }) => {
   const settings = page.getByRole("dialog", { name: "Settings" });
 
   await settings.getByRole("combobox", { name: "Language" }).selectOption("pt-BR");
-  await expect(settings.getByRole("heading", { name: "Geral" })).toBeVisible();
+  const configuracoes = page.getByRole("dialog", { name: "Configurações" });
+  await expect(configuracoes.getByRole("heading", { name: "Geral" })).toBeVisible();
   await expect(page.locator("html")).toHaveAttribute("lang", "pt-BR");
 
-  await settings.getByRole("combobox", { name: "Idioma" }).selectOption("en");
-  await expect(page.getByRole("heading", { name: "General" })).toBeVisible();
+  await configuracoes.getByRole("combobox", { name: "Idioma" }).selectOption("en");
+  await expect(settings.getByRole("heading", { name: "General" })).toBeVisible();
+});
+
+test("the whole interface follows Portuguese", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("complementary").first()).toBeVisible();
+  await page.keyboard.press("Control+,");
+  await page.getByRole("combobox", { name: "Language" }).selectOption("pt-BR");
+  await page.keyboard.press("Escape");
+
+  await expect(page.getByRole("button", { name: "Abrir pasta" })).toBeVisible();
+  await expect(page.getByRole("navigation", { name: "Barra de atividades" })).toBeVisible();
+  await expect(page.getByText("Abra um arquivo pelo explorador")).toBeVisible();
+
+  await page.keyboard.press("Control+Shift+P");
+  const search = page.getByRole("combobox", { name: "Executar um comando" });
+  await search.fill("terminal");
+  await expect(page.getByRole("option", { name: /Mostrar ou esconder o terminal/ })).toBeVisible();
+  await page.keyboard.press("Escape");
+
+  await page.getByRole("button", { name: "Abrir o painel do Git" }).click();
+  await expect(page.getByRole("tab", { name: "Histórico" })).toBeVisible();
 });

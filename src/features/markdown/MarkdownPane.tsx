@@ -1,11 +1,13 @@
 import { useEffect } from "react";
 import { registerCommands } from "../../lib/commands";
 import { selectActiveTab, selectActiveText, useEditorStore } from "../../lib/editorStore";
+import { useT } from "../../lib/i18n";
 import { MarkdownPreview } from "./MarkdownPreview";
 import { usePreviewStore } from "./usePreviewStore";
 import "./Markdown.css";
 
 export function MarkdownPane() {
+  const t = useT();
   const isOpen = usePreviewStore((state) => state.isOpen);
   const isMarkdown = useEditorStore((state) => selectActiveTab(state)?.language === "markdown");
   const source = useEditorStore(selectActiveText);
@@ -15,12 +17,12 @@ export function MarkdownPane() {
       registerCommands([
         {
           id: "markdown.togglePreview",
-          title: "Toggle Markdown preview",
+          title: t("markdown.togglePreview"),
           keys: "Ctrl+Shift+V",
           run: () => usePreviewStore.getState().toggle(),
         },
       ]),
-    [],
+    [t],
   );
 
   if (!isMarkdown || source === null) {
@@ -31,9 +33,9 @@ export function MarkdownPane() {
       <button
         type="button"
         className="markdown-toggle"
-        aria-label="Toggle Markdown preview"
+        aria-label={t("markdown.togglePreview")}
         aria-pressed={isOpen}
-        title="Markdown preview (Ctrl+Shift+V)"
+        title={t("markdown.previewShortcut")}
         onClick={() => usePreviewStore.getState().toggle()}
       >
         <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
@@ -47,7 +49,7 @@ export function MarkdownPane() {
         </svg>
       </button>
       {isOpen && (
-        <section className="markdown-pane" aria-label="Markdown preview">
+        <section className="markdown-pane" aria-label={t("markdown.preview")}>
           <MarkdownPreview source={source} />
         </section>
       )}

@@ -1,9 +1,11 @@
 import { useEffect } from "react";
 import { registerCommands } from "../../lib/commands";
+import { useT } from "../../lib/i18n";
 import { initUpdater, useUpdaterStore } from "./useUpdaterStore";
 import "./Updater.css";
 
 export function UpdateNotice() {
+  const t = useT();
   const available = useUpdaterStore((state) => state.available);
   const installing = useUpdaterStore((state) => state.installing);
   const error = useUpdaterStore((state) => state.error);
@@ -11,22 +13,28 @@ export function UpdateNotice() {
 
   useEffect(() => {
     initUpdater();
-    return registerCommands([
-      {
-        id: "updates.check",
-        title: "Check for updates",
-        run: () => useUpdaterStore.getState().check(true),
-      },
-    ]);
   }, []);
+
+  useEffect(
+    () =>
+      registerCommands([
+        {
+          id: "updates.check",
+          title: t("updates.check"),
+          run: () => useUpdaterStore.getState().check(true),
+        },
+      ]),
+    [t],
+  );
 
   if (!available) {
     return null;
   }
   return (
-    <div className="update-notice panel" role="dialog" aria-label="Update available">
+    <div className="update-notice panel" role="dialog" aria-label={t("updates.dialog")}>
       <p>
-        Alchemide <strong>{available.version}</strong> is available.
+        {t("updates.availablePrefix")} <strong>{available.version}</strong>{" "}
+        {t("updates.availableSuffix")}
       </p>
       {available.notes && <p className="update-notice__notes">{available.notes}</p>}
       {error && (
@@ -36,10 +44,10 @@ export function UpdateNotice() {
       )}
       <div className="update-notice__actions">
         <button type="button" disabled={installing} onClick={() => install()}>
-          {installing ? "Installing…" : "Install and restart"}
+          {installing ? t("updates.installing") : t("updates.install")}
         </button>
         <button type="button" disabled={installing} onClick={dismiss}>
-          Later
+          {t("updates.later")}
         </button>
       </div>
     </div>

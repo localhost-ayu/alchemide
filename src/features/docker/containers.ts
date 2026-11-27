@@ -1,3 +1,4 @@
+import { t } from "../../lib/i18n";
 import type { DockerContainer } from "../../lib/types";
 
 const ACTIVE_STATES = new Set(["running", "restarting", "paused"]);
@@ -40,10 +41,10 @@ export function logsCommand(container: DockerContainer): string {
 
 export function dockerNotice(error: string): string {
   if (/not installed|not on the PATH/i.test(error)) {
-    return "Docker is not installed or not on the PATH.";
+    return t("docker.missing");
   }
   if (/error during connect|cannot connect|daemon|pipe/i.test(error)) {
-    return "Docker is not running. Start Docker Desktop or the Docker service, then refresh.";
+    return t("docker.notRunning");
   }
   return error.replace(/^Error:\s*/, "");
 }

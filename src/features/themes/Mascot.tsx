@@ -1,5 +1,6 @@
 import { type PointerEvent, useEffect, useRef } from "react";
 import { registerCommands } from "../../lib/commands";
+import { useT } from "../../lib/i18n";
 import { setMascotLocked, useMascotLock } from "./mascotLock";
 import { isAnimatedFormat, positionFor } from "./mascotPlacement";
 import type { MascotPosition, ThemeMascot } from "./theme";
@@ -39,6 +40,7 @@ function StillFrame({ url, className }: { url: string; className: string }) {
 }
 
 export function Mascot() {
+  const t = useT();
   const mascot = useThemeStore((state) => state.custom.mascot ?? state.theme.mascot);
   const animations = useThemeStore((state) => state.effects.animations);
   const locked = useMascotLock((state) => state.locked);
@@ -50,7 +52,7 @@ export function Mascot() {
       registerCommands([
         {
           id: "themes.toggleMascot",
-          title: "Show or hide the mascot",
+          title: t("themes.toggleMascot"),
           keys: "Ctrl+Alt+M",
           run: () => {
             const { theme, effects, commit } = useThemeStore.getState();
@@ -59,11 +61,11 @@ export function Mascot() {
         },
         {
           id: "themes.toggleMascotLock",
-          title: "Lock or unlock the mascot to move it",
+          title: t("themes.toggleMascotLock"),
           run: () => setMascotLocked(!useMascotLock.getState().locked),
         },
       ]),
-    [],
+    [t],
   );
 
   if (!mascot || !url) {
@@ -116,7 +118,7 @@ export function Mascot() {
         onPointerUp,
         onPointerCancel: onPointerUp,
         onDoubleClick: () => void placeMascot(mascot, undefined),
-        title: "Drag to move, double click to return to the corner",
+        title: t("themes.dragMascot"),
       };
 
   return (

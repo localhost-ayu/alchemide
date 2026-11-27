@@ -1,16 +1,18 @@
 import { useEffect } from "react";
 import { useActivityStore } from "../../lib/activityStore";
 import { registerCommands } from "../../lib/commands";
+import { useT } from "../../lib/i18n";
 import { useSnippetStore } from "../../lib/snippetStore";
 import { importMessage } from "./importMessage";
 
 export function SnippetCommands() {
+  const t = useT();
   useEffect(
     () =>
       registerCommands([
         {
           id: "snippets.importVscode",
-          title: "Import snippets from VS Code",
+          title: t("snippets.importVscode"),
           run: async () => {
             const result = await useSnippetStore.getState().importFromVscode();
             useActivityStore.getState().notify(importMessage(result));
@@ -18,14 +20,14 @@ export function SnippetCommands() {
         },
         {
           id: "snippets.reload",
-          title: "Reload snippets",
+          title: t("snippets.reload"),
           run: async () => {
             await useSnippetStore.getState().load();
-            useActivityStore.getState().notify("Snippets reloaded");
+            useActivityStore.getState().notify(t("snippets.reloaded"));
           },
         },
       ]),
-    [],
+    [t],
   );
   return null;
 }

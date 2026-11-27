@@ -1,3 +1,4 @@
+import { t } from "../../lib/i18n";
 import type { UserThemeFile } from "../../lib/types";
 import { readTheme } from "./parseTheme";
 import type { Theme } from "./theme";
@@ -28,7 +29,7 @@ export function readUserThemes(files: UserThemeFile[], builtin: Theme[]): Loaded
       continue;
     }
     if (taken.has(nameKey(theme.name))) {
-      warnings.push(`${file}: the name "${theme.name}" is already in use; skipped`);
+      warnings.push(t("themes.nameInUse", { file, name: theme.name }));
       continue;
     }
     taken.add(nameKey(theme.name));
@@ -53,10 +54,10 @@ export function uniqueName(name: string, taken: string[]): string {
 
 export function nameProblem(name: string, taken: string[]): string | null {
   if (name.trim() === "") {
-    return "Give the theme a name";
+    return t("themes.nameMissing");
   }
   if (taken.some((other) => nameKey(other) === nameKey(name))) {
-    return "Another theme already has this name";
+    return t("themes.nameTaken");
   }
   return null;
 }

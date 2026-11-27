@@ -1,3 +1,4 @@
+import { useT } from "../../lib/i18n";
 import { NewEntryInput } from "./NewEntryInput";
 import { TreeItem } from "./TreeItem";
 import { useWorkspaceStore } from "./useWorkspaceStore";
@@ -7,6 +8,7 @@ type TreeProps = {
 };
 
 export function Tree({ root }: TreeProps) {
+  const t = useT();
   const entries = useWorkspaceStore((state) => state.children[root]);
   const creatingHere = useWorkspaceStore((state) => state.creating?.parent === root);
 
@@ -16,7 +18,7 @@ export function Tree({ root }: TreeProps) {
   return (
     <ul
       className="tree"
-      aria-label="Files"
+      aria-label={t("explorer.files")}
       onKeyDown={(event) => {
         const { startRename, deletePath, renaming, creating } = useWorkspaceStore.getState();
         if (renaming || creating || !(event.target instanceof HTMLButtonElement)) {

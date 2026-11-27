@@ -1,4 +1,5 @@
 import { type Command, effectiveKeys, type KeyOverrides } from "../lib/commands";
+import type { MessageKey } from "../lib/i18n";
 
 export type MenuItem = { id: string; title: string; keys?: string };
 
@@ -21,6 +22,21 @@ const CATEGORIES: Record<string, string> = {
   themes: "Theme",
   updates: "Help",
 };
+
+const MENU_KEYS: Record<string, MessageKey> = {
+  File: "menu.File",
+  Edit: "menu.Edit",
+  View: "menu.View",
+  Go: "menu.Go",
+  Terminal: "menu.Terminal",
+  Git: "menu.Git",
+  Theme: "menu.Theme",
+  Help: "menu.Help",
+};
+
+export function menuKey(label: string): MessageKey {
+  return MENU_KEYS[label] ?? "menu.More";
+}
 
 export function menuOf(id: string): string {
   return CATEGORIES[id.split(".")[0] ?? ""] ?? "More";

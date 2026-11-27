@@ -1,8 +1,10 @@
 import { useEditorStore } from "../../lib/editorStore";
+import { useT } from "../../lib/i18n";
 import { requestCloseTab } from "./requestCloseTab";
 import { tabDetails } from "./tabLabels";
 
 export function Tabs() {
+  const t = useT();
   const tabs = useEditorStore((state) => state.tabs);
   const activePath = useEditorStore((state) => state.activePath);
   const activate = useEditorStore((state) => state.activate);
@@ -12,7 +14,7 @@ export function Tabs() {
   }
   const details = tabDetails(tabs.map((tab) => tab.path));
   return (
-    <div className="tabs" role="tablist" aria-label="Open files">
+    <div className="tabs" role="tablist" aria-label={t("editor.openFiles")}>
       {tabs.map((tab) => (
         <div key={tab.path} className="tabs__tab" data-active={tab.path === activePath}>
           <button
@@ -26,7 +28,7 @@ export function Tabs() {
             {tab.name}
             {details.has(tab.path) && <span className="tabs__detail">{details.get(tab.path)}</span>}
             {tab.dirty && (
-              <span className="tabs__dirty" role="img" aria-label="unsaved">
+              <span className="tabs__dirty" role="img" aria-label={t("editor.unsaved")}>
                 ●
               </span>
             )}
@@ -34,7 +36,14 @@ export function Tabs() {
           <button
             type="button"
             className="tabs__close"
-            aria-label={`Close ${tab.name}${details.has(tab.path) ? ` (${details.get(tab.path)})` : ""}`}
+            aria-label={
+              details.has(tab.path)
+                ? t("editor.closeFileDetail", {
+                    name: tab.name,
+                    detail: details.get(tab.path) ?? "",
+                  })
+                : t("editor.closeFile", { name: tab.name })
+            }
             onClick={() => requestCloseTab(tab.path)}
           >
             ×

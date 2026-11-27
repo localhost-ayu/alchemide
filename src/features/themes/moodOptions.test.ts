@@ -1,4 +1,5 @@
 import { expect, test } from "vitest";
+import { setLanguagePreference } from "../../lib/i18n";
 import { filterOptions, moodOptions } from "./moodOptions";
 
 test("lists every theme by group and then the effect presets", () => {
@@ -9,7 +10,7 @@ test("lists every theme by group and then the effect presets", () => {
     "Menta",
     "Pêssego",
   ]);
-  expect(options.filter((option) => option.group === "Efeitos").map((o) => o.label)).toEqual([
+  expect(options.filter((option) => option.group === "Effects").map((o) => o.label)).toEqual([
     "Laboratório",
     "Focado",
     "Só wallpaper",
@@ -44,4 +45,13 @@ test("offers to pick a background and a mascot, and to remove them once set", ()
     "Remove custom background",
     "Remove mascot",
   ]);
+});
+
+test("group names follow the interface language", () => {
+  setLanguagePreference("pt-BR");
+  const groups = new Set(moodOptions().map((option) => option.group));
+  setLanguagePreference("en");
+  expect(groups.has("Efeitos")).toBe(true);
+  expect(groups.has("Personalizar")).toBe(true);
+  expect(groups.has("Laboratório")).toBe(true);
 });

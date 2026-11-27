@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { useActivityStore } from "../../lib/activityStore";
+import { t } from "../../lib/i18n";
 import { checkUpdate, installUpdate, loadSettings, saveSettings } from "../../lib/ipc";
 import type { UpdateInfo } from "../../lib/types";
 
@@ -32,11 +33,11 @@ export const useUpdaterStore = create<UpdaterState>((set) => ({
       const available = await checkUpdate();
       set({ available, error: null });
       if (!available && announceNoUpdate) {
-        useActivityStore.getState().notify("Alchemide is up to date");
+        useActivityStore.getState().notify(t("updates.upToDate"));
       }
     } catch (error) {
       if (announceNoUpdate) {
-        useActivityStore.getState().notify(`Could not check for updates: ${String(error)}`);
+        useActivityStore.getState().notify(t("updates.checkFailed", { error: String(error) }));
       }
     }
   },

@@ -1,6 +1,8 @@
+import { useT } from "../../lib/i18n";
 import { useThemeStore } from "./useThemeStore";
 
 export function ThemeWarnings() {
+  const t = useT();
   const warnings = useThemeStore((state) => state.warnings);
   const dismiss = useThemeStore((state) => state.dismissWarnings);
 
@@ -15,7 +17,7 @@ export function ThemeWarnings() {
         ))}
       </ul>
       <button type="button" onClick={dismiss}>
-        Dismiss
+        {t("themes.dismiss")}
       </button>
     </div>
   );

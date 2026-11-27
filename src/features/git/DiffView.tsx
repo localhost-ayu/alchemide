@@ -1,3 +1,4 @@
+import { useT } from "../../lib/i18n";
 import { classifyDiffLine } from "./diffLines";
 
 type DiffViewProps = {
@@ -5,12 +6,13 @@ type DiffViewProps = {
 };
 
 export function DiffView({ diff }: DiffViewProps) {
+  const t = useT();
   const lines = diff.replace(/\n$/, "").split("\n");
   if (!diff.trim()) {
-    return <p className="git-dock__empty">No differences</p>;
+    return <p className="git-dock__empty">{t("git.noDifferences")}</p>;
   }
   return (
-    <section aria-label="Diff">
+    <section aria-label={t("git.diff")}>
       <pre className="git-diff">
         {lines.map((line, index) => (
           // biome-ignore lint/suspicious/noArrayIndexKey: diff lines have no identity besides their position

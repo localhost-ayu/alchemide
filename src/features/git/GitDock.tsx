@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { registerCommands } from "../../lib/commands";
+import { type MessageKey, useT } from "../../lib/i18n";
 import { onFsChange } from "../../lib/ipc";
 import type { ChangedFile } from "../../lib/types";
 import { DiffView } from "./DiffView";
@@ -7,7 +8,18 @@ import { changeLabel } from "./diffLines";
 import { useGitStore } from "./useGitStore";
 import "./Git.css";
 
+const STATUS_KEYS: Record<string, MessageKey> = {
+  modified: "git.status.modified",
+  added: "git.status.added",
+  deleted: "git.status.deleted",
+  renamed: "git.status.renamed",
+  copied: "git.status.copied",
+  untracked: "git.status.untracked",
+  conflict: "git.status.conflict",
+};
+
 function FileRow({ file, staged }: { file: ChangedFile; staged: boolean }) {
+  const t = useT();
   const selection = useGitStore((state) => state.selection);
   const { showFile, stage, unstage } = useGitStore.getState();
   const code = staged ? file.staged : file.unstaged;
@@ -24,8 +36,12 @@ function FileRow({ file, staged }: { file: ChangedFile; staged: boolean }) {
       <button
         type="button"
         className="git-dock__file-action"
-        aria-label={`${staged ? "Unstage" : "Stage"} ${file.path}`}
-        title={`${staged ? "Unstage" : "Stage"} (${changeLabel(code)})`}
+        aria-label={t(staged ? "git.unstageFile" : "git.stageFile", { path: file.path })}
+        title={t(staged ? "git.unstageStatus" : "git.stageStatus", {
+          status: STATUS_KEYS[changeLabel(code)]
+            ? t(STATUS_KEYS[changeLabel(code)] as MessageKey)
+            : "",
+        })}
         onClick={() => (staged ? unstage(file) : stage(file))}
       >
         {staged ? "−" : "+"}
@@ -35,6 +51,7 @@ function FileRow({ file, staged }: { file: ChangedFile; staged: boolean }) {
 }
 
 function Changes() {
+  const t = useT();
   const status = useGitStore((state) => state.status);
   const message = useGitStore((state) => state.message);
   const { setMessage, stageAll, commit } = useGitStore.getState();
@@ -44,10 +61,10 @@ function Changes() {
 
   return (
     <div className="git-dock__changes">
-      {files.length === 0 && <p className="git-dock__empty">No changes to commit</p>}
+      {files.length === 0 && <p className="git-dock__empty">{t("git.noChanges")}</p>}
       {staged.length > 0 && (
-        <section aria-label="Staged changes">
-          <h3>Staged ({staged.length})</h3>
+        <section aria-label={t("git.stagedChanges")}>
+          <h3>{t("git.stagedCount", { count: staged.length })}</h3>
           <ul>
             {staged.map((file) => (
               <FileRow key={`s:${file.path}`} file={file} staged />
@@ -56,11 +73,11 @@ function Changes() {
         </section>
       )}
       {unstaged.length > 0 && (
-        <section aria-label="Changes">
+        <section aria-label={t("git.changes")}>
           <h3>
-            Changes ({unstaged.length})
+            {t("git.changesCount", { count: unstaged.length })}
             <button type="button" className="git-dock__link" onClick={() => stageAll()}>
-              Stage all
+              {t("git.stageAll")}
             </button>
           </h3>
           <ul>
@@ -72,8 +89,8 @@ function Changes() {
       )}
       <div className="git-dock__commit">
         <textarea
-          aria-label="Commit message"
-          placeholder="Commit message"
+          aria-label={t("git.commitMessage")}
+          placeholder={t("git.commitMessage")}
           value={message}
           onChange={(event) => setMessage(event.target.value)}
           onKeyDown={(event) => {
@@ -88,8 +105,11 @@ function Changes() {
           disabled={staged.length === 0 || !message.trim()}
           onClick={() => commit()}
         >
-          Commit{" "}
-          {staged.length > 0 ? `${staged.length} ${staged.length === 1 ? "file" : "files"}` : ""}
+          {staged.length === 0
+            ? t("git.commit")
+            : staged.length === 1
+              ? t("git.commitOne")
+              : t("git.commitMany", { count: staged.length })}
         </button>
       </div>
     </div>
@@ -97,14 +117,15 @@ function Changes() {
 }
 
 function History() {
+  const t = useT();
   const log = useGitStore((state) => state.log);
   const selection = useGitStore((state) => state.selection);
   const { showCommit } = useGitStore.getState();
   if (log.length === 0) {
-    return <p className="git-dock__empty">No commits yet</p>;
+    return <p className="git-dock__empty">{t("git.noCommits")}</p>;
   }
   return (
-    <ul className="git-dock__history" aria-label="History">
+    <ul className="git-dock__history" aria-label={t("git.history")}>
       {log.map((commit) => (
         <li key={commit.hash}>
           <button
@@ -128,6 +149,7 @@ export function GitDock() {
   const tab = useGitStore((state) => state.tab);
   const branch = useGitStore((state) => state.status?.branch);
   const branches = useGitStore((state) => state.branches);
+  const t = useT();
   const diff = useGitStore((state) => state.diff);
   const error = useGitStore((state) => state.error);
   const { toggle, setTab, refresh, switchBranch } = useGitStore.getState();
@@ -135,14 +157,14 @@ export function GitDock() {
   useEffect(
     () =>
       registerCommands([
-        { id: "git.toggle", title: "Toggle Git panel", keys: "Ctrl+Shift+G", run: toggle },
+        { id: "git.toggle", title: t("git.togglePanel"), keys: "Ctrl+Shift+G", run: toggle },
         {
           id: "git.refresh",
-          title: "Refresh Git panel",
+          title: t("git.refreshPanel"),
           run: () => useGitStore.getState().refresh(),
         },
       ]),
-    [toggle],
+    [toggle, t],
   );
 
   useEffect(() => {
@@ -163,7 +185,7 @@ export function GitDock() {
       <button
         type="button"
         className="git-dock__tab"
-        aria-label="Open Git panel"
+        aria-label={t("git.openPanel")}
         title="Git (Ctrl+Shift+G)"
         onClick={toggle}
       >
@@ -172,16 +194,16 @@ export function GitDock() {
     );
   }
   return (
-    <aside className="git-dock panel" aria-label="Git">
+    <aside className="git-dock panel" aria-label={t("git.panel")}>
       <header className="git-dock__header">
-        <div className="git-dock__tabs" role="tablist" aria-label="Git views">
+        <div className="git-dock__tabs" role="tablist" aria-label={t("git.views")}>
           <button
             type="button"
             role="tab"
             aria-selected={tab === "changes"}
             onClick={() => setTab("changes")}
           >
-            Changes
+            {t("git.changes")}
           </button>
           <button
             type="button"
@@ -189,13 +211,13 @@ export function GitDock() {
             aria-selected={tab === "history"}
             onClick={() => setTab("history")}
           >
-            History
+            {t("git.history")}
           </button>
         </div>
-        <button type="button" aria-label="Refresh Git panel" onClick={() => refresh()}>
+        <button type="button" aria-label={t("git.refreshPanel")} onClick={() => refresh()}>
           ↻
         </button>
-        <button type="button" aria-label="Close Git panel" onClick={toggle}>
+        <button type="button" aria-label={t("git.closePanel")} onClick={toggle}>
           ×
         </button>
       </header>
@@ -203,13 +225,13 @@ export function GitDock() {
         <label className="git-dock__branch">
           <span aria-hidden="true">⎇</span>
           <select
-            aria-label="Branch"
+            aria-label={t("git.branch")}
             value={branch}
             onChange={(event) => switchBranch(event.target.value)}
           >
             {branches.map((item) => (
               <option key={item.name} value={item.name}>
-                {item.remoteOnly ? `${item.name} (remote)` : item.name}
+                {item.remoteOnly ? t("git.remoteBranch", { name: item.name }) : item.name}
               </option>
             ))}
             {!branches.some((item) => item.name === branch) && (

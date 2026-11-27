@@ -1,3 +1,4 @@
+import { t } from "./i18n";
 import { parseJsonc } from "./jsonc";
 import type { LanguageId } from "./languages";
 
@@ -91,14 +92,14 @@ export function readSnippetFile(file: string, content: string): SnippetFileResul
   try {
     definitions = parseJsonc(content);
   } catch {
-    return { snippets: [], problem: `${file} is not valid JSON` };
+    return { snippets: [], problem: t("snippets.invalidJson", { file }) };
   }
   if (file.endsWith(".code-snippets")) {
     return { snippets: readSnippetDefinitions(definitions, "all"), problem: null };
   }
   const languages = languagesFromScope(file.replace(/\.json$/, ""));
   if (languages.length === 0) {
-    return { snippets: [], problem: `${file}: unknown language` };
+    return { snippets: [], problem: t("snippets.unknownLanguage", { file }) };
   }
   return { snippets: readSnippetDefinitions(definitions, languages), problem: null };
 }

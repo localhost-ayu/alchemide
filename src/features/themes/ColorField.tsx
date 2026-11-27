@@ -1,3 +1,4 @@
+import { useT } from "../../lib/i18n";
 import { AA_CONTRAST, contrast, fromColorInput, toColorInput } from "./colors";
 
 type ColorFieldProps = {
@@ -9,6 +10,7 @@ type ColorFieldProps = {
 };
 
 export function ColorField({ label, value, background, suggestions, onChange }: ColorFieldProps) {
+  const t = useT();
   const ratio = background ? contrast(value, background) : null;
   const isLow = ratio !== null && ratio < AA_CONTRAST;
 
@@ -27,7 +29,7 @@ export function ColorField({ label, value, background, suggestions, onChange }: 
         <span
           className="theme-editor__contrast"
           data-low={isLow}
-          title={isLow ? "Below the WCAG AA contrast of 4.5:1 on the background" : undefined}
+          title={isLow ? t("themes.lowContrast") : undefined}
         >
           {ratio.toFixed(1)}:1
         </span>

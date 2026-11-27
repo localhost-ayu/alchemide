@@ -1,18 +1,25 @@
 import { useEffect, useMemo } from "react";
 import { useEditorStore } from "../../lib/editorStore";
+import { type Translate, useT } from "../../lib/i18n";
 import { MatchPreview } from "./MatchPreview";
 import { connectSearchEvents, groupByFile, matchKey, useSearchStore } from "./useSearchStore";
 import "./Search.css";
 
-function summary(results: number, files: number, truncated: boolean): string {
+function summary(t: Translate, results: number, files: number, truncated: boolean): string {
   if (results === 0) {
-    return "No results";
+    return t("search.noResults");
   }
-  const base = `${results} ${results === 1 ? "result" : "results"} in ${files} ${files === 1 ? "file" : "files"}`;
-  return truncated ? `${base} (showing the first ${results})` : base;
+  const base = t("search.summary", {
+    results,
+    resultWord: t(results === 1 ? "search.result" : "search.resultMany"),
+    files,
+    fileWord: t(files === 1 ? "search.file" : "search.fileMany"),
+  });
+  return truncated ? t("search.showingFirst", { base, count: results }) : base;
 }
 
 export function SearchPanel() {
+  const t = useT();
   const query = useSearchStore((state) => state.query);
   const replacement = useSearchStore((state) => state.replacement);
   const results = useSearchStore((state) => state.results);
@@ -27,25 +34,29 @@ export function SearchPanel() {
   useEffect(() => connectSearchEvents(), []);
 
   const replace = async () => {
-    const message = `Replace ${selectedCount} selected ${selectedCount === 1 ? "match" : "matches"}? This writes the files on disk.`;
+    const message =
+      selectedCount === 1
+        ? t("search.confirmReplaceOne")
+        : t("search.confirmReplaceMany", { count: selectedCount });
     if (!window.confirm(message)) {
       return;
     }
     const outcome = await replaceSelected();
     if (outcome.skipped.length > 0) {
-      window.alert(`Skipped files with unsaved changes: ${outcome.skipped.join(", ")}`);
+      window.alert(t("search.skippedUnsaved", { files: outcome.skipped.join(", ") }));
     }
   };
 
   return (
     <div className="search">
-      <h2 className="search__title">Search</h2>
+      <h2 className="search__title">{t("search.title")}</h2>
       <div className="search__form">
         <div className="search__row">
           <input
+            id="search-input"
             className="search__input"
-            aria-label="Search in files"
-            placeholder="Search"
+            aria-label={t("search.input")}
+            placeholder={t("search.placeholder")}
             value={query.text}
             onChange={(event) => setQuery({ text: event.target.value })}
             onKeyDown={(event) => {
@@ -58,7 +69,7 @@ export function SearchPanel() {
           <button
             type="button"
             className="search__toggle"
-            aria-label="Match case"
+            aria-label={t("search.matchCase")}
             aria-pressed={query.caseSensitive}
             onClick={() => {
               setQuery({ caseSensitive: !query.caseSensitive });
@@ -70,7 +81,7 @@ export function SearchPanel() {
           <button
             type="button"
             className="search__toggle"
-            aria-label="Use regular expression"
+            aria-label={t("search.regex")}
             aria-pressed={query.regex}
             onClick={() => {
               setQuery({ regex: !query.regex });
@@ -83,8 +94,8 @@ export function SearchPanel() {
         <div className="search__row">
           <input
             className="search__input"
-            aria-label="Replace with"
-            placeholder="Replace"
+            aria-label={t("search.replaceWith")}
+            placeholder={t("search.replacePlaceholder")}
             value={replacement}
             onChange={(event) => setReplacement(event.target.value)}
           />
@@ -94,19 +105,19 @@ export function SearchPanel() {
             disabled={selectedCount === 0 || status === "searching"}
             onClick={replace}
           >
-            Replace
+            {t("search.replace")}
           </button>
         </div>
       </div>
       <p className="search__status" role="status">
         {error ??
           (status === "searching"
-            ? "Searching…"
+            ? t("search.searching")
             : status === "done"
-              ? summary(results.length, groups.length, truncated)
+              ? summary(t, results.length, groups.length, truncated)
               : "")}
       </p>
-      <ul className="search__results" aria-label="Search results">
+      <ul className="search__results" aria-label={t("search.results")}>
         {groups.map((group) => (
           <li key={group.path}>
             <div className="search__file" title={group.path}>
@@ -118,7 +129,7 @@ export function SearchPanel() {
                 <li key={matchKey(match)} className="search-match">
                   <input
                     type="checkbox"
-                    aria-label={`Include line ${match.line} of ${group.relative}`}
+                    aria-label={t("search.includeLine", { line: match.line, file: group.relative })}
                     checked={!excluded[matchKey(match)]}
                     onChange={() => toggleMatch(match)}
                   />
