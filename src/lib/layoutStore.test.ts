@@ -1,6 +1,13 @@
 import { beforeEach, expect, test } from "vitest";
 import { loadSettings, saveSettings } from "./ipc.mock";
-import { DEFAULT_LAYOUT, initLayout, readLayout, useLayoutStore } from "./layoutStore";
+import {
+  DEFAULT_LAYOUT,
+  initLayout,
+  readLayout,
+  SIDEBAR_WIDTH,
+  TERMINAL_HEIGHT,
+  useLayoutStore,
+} from "./layoutStore";
 
 beforeEach(async () => {
   await saveSettings({});
@@ -57,4 +64,30 @@ test("restores the saved layout on start", async () => {
   await initLayout();
 
   expect(useLayoutStore.getState()).toMatchObject({ sidebarOpen: false, tabs: false });
+});
+
+test("reads panel sizes within their limits", () => {
+  expect(readLayout({ sidebarWidth: 320, terminalHeight: 400 })).toMatchObject({
+    sidebarWidth: 320,
+    terminalHeight: 400,
+  });
+  expect(readLayout({ sidebarWidth: 10, terminalHeight: 5000 })).toMatchObject({
+    sidebarWidth: SIDEBAR_WIDTH.min,
+    terminalHeight: TERMINAL_HEIGHT.max,
+  });
+  expect(readLayout({ sidebarWidth: "wide", terminalHeight: Number.NaN })).toMatchObject({
+    sidebarWidth: SIDEBAR_WIDTH.default,
+    terminalHeight: TERMINAL_HEIGHT.default,
+  });
+});
+
+test("previews a size without saving it and saves it on update", async () => {
+  await saveSettings({});
+  useLayoutStore.getState().preview({ sidebarWidth: 300 });
+  expect(useLayoutStore.getState().sidebarWidth).toBe(300);
+  expect((await loadSettings()).layout).toBeUndefined();
+
+  await useLayoutStore.getState().update({ sidebarWidth: 340 });
+
+  expect((await loadSettings()).layout).toMatchObject({ sidebarWidth: 340 });
 });
