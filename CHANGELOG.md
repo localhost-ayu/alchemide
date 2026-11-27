@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-11-27
+
+Languages: the interface, commands and error messages in Brazilian Portuguese or English, chosen in Settings → General (it follows the system by default).
+
 ### Changed
 
 - Error messages from the backend (files, Git, Docker, terminal, updates…) follow the interface language too
@@ -227,7 +231,8 @@ First release: a lightweight editor for Windows and Linux (including WSL) with m
 
 - Browser mode with a mocked backend (`pnpm dev:web`) and a Linux dev container
 
-[Unreleased]: https://github.com/localhost-ayu/alchemide/compare/v0.9.0...HEAD
+[Unreleased]: https://github.com/localhost-ayu/alchemide/compare/v0.10.0...HEAD
+[0.10.0]: https://github.com/localhost-ayu/alchemide/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/localhost-ayu/alchemide/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/localhost-ayu/alchemide/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/localhost-ayu/alchemide/compare/v0.6.2...v0.7.0
