@@ -11,6 +11,8 @@ import php from "./php.json";
 import python from "./python.json";
 import react from "./react.json";
 import rust from "./rust.json";
+import sql from "./sql.json";
+import sqlserver from "./sqlserver.json";
 
 type PackFile = { name: string; languages: string[]; snippets: unknown };
 
@@ -26,15 +28,17 @@ const FILES: Record<string, PackFile> = {
   rust,
   python,
   go,
+  sql,
   node,
   react,
   nextjs,
   laravel,
   codeigniter3,
   codeigniter4,
+  sqlserver,
 };
 
-export const DEFAULT_PACKS = ["php", "javascript", "rust", "python", "go"];
+export const DEFAULT_PACKS = ["php", "javascript", "rust", "python", "go", "sql"];
 
 export const SNIPPET_PACKS: SnippetPack[] = Object.entries(FILES).map(([id, file]) => ({
   id,

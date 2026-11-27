@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- SQL snippet pack (on by default: `sel`, `ij`, `lj`, `cte`, `ins`, `upd`, `case`, `rownum`…) and a SQL Server pack (`top`, `page`, `lasth`, `decl`, `trycatch`, `merge`, `temp`…), turned on in Settings → Snippets
+
+### Added
+
 - Tabs of files that share a name show the folder that tells them apart (`conexao.php · beer`)
 
 ### Changed
