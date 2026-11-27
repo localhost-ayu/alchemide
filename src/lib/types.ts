@@ -148,6 +148,7 @@ export type Commit = {
   author: string;
   date: string;
   subject: string;
+  pushed: boolean | null;
 };
 
 export type BlameCommit = {

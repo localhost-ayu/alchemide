@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { registerCommands, runCommand } from "../../lib/commands";
 import { type MessageKey, useT } from "../../lib/i18n";
 import { onFsChange } from "../../lib/ipc";
+import { timeAgo } from "../../lib/timeAgo";
 import type { ChangedFile } from "../../lib/types";
 import { BranchPicker } from "./BranchPicker";
 import { DiffView } from "./DiffView";
@@ -149,7 +150,20 @@ function History() {
           >
             <span className="git-dock__subject">{commit.subject}</span>
             <span className="git-dock__meta">
-              {commit.shortHash} · {commit.author} · {commit.date.slice(0, 10)}
+              {t("git.commitMeta", {
+                hash: commit.shortHash,
+                author: commit.author,
+                age: timeAgo(Date.parse(commit.date) / 1000, Date.now() / 1000),
+              })}
+              {commit.pushed !== null && (
+                <span
+                  className="git-dock__pushed"
+                  data-pushed={commit.pushed}
+                  title={t(commit.pushed ? "git.commitRemoteTitle" : "git.commitLocalTitle")}
+                >
+                  {t(commit.pushed ? "git.commitRemote" : "git.commitLocal")}
+                </span>
+              )}
             </span>
           </button>
         </li>

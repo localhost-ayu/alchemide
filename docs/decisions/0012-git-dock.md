@@ -52,6 +52,10 @@ The reference was Zed's Git panel: a dock on the right with the changes and the 
   switching). Picking a remote branch switches to its local name, which git creates as a tracking
   branch.
 
+- History badges (issue #150): each commit shows how long ago it was made and, when the branch
+  has an upstream, whether it is already there (`remote`) or only local (`local`), from
+  `git rev-list @{upstream}..HEAD` (`mark_pushed`). Without an upstream no badge is shown.
+
 ## Consequences
 
 - No git library is bundled; Alchemide needs `git` on the `PATH`, as for the terminal.

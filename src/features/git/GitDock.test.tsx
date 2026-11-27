@@ -150,3 +150,23 @@ test("a failed commit keeps its message on screen after the refresh", async () =
   });
   expect(screen.getByRole("alert").textContent).toMatch(/commit message|nothing to commit/);
 });
+
+test("history shows how long ago and whether each commit is pushed", async () => {
+  await openDock();
+  fireEvent.change(screen.getByRole("textbox", { name: "Commit message" }), {
+    target: { value: "docs: local only" },
+  });
+  await act(async () => {
+    fireEvent.click(screen.getByRole("button", { name: /^Commit/ }));
+  });
+  await act(async () => {
+    fireEvent.click(screen.getByRole("tab", { name: "History" }));
+  });
+  const [mine, sample] = within(screen.getByRole("list", { name: "History" })).getAllByRole(
+    "button",
+  );
+  expect(mine?.textContent).toContain("just now");
+  expect(mine?.textContent).toContain("local");
+  expect(sample?.textContent).toMatch(/ago/);
+  expect(sample?.textContent).toContain("remote");
+});

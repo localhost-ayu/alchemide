@@ -420,4 +420,9 @@ export const ptBR: Messages = {
   "git.branchMeta": "{author} · {age} · {subject}",
   "git.noBranches": "Nenhuma branch encontrada",
   "git.createdBranch": "Branch {name} criada",
+  "git.commitLocal": "local",
+  "git.commitRemote": "remoto",
+  "git.commitLocalTitle": "Ainda não enviado",
+  "git.commitRemoteTitle": "Já está no remoto",
+  "git.commitMeta": "{hash} · {author} · {age}",
 };
