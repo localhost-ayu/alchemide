@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- A terminal button in the bottom right corner of the status bar opens and hides the terminal
+
+### Added
+
 - Tabs of files that share a name show the folder that tells them apart (`conexao.php · beer`)
 
 ### Changed

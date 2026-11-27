@@ -354,3 +354,15 @@ test("settings switches follow the theme accent", async ({ page }) => {
     `rgb(${[1, 3, 5].map((i) => Number.parseInt(hex.slice(i, i + 2), 16)).join(", ")})`;
   expect(background).toBe(toRgb(accent));
 });
+
+test("the status bar button opens and hides the terminal", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("complementary").first()).toBeVisible();
+  const panel = page.getByRole("region", { name: "Terminal" });
+  const toggle = page.getByRole("contentinfo").getByRole("button", { name: "Toggle terminal" });
+
+  await toggle.click();
+  await expect(panel).toBeVisible();
+  await toggle.click();
+  await expect(panel).toBeHidden();
+});
