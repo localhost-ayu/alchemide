@@ -267,3 +267,31 @@
   font: inherit;
   font-size: 12px;
 }
+
+.git-dock__counts {
+  margin-left: auto;
+  padding-left: 6px;
+  font-family: var(--font-code);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.git-dock__added {
+  color: var(--syntax-string);
+}
+
+.git-dock__removed {
+  color: var(--color-error);
+}
+
+.git-dock__view-changes {
+  margin: 6px 12px 0;
+  padding: 3px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-hover);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}

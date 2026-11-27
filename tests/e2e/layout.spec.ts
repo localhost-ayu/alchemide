@@ -499,3 +499,23 @@ test("the whole interface follows Portuguese", async ({ page }) => {
   await page.getByRole("button", { name: "Abrir o painel do Git" }).click();
   await expect(page.getByRole("tab", { name: "Histórico" })).toBeVisible();
 });
+
+test("opens the uncommitted changes tab from the Git dock", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("complementary").first()).toBeVisible();
+  await page.getByRole("button", { name: "Open Git panel" }).click();
+  const dock = page.getByRole("complementary", { name: "Git" });
+  await expect(dock).toContainText("+2");
+  await dock.getByRole("button", { name: /View changes/ }).click();
+
+  const changes = page.getByRole("region", { name: "Uncommitted Changes" });
+  await expect(page.getByRole("tab", { name: /Uncommitted Changes/ })).toBeVisible();
+  await expect(changes.locator(".cm-mergeView")).toHaveCount(3);
+  await expect(changes).toContainText("Hello, {name}");
+
+  await changes.getByRole("button", { name: "Unified" }).click();
+  await expect(changes.locator(".cm-mergeView")).toHaveCount(0);
+
+  await page.getByRole("button", { name: "Close uncommitted changes" }).first().click();
+  await expect(changes).toBeHidden();
+});

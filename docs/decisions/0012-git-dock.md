@@ -36,6 +36,15 @@ The reference was Zed's Git panel: a dock on the right with the changes and the 
   it is fetched again when the file is opened, activated or saved. A file outside a repository or
   not tracked yet shows nothing. Settings → Editor turns it off (`editor.inlineBlame`).
 
+- Uncommitted changes tab (issue #148), like Zed's: the editor feature shows every changed file
+  with its diff against `HEAD`, side by side or unified, with syntax highlighting and unchanged
+  regions collapsed, using `@codemirror/merge` (official, MIT). `git_file_versions` returns the
+  `HEAD` text (`git show HEAD:path`, empty for new files) and the text on disk; `git_status`
+  adds `+N −M` per file from `git diff --numstat` (staged plus unstaged; untracked files count
+  their lines) and the repository root, so a file can be opened from the tab. Stage, unstage,
+  stage all and commit work from the tab too. The Git dock opens it through the
+  `editor.showChanges` command, so neither feature imports the other.
+
 ## Consequences
 
 - No git library is bundled; Alchemide needs `git` on the `PATH`, as for the terminal.

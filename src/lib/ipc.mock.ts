@@ -9,6 +9,7 @@ import type {
   Entry,
   Environment,
   FileContent,
+  FileVersions,
   Folder,
   GitStatus,
   LspMessage,
@@ -797,9 +798,9 @@ type MockGit = { files: ChangedFile[]; log: Commit[]; branch: string; branches: 
 
 const INITIAL_GIT: MockGit = {
   files: [
-    { path: "src/App.tsx", originalPath: null, staged: null, unstaged: "M" },
-    { path: "README.md", originalPath: null, staged: "M", unstaged: null },
-    { path: "notes.txt", originalPath: null, staged: null, unstaged: "?" },
+    { path: "src/App.tsx", originalPath: null, staged: null, unstaged: "M", added: 2, removed: 1 },
+    { path: "README.md", originalPath: null, staged: "M", unstaged: null, added: 1, removed: 1 },
+    { path: "notes.txt", originalPath: null, staged: null, unstaged: "?", added: 3, removed: 0 },
   ],
   branch: "main",
   branches: ["main", "feature/login"],
@@ -821,7 +822,7 @@ export function resetMockGit(): void {
 }
 
 export function gitStatus(): Promise<GitStatus> {
-  return Promise.resolve({ branch: git.branch, files: structuredClone(git.files) });
+  return Promise.resolve({ root, branch: git.branch, files: structuredClone(git.files) });
 }
 
 export function gitDiff(path: string, staged: boolean, untracked: boolean): Promise<string> {
@@ -1061,4 +1062,17 @@ export function resetMockFiles(): void {
   }
   Object.assign(tree, structuredClone(INITIAL_TREE));
   Object.assign(files, structuredClone(INITIAL_FILES));
+}
+
+const MOCK_VERSIONS: Record<string, FileVersions> = {
+  "src/App.tsx": {
+    before: "export function App() {\n  return <h1>Hello</h1>;\n}\n",
+    after: 'export function App() {\n  const name = "lab";\n  return <h1>Hello, {name}</h1>;\n}\n',
+  },
+  "README.md": { before: "# Sample project\n", after: "# Sample lab project\n" },
+  "notes.txt": { before: "", after: "first\nsecond\nthird\n" },
+};
+
+export function gitFileVersions(path: string): Promise<FileVersions> {
+  return Promise.resolve(MOCK_VERSIONS[path] ?? { before: "", after: "" });
 }

@@ -19,11 +19,21 @@ pub struct ChangedFile {
     pub original_path: Option<String>,
     pub staged: Option<char>,
     pub unstaged: Option<char>,
+    pub added: u32,
+    pub removed: u32,
+}
+
+#[derive(Debug, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct FileVersions {
+    pub before: String,
+    pub after: String,
 }
 
 #[derive(Debug, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GitStatus {
+    pub root: String,
     pub branch: Option<String>,
     pub files: Vec<ChangedFile>,
 }
@@ -69,9 +79,15 @@ pub fn parse_status(output: &str) -> GitStatus {
             original_path,
             staged: status_code(x),
             unstaged: if untracked { Some('?') } else { status_code(y) },
+            added: 0,
+            removed: 0,
         });
     }
-    GitStatus { branch, files }
+    GitStatus {
+        root: String::new(),
+        branch,
+        files,
+    }
 }
 
 pub fn parse_log(output: &str) -> Vec<Commit> {
@@ -214,6 +230,32 @@ pub fn parse_blame(output: &str) -> Blame {
     blame
 }
 
+pub fn parse_numstat(output: &str) -> HashMap<String, (u32, u32)> {
+    let mut counts = HashMap::new();
+    let mut fields = output.split('\0').filter(|field| !field.is_empty());
+    while let Some(field) = fields.next() {
+        let mut parts = field.splitn(3, '\t');
+        let (Some(added), Some(removed), Some(path)) = (parts.next(), parts.next(), parts.next())
+        else {
+            continue;
+        };
+        let path = if path.is_empty() {
+            fields.next();
+            fields.next().unwrap_or_default()
+        } else {
+            path
+        };
+        let entry = counts.entry(path.to_string()).or_insert((0, 0));
+        entry.0 += added.parse().unwrap_or(0);
+        entry.1 += removed.parse().unwrap_or(0);
+    }
+    counts
+}
+
+pub fn count_lines(text: &str) -> u32 {
+    u32::try_from(text.lines().count()).unwrap_or(u32::MAX)
+}
+
 pub fn is_commit_hash(hash: &str) -> bool {
     (4..=64).contains(&hash.len()) && hash.chars().all(|c| c.is_ascii_hexdigit())
 }
@@ -296,7 +338,54 @@ pub async fn git_status(workspace: State<'_, Workspace>) -> Result<GitStatus> {
             ],
             &[],
         )?;
-        Ok(parse_status(&text(output)))
+        let mut status = parse_status(&text(output));
+        status.root = dir.to_string_lossy().into_owned();
+        let mut counts = HashMap::new();
+        for args in [
+            &["diff", "--numstat", "-z"][..],
+            &["diff", "--cached", "--numstat", "-z"][..],
+        ] {
+            if let Ok(output) = run(&dir, args, &[]) {
+                for (path, (added, removed)) in parse_numstat(&text(output)) {
+                    let entry = counts.entry(path).or_insert((0, 0));
+                    entry.0 += added;
+                    entry.1 += removed;
+                }
+            }
+        }
+        for file in &mut status.files {
+            if let Some((added, removed)) = counts.get(&file.path) {
+                file.added = *added;
+                file.removed = *removed;
+            } else if file.unstaged == Some('?') {
+                let text = std::fs::read(dir.join(&file.path)).unwrap_or_default();
+                file.added = count_lines(&String::from_utf8_lossy(&text));
+            }
+        }
+        Ok(status)
+    })
+    .await
+}
+
+fn show(dir: &Path, spec: &str) -> Option<String> {
+    run(dir, &["show", spec], &[]).ok().map(text)
+}
+
+#[tauri::command]
+pub async fn git_file_versions(
+    path: String,
+    workspace: State<'_, Workspace>,
+) -> Result<FileVersions> {
+    if !is_safe_repo_path(&path) {
+        return Err(Error::OutsideWorkspace);
+    }
+    let dir = repository_root(&workspace)?;
+    blocking(move || {
+        let disk = std::fs::read(dir.join(&path)).unwrap_or_default();
+        Ok(FileVersions {
+            before: show(&dir, &format!("HEAD:{path}")).unwrap_or_default(),
+            after: String::from_utf8_lossy(&disk).into_owned(),
+        })
     })
     .await
 }
@@ -570,6 +659,17 @@ mod tests {
     }
 
     #[test]
+    fn reads_numstat_including_renames_and_binary_files() {
+        let output = "3\t1\tsrc/a.ts\0-\t-\tlogo.png\0\x32\t0\t\0old.ts\0new.ts\0";
+        let counts = parse_numstat(output);
+        assert_eq!(counts["src/a.ts"], (3, 1));
+        assert_eq!(counts["logo.png"], (0, 0));
+        assert_eq!(counts["new.ts"], (2, 0));
+        assert_eq!(count_lines("a\nb\n"), 2);
+        assert_eq!(count_lines(""), 0);
+    }
+
+    #[test]
     fn accepts_only_hex_commit_hashes() {
         assert!(is_commit_hash("abc123"));
         assert!(!is_commit_hash("--output=/tmp/x"));
@@ -641,5 +741,8 @@ mod tests {
         assert_eq!(blame.lines.len(), 2);
         assert_eq!(blame.commits[&blame.lines[0]].summary, "first");
         assert_eq!(blame.lines[1], "0".repeat(40));
+        assert_eq!(show(repo, "HEAD:a.txt").as_deref(), Some("one\n"));
+        assert_eq!(show(repo, ":a.txt").as_deref(), Some("one\n"));
+        assert_eq!(show(repo, "HEAD:missing.txt"), None);
     }
 }
