@@ -137,7 +137,7 @@ as you make it; Cancel or `Esc` brings back the theme as it was.
 - Text and syntax colors show their contrast on the background, highlighted when below the WCAG
   AA ratio of 4.5:1 (the bar every built-in theme meets).
 - A color with transparency (`#rrggbbaa`) keeps its alpha when you pick a new color.
-- Sliders adjust the glass (panel opacity and blur), the background (dim, blur and fit) and the
+- A switch turns the glass panels on or off (the `surface` effect; saving also keeps it in the theme's `effects`), and sliders adjust the glass (panel opacity and blur), the background (dim, blur and fit) and the
   mascot (opacity, size and corner). Background and mascot sliders change what is on screen: your
   own background or mascot when you chose one (saved in the settings, kept across themes), otherwise
   the theme's. They appear once there is an image or video background or a mascot.

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- The "Glass panels" switch moved from Settings to the theme editor, next to the glass opacity and blur, with a live preview
+
 ### Added
 
 - Tabs of files that share a name show the folder that tells them apart (`conexao.php · beer`)
