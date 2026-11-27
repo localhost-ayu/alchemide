@@ -142,6 +142,29 @@ pub async fn reopen_last_folder(
 }
 
 #[tauri::command]
+pub async fn recent_folders() -> Result<Vec<Folder>> {
+    let dir = crate::config::config_dir()?;
+    Ok(crate::config::recent_folders(&dir)
+        .iter()
+        .map(|folder| describe_folder(folder))
+        .collect())
+}
+
+#[tauri::command]
+pub async fn open_recent_folder(
+    path: String,
+    app: AppHandle,
+    workspace: State<'_, Workspace>,
+) -> Result<Folder> {
+    let dir = crate::config::config_dir()?;
+    let root = crate::config::recent_folders(&dir)
+        .into_iter()
+        .find(|folder| folder.to_string_lossy() == path)
+        .ok_or(Error::OutsideWorkspace)?;
+    open_root(app, &workspace, root)
+}
+
+#[tauri::command]
 pub async fn pick_file(app: AppHandle, workspace: State<'_, Workspace>) -> Result<Option<String>> {
     let picked =
         tauri::async_runtime::spawn_blocking(move || app.dialog().file().blocking_pick_file())

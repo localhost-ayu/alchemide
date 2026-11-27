@@ -1,9 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { registerCommands } from "../../lib/commands";
 import { useT } from "../../lib/i18n";
 import { onFsChange } from "../../lib/ipc";
 import "./Explorer.css";
 import { ExplorerContextMenu } from "./ExplorerContextMenu";
+import { ProjectSwitcher } from "./ProjectSwitcher";
+import { RecentProjects } from "./RecentProjects";
 import { Tree } from "./Tree";
 import { useWorkspaceStore } from "./useWorkspaceStore";
 
@@ -13,6 +15,7 @@ export function Explorer() {
   const pickFolder = useWorkspaceStore((state) => state.pickFolder);
   const refreshDirs = useWorkspaceStore((state) => state.refreshDirs);
   const t = useT();
+  const [switcherRequest, setSwitcherRequest] = useState(0);
 
   useEffect(
     () =>
@@ -22,6 +25,12 @@ export function Explorer() {
           title: t("explorer.openFolderCommand"),
           keys: "Ctrl+K Ctrl+O",
           run: () => useWorkspaceStore.getState().pickFolder(),
+        },
+        {
+          id: "explorer.recentProjects",
+          title: t("projects.command"),
+          keys: "Ctrl+Alt+O",
+          run: () => setSwitcherRequest((count) => count + 1),
         },
         {
           id: "explorer.newFile",
@@ -63,9 +72,7 @@ export function Explorer() {
       {folder ? (
         <>
           <div className="explorer__header">
-            <h2 className="explorer__title" title={folder.path}>
-              {folder.name}
-            </h2>
+            <ProjectSwitcher current={folder} openRequest={switcherRequest} />
             <button
               type="button"
               className="explorer__action"
@@ -105,9 +112,12 @@ export function Explorer() {
           <ExplorerContextMenu />
         </>
       ) : (
-        <button type="button" className="explorer__open" onClick={pickFolder}>
-          {t("explorer.openFolder")}
-        </button>
+        <>
+          <button type="button" className="explorer__open" onClick={pickFolder}>
+            {t("explorer.openFolder")}
+          </button>
+          <RecentProjects />
+        </>
       )}
       {error && (
         <p role="alert" className="explorer__error">

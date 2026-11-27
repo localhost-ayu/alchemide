@@ -36,9 +36,48 @@ pub fn read_settings(dir: &Path) -> Value {
 
 const STATE_FILE: &str = "state.json";
 
+pub const RECENT_LIMIT: usize = 12;
+
+pub fn push_recent(recent: Vec<String>, folder: &str) -> Vec<String> {
+    std::iter::once(folder.to_string())
+        .chain(recent.into_iter().filter(|path| path != folder))
+        .take(RECENT_LIMIT)
+        .collect()
+}
+
+fn read_state(dir: &Path) -> Value {
+    std::fs::read_to_string(dir.join(STATE_FILE))
+        .ok()
+        .and_then(|text| serde_json::from_str(&text).ok())
+        .unwrap_or(Value::Null)
+}
+
+fn stored_recent(state: &Value) -> Vec<String> {
+    state
+        .get("recentFolders")
+        .and_then(Value::as_array)
+        .map(|items| {
+            items
+                .iter()
+                .filter_map(|item| item.as_str().map(String::from))
+                .collect()
+        })
+        .unwrap_or_default()
+}
+
+pub fn recent_folders(dir: &Path) -> Vec<PathBuf> {
+    stored_recent(&read_state(dir))
+        .into_iter()
+        .map(PathBuf::from)
+        .filter(|folder| folder.is_dir())
+        .collect()
+}
+
 pub fn remember_last_folder(dir: &Path, folder: &Path) -> Result<()> {
     std::fs::create_dir_all(dir)?;
-    let state = serde_json::json!({ "lastFolder": folder.to_string_lossy() });
+    let path = folder.to_string_lossy();
+    let recent = push_recent(stored_recent(&read_state(dir)), &path);
+    let state = serde_json::json!({ "lastFolder": path, "recentFolders": recent });
     let temporary = dir.join(format!("{STATE_FILE}.tmp"));
     std::fs::write(&temporary, state.to_string())?;
     std::fs::rename(&temporary, dir.join(STATE_FILE))?;
@@ -67,6 +106,33 @@ mod tests {
     use super::*;
     use serde_json::json;
     use tempfile::TempDir;
+
+    #[test]
+    fn keeps_recent_folders_newest_first_without_duplicates() {
+        let recent = vec!["/b".to_string(), "/a".to_string()];
+        assert_eq!(push_recent(recent, "/a"), ["/a", "/b"]);
+        let many: Vec<String> = (0..20).map(|n| format!("/p{n}")).collect();
+        let pushed = push_recent(many, "/new");
+        assert_eq!(pushed.len(), RECENT_LIMIT);
+        assert_eq!(pushed[0], "/new");
+    }
+
+    #[test]
+    fn lists_only_recent_folders_that_still_exist() {
+        let config = TempDir::new().expect("config");
+        let first = TempDir::new().expect("first");
+        let second = TempDir::new().expect("second");
+        remember_last_folder(config.path(), first.path()).expect("first");
+        remember_last_folder(config.path(), second.path()).expect("second");
+        remember_last_folder(config.path(), first.path()).expect("again");
+        assert_eq!(
+            recent_folders(config.path()),
+            [first.path().to_path_buf(), second.path().to_path_buf()]
+        );
+        drop(second);
+        assert_eq!(recent_folders(config.path()), [first.path().to_path_buf()]);
+        assert_eq!(last_folder(config.path()), Some(first.path().to_path_buf()));
+    }
 
     #[test]
     fn remembers_the_last_folder_outside_the_settings_file() {

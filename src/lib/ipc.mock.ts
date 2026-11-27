@@ -1091,3 +1091,26 @@ const MOCK_VERSIONS: Record<string, FileVersions> = {
 export function gitFileVersions(path: string): Promise<FileVersions> {
   return Promise.resolve(MOCK_VERSIONS[path] ?? { before: "", after: "" });
 }
+
+let mockRecent: Folder[] = [
+  { name: "sample-project", path: root },
+  { name: "lab-notes", path: "/home/user/lab-notes" },
+];
+
+export function setMockRecentFolders(folders: Folder[]): void {
+  mockRecent = folders;
+}
+
+export function recentFolders(): Promise<Folder[]> {
+  return Promise.resolve(structuredClone(mockRecent));
+}
+
+export function openRecentFolder(path: string): Promise<Folder> {
+  const folder = mockRecent.find((candidate) => candidate.path === path);
+  if (!folder) {
+    return Promise.reject(new Error("the path is outside the open folder"));
+  }
+  mockRecent = [folder, ...mockRecent.filter((candidate) => candidate !== folder)];
+  tree[folder.path] = tree[folder.path] ?? [];
+  return Promise.resolve(folder);
+}

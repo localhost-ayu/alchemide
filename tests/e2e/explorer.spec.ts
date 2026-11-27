@@ -207,3 +207,18 @@ test("renames and deletes from the right-click menu", async ({ page }) => {
   await page.getByRole("menuitem", { name: /Delete/ }).click();
   await expect(page.getByRole("button", { name: "report.sql", exact: true })).toBeHidden();
 });
+
+test("switches between recent projects", async ({ page }) => {
+  await page.goto("/");
+  await page
+    .getByRole("region", { name: "Recent projects" })
+    .getByRole("button", { name: "sample-project" })
+    .click();
+  await expect(page.getByRole("heading", { name: "sample-project" })).toBeVisible();
+
+  await page.getByRole("heading", { name: "sample-project" }).getByRole("button").click();
+  const switcher = page.getByRole("dialog", { name: "Projects" });
+  await switcher.getByRole("textbox").fill("lab");
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("heading", { name: "lab-notes" })).toBeVisible();
+});
