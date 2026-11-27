@@ -1,6 +1,6 @@
 .app {
   --activity-width: 44px;
-  --sidebar-width: 260px;
+  --sidebar-width: var(--sidebar-size, 260px);
   --statusbar-height: 24px;
   --git-width: 22px;
   display: grid;
@@ -171,4 +171,43 @@
   min-width: 0;
   min-height: 0;
   overflow: hidden;
+}
+
+.app__explorer,
+.app__terminal {
+  position: relative;
+}
+
+.resize-handle {
+  position: absolute;
+  z-index: 3;
+  background: transparent;
+  transition: background-color var(--motion) ease;
+}
+
+.resize-handle:hover,
+.resize-handle:focus-visible,
+.resize-handle:active {
+  background: color-mix(in srgb, var(--color-accent) 45%, transparent);
+  outline: none;
+}
+
+.resize-handle--vertical {
+  top: 0;
+  right: -3px;
+  bottom: 0;
+  width: 6px;
+  cursor: col-resize;
+}
+
+.resize-handle--horizontal {
+  top: -3px;
+  right: 0;
+  left: 0;
+  height: 6px;
+  cursor: row-resize;
+}
+
+.app__terminal:has(.terminal-panel[hidden]) .resize-handle {
+  display: none;
 }

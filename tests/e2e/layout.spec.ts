@@ -215,6 +215,42 @@ test("select fields stay readable in light and dark themes", async ({ page }) =>
   }
 });
 
+test("resizes the sidebar and the terminal by dragging their edges", async ({ page }) => {
+  await page.goto("/");
+  const sidebar = page.getByRole("complementary", { name: "Explorer" });
+  await expect(sidebar).toBeVisible();
+  const before = (await sidebar.boundingBox())?.width ?? 0;
+
+  const sidebarHandle = page.getByRole("separator", { name: "Resize sidebar" });
+  const box = await sidebarHandle.boundingBox();
+  if (!box) throw new Error("no sidebar handle");
+  await page.mouse.move(box.x + box.width / 2, box.y + 100);
+  await page.mouse.down();
+  await page.mouse.move(box.x + 120, box.y + 100, { steps: 5 });
+  await page.mouse.up();
+  await expect
+    .poll(async () => (await sidebar.boundingBox())?.width ?? 0)
+    .toBeGreaterThan(before + 80);
+
+  await page.keyboard.press("Control+Backquote");
+  const terminal = page.getByRole("region", { name: "Terminal" });
+  await expect(terminal).toBeVisible();
+  const height = (await terminal.boundingBox())?.height ?? 0;
+  const terminalHandle = page.getByRole("separator", { name: "Resize terminal" });
+  const edge = await terminalHandle.boundingBox();
+  if (!edge) throw new Error("no terminal handle");
+  await page.mouse.move(edge.x + 200, edge.y + edge.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(edge.x + 200, edge.y - 100, { steps: 5 });
+  await page.mouse.up();
+  await expect
+    .poll(async () => (await terminal.boundingBox())?.height ?? 0)
+    .toBeGreaterThan(height + 60);
+
+  await terminalHandle.dblclick();
+  await expect.poll(async () => Math.round((await terminal.boundingBox())?.height ?? 0)).toBe(260);
+});
+
 test("Esc closes the settings even when the focus is not inside them", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("complementary").first()).toBeVisible();
@@ -246,4 +282,56 @@ test("stages and commits from the Git dock", async ({ page }) => {
   await expect(dock.getByRole("list", { name: "History" })).toContainText("feat: from the dock");
   await dock.getByRole("button", { name: "Close Git panel" }).click();
   await expect(dock).toBeHidden();
+});
+
+test("changes a keyboard shortcut and uses it", async ({ page }) => {
+  await page.goto("/");
+  const explorer = page.getByRole("complementary", { name: "Explorer" });
+  await expect(explorer).toBeVisible();
+
+  await page.keyboard.press("Control+,");
+  const settings = page.getByRole("dialog", { name: "Settings" });
+  await settings.getByRole("button", { name: "Change shortcut for Toggle side bar" }).click();
+  await page.keyboard.press("Control+Shift+J");
+  await expect(settings.getByLabel("Shortcut for Toggle side bar", { exact: true })).toHaveText(
+    "Ctrl+Shift+J",
+  );
+  await page.keyboard.press("Escape");
+
+  await page.keyboard.press("Control+b");
+  await expect(explorer).toBeVisible();
+  await page.keyboard.press("Control+Shift+J");
+  await expect(explorer).toBeHidden();
+});
+
+test("customizes the terminal colors and cursor from the settings", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("complementary").first()).toBeVisible();
+
+  await page.keyboard.press("Control+,");
+  const terminalSection = page.getByRole("region", { name: "Terminal" });
+  await terminalSection.getByRole("combobox", { name: "Colors" }).selectOption("Paper");
+  await terminalSection.getByRole("combobox", { name: "Cursor" }).selectOption("bar");
+  await page.keyboard.press("Escape");
+
+  await page.keyboard.press("Control+Backquote");
+  const view = page.locator(".terminal-view").first();
+  await expect(view).toHaveCSS("background-color", "rgb(250, 247, 240)");
+});
+
+test("searches the settings", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("complementary").first()).toBeVisible();
+
+  await page.keyboard.press("Control+,");
+  const settings = page.getByRole("dialog", { name: "Settings" });
+  const search = settings.getByRole("searchbox", { name: "Search settings" });
+  await expect(search).toBeFocused();
+  await search.fill("tab size");
+
+  await expect(settings.getByRole("combobox", { name: "Tab size" })).toBeVisible();
+  await expect(settings.getByRole("combobox", { name: "Theme" })).toBeHidden();
+  await expect(
+    settings.getByRole("checkbox", { name: "Reopen the last folder on start" }),
+  ).toBeHidden();
 });

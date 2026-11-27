@@ -6,8 +6,8 @@ test("loads the bundled font chosen in the settings", async ({ page }) => {
   await page.getByRole("button", { name: "README.md" }).click();
 
   await page.keyboard.press("Control+,");
-  await page.getByRole("combobox", { name: "Font" }).selectOption("JetBrains Mono");
-  await page.getByRole("spinbutton", { name: "Line height" }).fill("2");
+  await page.getByRole("combobox", { name: "Font", exact: true }).selectOption("JetBrains Mono");
+  await page.getByRole("spinbutton", { name: "Line height", exact: true }).fill("2");
   await page.keyboard.press("Escape");
 
   const scroller = page.locator(".cm-scroller");

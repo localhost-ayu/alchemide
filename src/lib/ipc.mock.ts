@@ -88,6 +88,16 @@ export function setMockEnvironment(next: Environment): void {
   environment = next;
 }
 
+let lastFolderRemembered = false;
+
+export function setMockLastFolder(remembered: boolean): void {
+  lastFolderRemembered = remembered;
+}
+
+export function reopenLastFolder(): Promise<Folder | null> {
+  return lastFolderRemembered ? openFolder() : Promise.resolve(null);
+}
+
 export function pickFile(): Promise<string | null> {
   return Promise.resolve(LOOSE_FILE);
 }

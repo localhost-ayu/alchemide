@@ -9,11 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Keyboard shortcuts in the settings: record a new shortcut (one key or a two-step chord), remove it or reset it; shortcuts used by more than one command are flagged
 - Git dock on the right (small tab or `Ctrl+Shift+G`): changed files with their diff, stage and unstage per file, stage all, commit with a message (`Ctrl+Enter`), and the history with the diff of each commit
 
 ### Added
 
 - `Ctrl+O` opens a single file with the system dialog, even outside the open folder; `Ctrl+K Ctrl+O` opens a folder. Both are in the command palette
+- Resize the sidebar and the terminal by dragging their edge (or with the arrow keys on the focused edge); sizes are remembered and a double click restores the default
+- Terminal settings: follow the theme or use one of four palettes (Reagent, Midnight ink, Paper, Ember), its own font and line height, cursor shape and blinking, padding, scrollback lines and a visual bell; changes apply to open terminals right away
+- Search in the settings: type to filter every option, accents and word order do not matter
+- General settings: reopen the last folder on start (on by default)
 
 ### Changed
 
