@@ -211,3 +211,7 @@
 .app__terminal:has(.terminal-panel[hidden]) .resize-handle {
   display: none;
 }
+
+.app__editor:has(.markdown-toggle) .tabs {
+  padding-right: 36px;
+}

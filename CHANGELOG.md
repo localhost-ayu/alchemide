@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- A button at the end of the tab bar opens and closes the preview of Markdown files
 - SQL snippet pack (on by default: `sel`, `ij`, `lj`, `cte`, `ins`, `upd`, `case`, `rownum`…) and a SQL Server pack (`top`, `page`, `lasth`, `decl`, `trycatch`, `merge`, `temp`…), turned on in Settings → Snippets
 - The mascot can be unlocked and dragged anywhere in the editor (double click sends it back to its corner), drawn behind the code (new default) or in front of it, and an animated GIF stands still when animations are off
 - Tabs of files that share a name show the folder that tells them apart (`conexao.php · beer`)
