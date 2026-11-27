@@ -52,6 +52,10 @@ pub enum Error {
     InvalidName,
     #[error("a file or folder with that name already exists")]
     AlreadyExists,
+    #[error("the open folder itself cannot be renamed or deleted")]
+    WorkspaceRoot,
+    #[error("could not move it to the trash: {0}")]
+    Trash(String),
     #[error("git is not installed or not on the PATH")]
     GitMissing,
     #[error("the open folder is not a git repository")]

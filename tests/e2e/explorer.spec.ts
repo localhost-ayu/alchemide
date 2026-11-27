@@ -188,3 +188,22 @@ test("creates a new file from the explorer and saves it", async ({ page }) => {
   await page.keyboard.press("Control+s");
   await expect(page.getByRole("tab", { name: /hello\.ts/ })).not.toContainText("●");
 });
+
+test("renames and deletes from the right-click menu", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Open folder" }).click();
+
+  await page.getByRole("button", { name: "query.sql", exact: true }).click({ button: "right" });
+  await page.getByRole("menuitem", { name: /Rename/ }).click();
+  const input = page.getByRole("textbox", { name: "New name for query.sql" });
+  await expect(input).toBeFocused();
+  await page.keyboard.press("Control+a");
+  await page.keyboard.type("report.sql");
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("button", { name: "report.sql", exact: true })).toBeVisible();
+
+  page.once("dialog", (dialog) => dialog.accept());
+  await page.getByRole("button", { name: "report.sql", exact: true }).click({ button: "right" });
+  await page.getByRole("menuitem", { name: /Delete/ }).click();
+  await expect(page.getByRole("button", { name: "report.sql", exact: true })).toBeHidden();
+});
