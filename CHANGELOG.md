@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Activity bar to switch between Explorer, Search and Docker; clicking the open view collapses the side bar
+- Hide the activity bar, status bar or editor tabs from the command palette or Settings → Layout; the layout and the open side bar view are remembered
+- Zen mode (`Ctrl+K Z`) hides everything but the editor until you press it again
 - Docker panel (`Ctrl+Shift+D`): running and stopped containers grouped by Compose project, with start, stop and restart, and logs followed in a new terminal tab; refreshes every 5 seconds while visible and shows a short notice when Docker is missing or not running
 
 ## [0.5.0] - 2026-11-27

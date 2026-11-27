@@ -9,6 +9,7 @@ A lightweight, mood-themed code editor built with Tauri, React and CodeMirror.
 - Syntax highlighting for PHP, JavaScript, TypeScript, JSX/TSX, SQL, Markdown, HTML, CSS, JSON,
   Rust, Python and Go
 - Collapsible file explorer that respects `.gitignore`
+- Minimal layout: activity bar, collapsible side bar, hideable status bar and tabs, and zen mode
 - Built-in terminal with automatic Windows, Linux and WSL profiles
 - Docker panel: running and stopped containers, start, stop, restart and logs without opening Docker Desktop
 - Markdown preview

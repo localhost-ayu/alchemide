@@ -132,7 +132,7 @@ test("runs actions from the command palette", async ({ page }) => {
   await page.keyboard.press("Control+Shift+P");
   const search = page.getByRole("combobox", { name: "Run a command" });
   await expect(page.getByRole("option", { name: /Toggle terminal/ })).toBeVisible();
-  await search.fill("toggle explorer");
+  await search.fill("toggle side bar");
   await search.press("Enter");
 
   await expect(explorer).toBeHidden();
@@ -150,4 +150,41 @@ test("changes theme and effects from the settings screen", async ({ page }) => {
 
   await expect(page.locator("html")).toHaveAttribute("data-theme", "Aço");
   await expect(explorer).toHaveCSS("backdrop-filter", "none");
+});
+
+test("switches side bar views from the activity bar and hides bars", async ({ page }) => {
+  await page.goto("/");
+  const activity = page.getByRole("navigation", { name: "Activity bar" });
+  await expect(page.getByRole("complementary", { name: "Explorer" })).toBeVisible();
+
+  await activity.getByRole("button", { name: "Docker" }).click();
+  await expect(page.getByRole("complementary", { name: "Docker" })).toBeVisible();
+  await activity.getByRole("button", { name: "Docker" }).click();
+  await expect(page.getByRole("complementary")).toHaveCount(0);
+
+  await page.keyboard.press("Control+,");
+  const settings = page.getByRole("dialog", { name: "Settings" });
+  await settings.getByRole("checkbox", { name: "Status bar" }).uncheck();
+  await settings.getByRole("checkbox", { name: "Activity bar" }).uncheck();
+  await page.keyboard.press("Escape");
+  await expect(page.locator(".app__statusbar")).toBeHidden();
+  await expect(activity).toBeHidden();
+});
+
+test("zen mode hides everything but the editor and comes back", async ({ page }) => {
+  await page.goto("/");
+  const activity = page.getByRole("navigation", { name: "Activity bar" });
+  const explorer = page.getByRole("complementary", { name: "Explorer" });
+  await expect(explorer).toBeVisible();
+
+  await page.keyboard.press("Control+k");
+  await page.keyboard.press("z");
+  await expect(explorer).toBeHidden();
+  await expect(activity).toBeHidden();
+  await expect(page.locator(".app__statusbar")).toBeHidden();
+
+  await page.keyboard.press("Control+k");
+  await page.keyboard.press("z");
+  await expect(explorer).toBeVisible();
+  await expect(activity).toBeVisible();
 });
