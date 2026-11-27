@@ -63,5 +63,6 @@ export function toCssVariables(theme: Theme): Record<string, string> {
     "--control-bg": controls.background,
     "--control-text": controls.text,
     "--color-scheme": controls.scheme,
+    "--color-on-accent": controls.onAccent,
   };
 }

@@ -41,3 +41,12 @@ describe.each(BUILTIN_THEMES.map((theme) => [theme.name, theme] as const))("%s",
     expect(contrast(text, background)).toBeGreaterThanOrEqual(4.5);
   });
 });
+
+test("picks a knob color that stands out on the accent", () => {
+  expect(controlColors(dark).onAccent).toBe("#120f1a");
+  const pale = { ...dark, bg: "#d0ffa0", accent: "#b6f24a" };
+  expect(contrast(controlColors(pale).onAccent, pale.accent)).toBeGreaterThanOrEqual(3);
+  for (const theme of BUILTIN_THEMES) {
+    expect(contrast(controlColors(theme.ui).onAccent, theme.ui.accent)).toBeGreaterThanOrEqual(3);
+  }
+});

@@ -5,6 +5,7 @@ export type ControlColors = {
   background: string;
   text: string;
   scheme: "dark" | "light";
+  onAccent: string;
 };
 
 const BLACK = "#000000";
@@ -15,5 +16,7 @@ export function controlColors(ui: ThemeUi): ControlColors {
   const fallback = contrast(WHITE, background) >= contrast(BLACK, background) ? WHITE : BLACK;
   const text = contrast(ui.text, background) >= AA_CONTRAST ? ui.text : fallback;
   const scheme = contrast(WHITE, background) >= contrast(BLACK, background) ? "dark" : "light";
-  return { background, text, scheme };
+  const strongest = contrast(WHITE, ui.accent) >= contrast(BLACK, ui.accent) ? WHITE : BLACK;
+  const onAccent = contrast(ui.bg, ui.accent) >= 3 ? ui.bg : strongest;
+  return { background, text, scheme, onAccent };
 }
