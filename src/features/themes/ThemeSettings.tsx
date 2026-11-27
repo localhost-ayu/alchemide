@@ -12,6 +12,7 @@ export function ThemeSettings() {
   const theme = useThemeStore((state) => state.theme);
   const effects = useThemeStore((state) => state.effects);
   const commit = useThemeStore((state) => state.commit);
+  const userThemes = useThemeStore((state) => state.userThemes);
   const setEffect = (changes: Partial<Effects>) => commit(theme, { ...effects, ...changes });
 
   return (
@@ -28,11 +29,22 @@ export function ThemeSettings() {
             }
           }}
         >
-          {BUILTIN_THEMES.map((option) => (
-            <option key={option.name} value={option.name}>
-              {option.name}
-            </option>
-          ))}
+          <optgroup label="Built-in">
+            {BUILTIN_THEMES.map((option) => (
+              <option key={option.name} value={option.name}>
+                {option.name}
+              </option>
+            ))}
+          </optgroup>
+          {userThemes.length > 0 && (
+            <optgroup label="Your themes">
+              {userThemes.map(({ file, theme: option }) => (
+                <option key={file} value={option.name}>
+                  {option.name}
+                </option>
+              ))}
+            </optgroup>
+          )}
         </select>
       </label>
       <label className="settings__field">

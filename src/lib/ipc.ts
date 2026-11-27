@@ -17,6 +17,7 @@ import type {
   TerminalOutput,
   TerminalProfile,
   UpdateInfo,
+  UserThemeFile,
 } from "./types";
 
 export function getEnvironment(): Promise<Environment> {
@@ -125,6 +126,18 @@ export function replaceMatches(
   targets: ReplaceTarget[],
 ): Promise<ReplaceSummary> {
   return invoke<ReplaceSummary>("replace_matches", { query, replacement, targets });
+}
+
+export function listUserThemes(): Promise<UserThemeFile[]> {
+  return invoke<UserThemeFile[]>("list_user_themes");
+}
+
+export function saveUserTheme(file: string | null, theme: unknown): Promise<string> {
+  return invoke<string>("save_user_theme", { file, theme });
+}
+
+export function deleteUserTheme(file: string): Promise<void> {
+  return invoke<void>("delete_user_theme", { file });
 }
 
 export function checkUpdate(): Promise<UpdateInfo | null> {

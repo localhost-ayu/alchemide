@@ -5,6 +5,7 @@ mod error;
 mod fs;
 mod links;
 mod terminal;
+mod themes;
 mod updater;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -35,6 +36,9 @@ pub fn run() {
             terminal::terminal_write,
             terminal::terminal_resize,
             terminal::terminal_close,
+            themes::delete_user_theme,
+            themes::list_user_themes,
+            themes::save_user_theme,
             updater::check_update,
             updater::install_update
         ])
