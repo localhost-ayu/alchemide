@@ -40,6 +40,10 @@ pub enum Error {
     Update(String),
     #[error("there is no update to install")]
     NoUpdate,
+    #[error("Docker is not installed or not on the PATH")]
+    DockerMissing,
+    #[error("Docker: {0}")]
+    Docker(String),
     #[error(transparent)]
     Io(#[from] std::io::Error),
     #[error("could not watch the folder for changes: {0}")]

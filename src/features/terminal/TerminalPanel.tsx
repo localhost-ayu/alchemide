@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { registerCommands } from "../../lib/commands";
 import { onTerminalExit, terminalProfiles } from "../../lib/ipc";
+import { onTerminalRequest } from "../../lib/terminalRequests";
 import type { TerminalProfile } from "../../lib/types";
 import { TerminalView } from "./TerminalView";
 import { useTerminalStore } from "./useTerminalStore";
@@ -29,8 +30,12 @@ export function TerminalPanel() {
       },
     ]);
     const exit = onTerminalExit((id) => useTerminalStore.getState().removeTab(id));
+    const stopRequests = onTerminalRequest(({ label, command }) =>
+      useTerminalStore.getState().openTab(null, label, command),
+    );
     return () => {
       unregister();
+      stopRequests();
       exit.then((unsubscribe) => unsubscribe());
     };
   }, []);

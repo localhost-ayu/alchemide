@@ -3,6 +3,8 @@ import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import type {
   AssetKind,
+  ContainerAction,
+  DockerContainer,
   Entry,
   Environment,
   FileContent,
@@ -133,4 +135,12 @@ export function checkUpdate(): Promise<UpdateInfo | null> {
 
 export function installUpdate(): Promise<void> {
   return invoke<void>("install_update");
+}
+
+export function dockerContainers(): Promise<DockerContainer[]> {
+  return invoke<DockerContainer[]>("docker_containers");
+}
+
+export function dockerAction(id: string, action: ContainerAction): Promise<void> {
+  return invoke<void>("docker_action", { id, action });
 }

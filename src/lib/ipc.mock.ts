@@ -1,5 +1,7 @@
 import type {
   AssetKind,
+  ContainerAction,
+  DockerContainer,
   Entry,
   Environment,
   FileContent,
@@ -375,5 +377,64 @@ export function installUpdate(): Promise<void> {
     return Promise.reject(new Error("there is no update to install"));
   }
   installedUpdates += 1;
+  return Promise.resolve();
+}
+
+const INITIAL_CONTAINERS: DockerContainer[] = [
+  {
+    id: "a1b2c3d4e5f6",
+    name: "shop-db-1",
+    image: "mysql:8.4",
+    state: "running",
+    status: "Up 2 hours",
+    ports: "0.0.0.0:3306->3306/tcp",
+    project: "shop",
+  },
+  {
+    id: "b2c3d4e5f6a1",
+    name: "shop-mail-1",
+    image: "axllent/mailpit:v1.22",
+    state: "exited",
+    status: "Exited (0) 5 days ago",
+    ports: "",
+    project: "shop",
+  },
+  {
+    id: "c3d4e5f6a1b2",
+    name: "scratch",
+    image: "alpine",
+    state: "exited",
+    status: "Exited (0) 3 weeks ago",
+    ports: "",
+    project: null,
+  },
+];
+
+let containers: DockerContainer[] | null = structuredClone(INITIAL_CONTAINERS);
+const dockerActions: string[] = [];
+
+export function setMockDocker(available: boolean): void {
+  containers = available ? structuredClone(INITIAL_CONTAINERS) : null;
+  dockerActions.length = 0;
+}
+
+export function mockDockerActions(): string[] {
+  return [...dockerActions];
+}
+
+export function dockerContainers(): Promise<DockerContainer[]> {
+  return containers
+    ? Promise.resolve(structuredClone(containers))
+    : Promise.reject(new Error("Docker is not installed or not on the PATH"));
+}
+
+export function dockerAction(id: string, action: ContainerAction): Promise<void> {
+  const container = containers?.find((candidate) => candidate.id === id);
+  if (!container) {
+    return Promise.reject(new Error("Docker: No such container"));
+  }
+  dockerActions.push(`${action} ${container.name}`);
+  container.state = action === "stop" ? "exited" : "running";
+  container.status = action === "stop" ? "Exited (0) Less than a second ago" : "Up 1 second";
   return Promise.resolve();
 }

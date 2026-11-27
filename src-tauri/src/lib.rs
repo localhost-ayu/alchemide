@@ -1,5 +1,6 @@
 mod assets;
 mod config;
+mod docker;
 mod env;
 mod error;
 mod fs;
@@ -31,6 +32,8 @@ pub fn run() {
             fs::write_file,
             links::open_external,
             terminal::terminal_open,
+            docker::docker_containers,
+            docker::docker_action,
             terminal::terminal_profiles,
             terminal::terminal_write,
             terminal::terminal_resize,
