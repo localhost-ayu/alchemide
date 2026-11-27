@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Resize the sidebar and the terminal by dragging their edge (or with the arrow keys on the focused edge); sizes are remembered and a double click restores the default
+
 ### Fixed
 
 - The terminal uses the theme's panel color instead of a transparent background, which showed black on Linux, and keeps black and white text readable on light themes

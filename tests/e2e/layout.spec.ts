@@ -214,3 +214,39 @@ test("select fields stay readable in light and dark themes", async ({ page }) =>
     await page.keyboard.press("Escape");
   }
 });
+
+test("resizes the sidebar and the terminal by dragging their edges", async ({ page }) => {
+  await page.goto("/");
+  const sidebar = page.getByRole("complementary", { name: "Explorer" });
+  await expect(sidebar).toBeVisible();
+  const before = (await sidebar.boundingBox())?.width ?? 0;
+
+  const sidebarHandle = page.getByRole("separator", { name: "Resize sidebar" });
+  const box = await sidebarHandle.boundingBox();
+  if (!box) throw new Error("no sidebar handle");
+  await page.mouse.move(box.x + box.width / 2, box.y + 100);
+  await page.mouse.down();
+  await page.mouse.move(box.x + 120, box.y + 100, { steps: 5 });
+  await page.mouse.up();
+  await expect
+    .poll(async () => (await sidebar.boundingBox())?.width ?? 0)
+    .toBeGreaterThan(before + 80);
+
+  await page.keyboard.press("Control+Backquote");
+  const terminal = page.getByRole("region", { name: "Terminal" });
+  await expect(terminal).toBeVisible();
+  const height = (await terminal.boundingBox())?.height ?? 0;
+  const terminalHandle = page.getByRole("separator", { name: "Resize terminal" });
+  const edge = await terminalHandle.boundingBox();
+  if (!edge) throw new Error("no terminal handle");
+  await page.mouse.move(edge.x + 200, edge.y + edge.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(edge.x + 200, edge.y - 100, { steps: 5 });
+  await page.mouse.up();
+  await expect
+    .poll(async () => (await terminal.boundingBox())?.height ?? 0)
+    .toBeGreaterThan(height + 60);
+
+  await terminalHandle.dblclick();
+  await expect.poll(async () => Math.round((await terminal.boundingBox())?.height ?? 0)).toBe(260);
+});

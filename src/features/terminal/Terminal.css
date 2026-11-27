@@ -1,7 +1,7 @@
 .terminal-panel {
   display: flex;
   flex-direction: column;
-  height: 260px;
+  height: var(--terminal-size, 260px);
   min-height: 0;
   border-top: 1px solid var(--color-border);
 }
