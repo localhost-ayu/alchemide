@@ -3,6 +3,7 @@ import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import type {
   AssetKind,
+  Blame,
   Commit,
   ContainerAction,
   DockerContainer,
@@ -255,4 +256,8 @@ export function gitLog(): Promise<Commit[]> {
 
 export function gitShow(hash: string): Promise<string> {
   return invoke<string>("git_show", { hash });
+}
+
+export function gitBlame(path: string): Promise<Blame> {
+  return invoke<Blame>("git_blame", { path });
 }

@@ -10,6 +10,7 @@ export type EditorSettings = {
   ligatures: boolean;
   zoom: number;
   tabSize: number;
+  inlineBlame: boolean;
 };
 
 export const TAB_SIZES = [2, 4, 8] as const;
@@ -36,6 +37,7 @@ export const DEFAULT_EDITOR_SETTINGS: EditorSettings = {
   ligatures: true,
   zoom: 1,
   tabSize: 2,
+  inlineBlame: true,
 };
 
 const FONT_FALLBACK = '"Cascadia Code", "JetBrains Mono", ui-monospace, monospace';
@@ -68,6 +70,10 @@ export function readEditorSettings(raw: unknown): EditorSettings {
       typeof fields.ligatures === "boolean" ? fields.ligatures : DEFAULT_EDITOR_SETTINGS.ligatures,
     zoom: readNumber(fields, "zoom"),
     tabSize: TAB_SIZES.find((size) => size === fields.tabSize) ?? DEFAULT_EDITOR_SETTINGS.tabSize,
+    inlineBlame:
+      typeof fields.inlineBlame === "boolean"
+        ? fields.inlineBlame
+        : DEFAULT_EDITOR_SETTINGS.inlineBlame,
   };
 }
 
@@ -97,7 +103,17 @@ type EditorSettingsState = EditorSettings & {
 
 function pick(state: EditorSettings): EditorSettings {
   const { fontFamily, fontSize, terminalFontSize, lineHeight, ligatures, zoom, tabSize } = state;
-  return { fontFamily, fontSize, terminalFontSize, lineHeight, ligatures, zoom, tabSize };
+  const { inlineBlame } = state;
+  return {
+    fontFamily,
+    fontSize,
+    terminalFontSize,
+    lineHeight,
+    ligatures,
+    zoom,
+    tabSize,
+    inlineBlame,
+  };
 }
 
 export const useEditorSettings = create<EditorSettingsState>((set, get) => ({

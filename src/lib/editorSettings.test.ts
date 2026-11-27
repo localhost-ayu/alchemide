@@ -24,6 +24,7 @@ test("reads valid settings and falls back field by field", () => {
       ligatures: false,
       zoom: 1.25,
       tabSize: 4,
+      inlineBlame: false,
     }),
   ).toEqual({
     fontFamily: "Fira Code",
@@ -33,6 +34,7 @@ test("reads valid settings and falls back field by field", () => {
     ligatures: false,
     zoom: 1.25,
     tabSize: 4,
+    inlineBlame: false,
   });
   expect(
     readEditorSettings({
@@ -42,6 +44,7 @@ test("reads valid settings and falls back field by field", () => {
       ligatures: "yes",
       zoom: 9,
       tabSize: 3,
+      inlineBlame: "no",
       fontFamily: "x; } body { color: red",
     }),
   ).toEqual(DEFAULT_EDITOR_SETTINGS);
@@ -95,4 +98,11 @@ test("restores saved settings on start", async () => {
 
   expect(useEditorSettings.getState().tabSize).toBe(8);
   expect(document.documentElement.style.getPropertyValue("--font-code")).toMatch(/^"Iosevka"/);
+});
+
+test("changing one setting keeps the inline blame choice", async () => {
+  await useEditorSettings.getState().update({ inlineBlame: false });
+  await useEditorSettings.getState().update({ fontSize: 15 });
+  expect(useEditorSettings.getState().inlineBlame).toBe(false);
+  await useEditorSettings.getState().update({ inlineBlame: true });
 });

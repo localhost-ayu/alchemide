@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Inline blame: the end of the cursor line shows who last changed it and when (`Ana, 10 months ago`), with the commit subject on hover; Settings → Editor turns it off
+
+### Added
+
 - What sits behind open files over a wallpaper: a dimmed, blurred layer (new default, the wallpaper stays sharp with no file open), the wallpaper as it is, or the theme color. Adjustable in the theme editor under Background
 - Option in Settings → General to close panels by clicking outside them (off by default)
 - Tabs of files that share a name show the folder that tells them apart (`conexao.php · beer`)

@@ -24,6 +24,13 @@ The reference was Zed's Git panel: a dock on the right with the changes and the 
 - The dock is a grid column: a 22 px tab when closed, 360 px when open, hidden in zen mode. It
   refreshes when it opens, after each action, when the window gets focus and on file changes.
 
+- Inline blame (issue #131): `git_blame` runs `git blame --porcelain` from the file's folder for a
+  file the workspace allows, and `parse_blame` turns it into the commits and the commit of each
+  line. The editor shows the author and age of the cursor line at its end, with the commit subject
+  on hover, and hides it while the text has unsaved changes (the line numbers no longer match);
+  it is fetched again when the file is opened, activated or saved. A file outside a repository or
+  not tracked yet shows nothing. Settings → Editor turns it off (`editor.inlineBlame`).
+
 ## Consequences
 
 - No git library is bundled; Alchemide needs `git` on the `PATH`, as for the terminal.

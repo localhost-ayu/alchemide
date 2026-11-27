@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::io::ErrorKind;
 use std::path::{Component, Path, PathBuf};
 use std::process::{Command, Output};
@@ -97,6 +98,67 @@ pub fn is_safe_repo_path(path: &str) -> bool {
         && path
             .components()
             .all(|component| matches!(component, Component::Normal(_)))
+}
+
+#[derive(Debug, Default, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct BlameCommit {
+    pub author: String,
+    pub time: i64,
+    pub summary: String,
+}
+
+#[derive(Debug, Default, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Blame {
+    pub commits: HashMap<String, BlameCommit>,
+    pub lines: Vec<String>,
+}
+
+fn blame_header(line: &str) -> Option<(&str, usize)> {
+    let mut parts = line.split(' ');
+    let hash = parts.next()?;
+    if hash.len() != 40 || !hash.chars().all(|c| c.is_ascii_hexdigit()) {
+        return None;
+    }
+    parts.next()?;
+    let final_line = parts.next()?.parse().ok()?;
+    Some((hash, final_line))
+}
+
+pub fn parse_blame(output: &str) -> Blame {
+    let mut blame = Blame::default();
+    let mut current: Option<(String, usize)> = None;
+    for line in output.lines() {
+        if let Some(content_of) = line.strip_prefix('\t').map(|_| current.as_ref()) {
+            if let Some((hash, number)) = content_of {
+                if blame.lines.len() < *number {
+                    blame.lines.resize(*number, String::new());
+                }
+                blame.lines[number - 1] = hash.clone();
+            }
+            continue;
+        }
+        if let Some((hash, number)) = blame_header(line) {
+            blame.commits.entry(hash.to_string()).or_default();
+            current = Some((hash.to_string(), number));
+            continue;
+        }
+        let Some((hash, _)) = &current else {
+            continue;
+        };
+        let Some(commit) = blame.commits.get_mut(hash) else {
+            continue;
+        };
+        if let Some(author) = line.strip_prefix("author ") {
+            commit.author = author.to_string();
+        } else if let Some(time) = line.strip_prefix("author-time ") {
+            commit.time = time.parse().unwrap_or_default();
+        } else if let Some(summary) = line.strip_prefix("summary ") {
+            commit.summary = summary.to_string();
+        }
+    }
+    blame
 }
 
 pub fn is_commit_hash(hash: &str) -> bool {
@@ -262,6 +324,24 @@ pub async fn git_commit(message: String, workspace: State<'_, Workspace>) -> Res
 }
 
 #[tauri::command]
+pub async fn git_blame(path: String, workspace: State<'_, Workspace>) -> Result<Blame> {
+    let path = PathBuf::from(path);
+    workspace.check(&path)?;
+    let (Some(dir), Some(name)) = (path.parent(), path.file_name()) else {
+        return Ok(Blame::default());
+    };
+    let dir = dir.to_path_buf();
+    let name = name.to_string_lossy().into_owned();
+    blocking(
+        move || match run(&dir, &["blame", "--porcelain", "--", &name], &[]) {
+            Ok(output) => Ok(parse_blame(&text(output))),
+            Err(_) => Ok(Blame::default()),
+        },
+    )
+    .await
+}
+
+#[tauri::command]
 pub async fn git_log(workspace: State<'_, Workspace>) -> Result<Vec<Commit>> {
     let dir = repository_root(&workspace)?;
     blocking(move || {
@@ -349,6 +429,24 @@ mod tests {
     }
 
     #[test]
+    fn reads_blame_porcelain_output() {
+        let a = "a".repeat(40);
+        let z = "0".repeat(40);
+        let output = format!(
+            "{a} 1 1 2\nauthor Ana\nauthor-time 1700000000\nsummary feat: start\nfilename x.php\n\t<?php\n\
+             {a} 2 2\n\t\n\
+             {z} 3 3 1\nauthor Not Committed Yet\nauthor-time 1800000000\nsummary Version of x.php from x.php\nfilename x.php\n\techo 1;\n"
+        );
+        let blame = parse_blame(&output);
+        assert_eq!(blame.lines, [a.clone(), a.clone(), z.clone()]);
+        assert_eq!(blame.commits[&a].author, "Ana");
+        assert_eq!(blame.commits[&a].time, 1_700_000_000);
+        assert_eq!(blame.commits[&a].summary, "feat: start");
+        assert_eq!(blame.commits[&z].author, "Not Committed Yet");
+        assert_eq!(parse_blame(""), Blame::default());
+    }
+
+    #[test]
     fn accepts_only_hex_commit_hashes() {
         assert!(is_commit_hash("abc123"));
         assert!(!is_commit_hash("--output=/tmp/x"));
@@ -398,5 +496,13 @@ mod tests {
             .expect("log"),
         ));
         assert_eq!(log[0].subject, "first");
+
+        std::fs::write(repo.join("a.txt"), "one\ntwo\n").expect("write");
+        let blame = parse_blame(&text(
+            run(repo, &["blame", "--porcelain", "--", "a.txt"], &[]).expect("blame"),
+        ));
+        assert_eq!(blame.lines.len(), 2);
+        assert_eq!(blame.commits[&blame.lines[0]].summary, "first");
+        assert_eq!(blame.lines[1], "0".repeat(40));
     }
 }

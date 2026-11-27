@@ -1,5 +1,6 @@
 import type {
   AssetKind,
+  Blame,
   ChangedFile,
   Commit,
   ContainerAction,
@@ -881,4 +882,31 @@ export function gitShow(hash: string): Promise<string> {
         `${commit.subject}\n\ndiff --git a/src/App.tsx b/src/App.tsx\n@@ -1 +1 @@\n-before\n+after\n`,
       )
     : Promise.reject(new Error("git: unknown commit"));
+}
+
+const MOCK_COMMIT = "4f1c2a9e0b7d6c5a4b3c2d1e0f9a8b7c6d5e4f3a";
+const UNCOMMITTED = "0".repeat(40);
+const TEN_MONTHS = 10 * 30 * 24 * 60 * 60;
+
+export function gitBlame(path: string): Promise<Blame> {
+  const text = files[path];
+  if (text === undefined) {
+    return Promise.resolve({ commits: {}, lines: [] });
+  }
+  const lines = text.split("\n").map((_, index) => (index === 0 ? UNCOMMITTED : MOCK_COMMIT));
+  return Promise.resolve({
+    commits: {
+      [MOCK_COMMIT]: {
+        author: "Sample Author",
+        time: Math.floor(Date.now() / 1000) - TEN_MONTHS,
+        summary: "feat: first sample commit",
+      },
+      [UNCOMMITTED]: {
+        author: "Not Committed Yet",
+        time: Math.floor(Date.now() / 1000),
+        summary: "",
+      },
+    },
+    lines,
+  });
 }

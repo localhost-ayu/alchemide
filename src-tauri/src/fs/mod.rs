@@ -43,7 +43,7 @@ impl Workspace {
         Ok(tree::list_dir(dir))
     }
 
-    fn check(&self, path: &Path) -> Result<()> {
+    pub fn check(&self, path: &Path) -> Result<()> {
         let root = self.root();
         let loose = self.loose();
         is_allowed(root.as_deref(), &loose, path)
