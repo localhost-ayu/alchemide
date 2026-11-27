@@ -18,6 +18,8 @@ const LOADERS: Record<CodeLanguage, () => Promise<unknown>> = {
   shellscript: () => import("shiki/langs/shellscript.mjs"),
   markdown: () => import("shiki/langs/markdown.mjs"),
   rust: () => import("shiki/langs/rust.mjs"),
+  python: () => import("shiki/langs/python.mjs"),
+  go: () => import("shiki/langs/go.mjs"),
   yaml: () => import("shiki/langs/yaml.mjs"),
 };
 

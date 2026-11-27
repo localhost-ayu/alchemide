@@ -63,7 +63,8 @@ test("picks a mascot, turns the mascot effect on and toggles it with Ctrl+Alt+M"
   await runPickerAction("choose mascot");
   await waitFor(() => expect(container.querySelector(".mascot")).not.toBeNull());
 
-  expect(container.querySelector(".mascot")?.getAttribute("data-corner")).toBe("bottom-right");
+  expect(root.dataset.mascotCorner).toBe("bottom-right");
+  expect(root.style.getPropertyValue("--mascot-size")).toBe("280px");
   expect(root.dataset.mascot).toBe("true");
 
   await act(async () => {

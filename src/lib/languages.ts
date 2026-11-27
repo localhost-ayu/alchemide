@@ -9,6 +9,9 @@ export type LanguageId =
   | "html"
   | "css"
   | "json"
+  | "rust"
+  | "python"
+  | "go"
   | "plaintext";
 
 const byExtension: Record<string, LanguageId> = {
@@ -24,6 +27,11 @@ const byExtension: Record<string, LanguageId> = {
   html: "html",
   css: "css",
   json: "json",
+  rs: "rust",
+  py: "python",
+  pyw: "python",
+  pyi: "python",
+  go: "go",
 };
 
 const labels: Record<LanguageId, string> = {
@@ -37,6 +45,9 @@ const labels: Record<LanguageId, string> = {
   html: "HTML",
   css: "CSS",
   json: "JSON",
+  rust: "Rust",
+  python: "Python",
+  go: "Go",
   plaintext: "Plain Text",
 };
 
@@ -47,6 +58,10 @@ export function languageForPath(path: string): LanguageId {
     return "plaintext";
   }
   return byExtension[name.slice(dot + 1).toLowerCase()] ?? "plaintext";
+}
+
+export function isLanguageId(value: string): value is LanguageId {
+  return value in labels;
 }
 
 export function languageLabel(language: LanguageId): string {

@@ -1,4 +1,4 @@
-import { DEFAULT_EFFECTS } from "./parseTheme";
+import { DEFAULT_EFFECTS, DEFAULT_SHAPE } from "./parseTheme";
 import type { Theme } from "./theme";
 
 export const FALLBACK_THEME: Theme = {
@@ -16,6 +16,7 @@ export const FALLBACK_THEME: Theme = {
   },
   background: { type: "solid", color: "#16161c" },
   glass: { panelOpacity: 0.85, blur: 10 },
+  shape: DEFAULT_SHAPE,
   mascot: null,
   effects: DEFAULT_EFFECTS,
 };

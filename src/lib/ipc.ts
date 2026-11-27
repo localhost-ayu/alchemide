@@ -9,6 +9,8 @@ import type {
   Environment,
   FileContent,
   Folder,
+  LspMessage,
+  LspStart,
   ProjectFile,
   ReplaceSummary,
   ReplaceTarget,
@@ -16,9 +18,13 @@ import type {
   SearchDone,
   SearchQuery,
   Settings,
+  SnippetFile,
+  SnippetImport,
   TerminalOutput,
   TerminalProfile,
   UpdateInfo,
+  UserThemeFile,
+  VscodeTheme,
 } from "./types";
 
 export function getEnvironment(): Promise<Environment> {
@@ -101,6 +107,18 @@ export function onTerminalExit(handler: (id: number) => void): Promise<() => voi
   return listen<number>("terminal-exit", (event) => handler(event.payload));
 }
 
+export function listUserSnippets(): Promise<SnippetFile[]> {
+  return invoke<SnippetFile[]>("list_user_snippets");
+}
+
+export function importVscodeSnippets(): Promise<SnippetImport> {
+  return invoke<SnippetImport>("import_vscode_snippets");
+}
+
+export function setZoom(scale: number): Promise<void> {
+  return invoke<void>("set_zoom", { scale });
+}
+
 export function openExternal(url: string): Promise<void> {
   return invoke<void>("open_external", { url });
 }
@@ -127,6 +145,58 @@ export function replaceMatches(
   targets: ReplaceTarget[],
 ): Promise<ReplaceSummary> {
   return invoke<ReplaceSummary>("replace_matches", { query, replacement, targets });
+}
+
+export function lspStart(language: string): Promise<LspStart> {
+  return invoke<LspStart>("lsp_start", { language });
+}
+
+export function lspSend(id: number, message: string): Promise<void> {
+  return invoke<void>("lsp_send", { id, message });
+}
+
+export function lspStop(id: number): Promise<void> {
+  return invoke<void>("lsp_stop", { id });
+}
+
+export function onLspMessage(handler: (message: LspMessage) => void): Promise<() => void> {
+  return listen<LspMessage>("lsp-message", (event) => handler(event.payload));
+}
+
+export function onLspExit(handler: (id: number) => void): Promise<() => void> {
+  return listen<number>("lsp-exit", (event) => handler(event.payload));
+}
+
+export function listUserThemes(): Promise<UserThemeFile[]> {
+  return invoke<UserThemeFile[]>("list_user_themes");
+}
+
+export function saveUserTheme(file: string | null, theme: unknown): Promise<string> {
+  return invoke<string>("save_user_theme", { file, theme });
+}
+
+export function deleteUserTheme(file: string): Promise<void> {
+  return invoke<void>("delete_user_theme", { file });
+}
+
+export function importTheme(): Promise<unknown | null> {
+  return invoke<unknown | null>("import_theme");
+}
+
+export function exportTheme(theme: unknown): Promise<boolean> {
+  return invoke<boolean>("export_theme", { theme });
+}
+
+export function listVscodeThemes(): Promise<VscodeTheme[]> {
+  return invoke<VscodeTheme[]>("list_vscode_themes");
+}
+
+export function loadVscodeTheme(path: string): Promise<unknown> {
+  return invoke<unknown>("load_vscode_theme", { path });
+}
+
+export function pickVscodeTheme(): Promise<unknown | null> {
+  return invoke<unknown | null>("pick_vscode_theme");
 }
 
 export function checkUpdate(): Promise<UpdateInfo | null> {

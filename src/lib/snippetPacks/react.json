@@ -1,0 +1,74 @@
+{
+  "name": "React",
+  "languages": ["jsx", "tsx"],
+  "snippets": {
+    "Component": {
+      "prefix": "rfc",
+      "body": [
+        "export function ${1:$TM_FILENAME_BASE}() {",
+        "\treturn (",
+        "\t\t<div>$0</div>",
+        "\t);",
+        "}"
+      ],
+      "description": "Function component named after the file"
+    },
+    "Component with props": {
+      "prefix": "rfcp",
+      "body": [
+        "type ${1:$TM_FILENAME_BASE}Props = {",
+        "\t${2:title}: ${3:string};",
+        "};",
+        "",
+        "export function ${1:$TM_FILENAME_BASE}({ ${2:title} }: ${1:$TM_FILENAME_BASE}Props) {",
+        "\treturn <div>{${2:title}}</div>;",
+        "}"
+      ],
+      "description": "Typed function component"
+    },
+    "useState": {
+      "prefix": "us",
+      "body": "const [${1:value}, ${2:setValue}] = useState(${3:null});",
+      "description": "useState"
+    },
+    "useEffect": {
+      "prefix": "ue",
+      "body": ["useEffect(() => {", "\t$1", "\treturn () => {", "\t\t$2", "\t};", "}, [${3}]);"],
+      "description": "useEffect with cleanup"
+    },
+    "useMemo": {
+      "prefix": "um",
+      "body": "const ${1:value} = useMemo(() => ${2}, [${3}]);",
+      "description": "useMemo"
+    },
+    "useCallback": {
+      "prefix": "uc",
+      "body": ["const ${1:handle} = useCallback((${2}) => {", "\t$0", "}, [${3}]);"],
+      "description": "useCallback"
+    },
+    "useRef": {
+      "prefix": "ur",
+      "body": "const ${1:ref} = useRef<${2:HTMLDivElement}>(null);",
+      "description": "useRef"
+    },
+    "useContext": {
+      "prefix": "uctx",
+      "body": "const ${1:value} = useContext(${2:Context});",
+      "description": "useContext"
+    },
+    "Render list": {
+      "prefix": "rmap",
+      "body": [
+        "{${1:items}.map((${2:item}) => (",
+        "\t<${3:li} key={${2:item}.id}>${0}</${3:li}>",
+        "))}"
+      ],
+      "description": "Render a list with keys"
+    },
+    "Conditional render": {
+      "prefix": "rif",
+      "body": "{${1:condition} && (${0})}",
+      "description": "Render when true"
+    }
+  }
+}

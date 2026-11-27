@@ -1,0 +1,123 @@
+{
+  "name": "CodeIgniter 4",
+  "languages": ["php"],
+  "snippets": {
+    "Controller": {
+      "prefix": "ci4-controller",
+      "body": [
+        "<?php",
+        "",
+        "namespace App\\Controllers;",
+        "",
+        "class ${1:$TM_FILENAME_BASE} extends BaseController",
+        "{",
+        "\tpublic function index()",
+        "\t{",
+        "\t\t$0",
+        "\t}",
+        "}"
+      ],
+      "description": "Controller"
+    },
+    "Model": {
+      "prefix": "ci4-model",
+      "body": [
+        "<?php",
+        "",
+        "namespace App\\Models;",
+        "",
+        "use CodeIgniter\\Model;",
+        "",
+        "class ${1:$TM_FILENAME_BASE} extends Model",
+        "{",
+        "\tprotected \\$table = '${2:table}';",
+        "\tprotected \\$primaryKey = 'id';",
+        "\tprotected \\$returnType = 'array';",
+        "\tprotected \\$allowedFields = [${3:'name'}];",
+        "\tprotected \\$useTimestamps = true;",
+        "}"
+      ],
+      "description": "Model"
+    },
+    "Route": {
+      "prefix": "ci4-route",
+      "body": "\\$routes->${1|get,post,put,patch,delete|}('${2:path}', '${3:Home}::${4:index}');",
+      "description": "Route"
+    },
+    "View": {
+      "prefix": "ci4-view",
+      "body": "return view('${1:view}', \\$${2:data});",
+      "description": "Return a view"
+    },
+    "Request input": {
+      "prefix": "ci4-post",
+      "body": "\\$this->request->${1|getPost,getGet,getVar,getJSON|}('${2:field}')",
+      "description": "Read request input"
+    },
+    "Validate": {
+      "prefix": "ci4-validate",
+      "body": [
+        "if (! \\$this->validate([",
+        "\t'${1:field}' => '${2:required}',",
+        "])) {",
+        "\treturn redirect()->back()->withInput();",
+        "}"
+      ],
+      "description": "Validate the request"
+    },
+    "Migration": {
+      "prefix": "ci4-migration",
+      "body": [
+        "<?php",
+        "",
+        "namespace App\\Database\\Migrations;",
+        "",
+        "use CodeIgniter\\Database\\Migration;",
+        "",
+        "class ${1:$TM_FILENAME_BASE} extends Migration",
+        "{",
+        "\tpublic function up()",
+        "\t{",
+        "\t\t\\$this->forge->addField([",
+        "\t\t\t'id' => ['type' => 'INT', 'unsigned' => true, 'auto_increment' => true],",
+        "\t\t\t$0",
+        "\t\t]);",
+        "\t\t\\$this->forge->addKey('id', true);",
+        "\t\t\\$this->forge->createTable('${2:table}');",
+        "\t}",
+        "",
+        "\tpublic function down()",
+        "\t{",
+        "\t\t\\$this->forge->dropTable('${2:table}');",
+        "\t}",
+        "}"
+      ],
+      "description": "Migration"
+    },
+    "Filter": {
+      "prefix": "ci4-filter",
+      "body": [
+        "<?php",
+        "",
+        "namespace App\\Filters;",
+        "",
+        "use CodeIgniter\\Filters\\FilterInterface;",
+        "use CodeIgniter\\HTTP\\RequestInterface;",
+        "use CodeIgniter\\HTTP\\ResponseInterface;",
+        "",
+        "class ${1:$TM_FILENAME_BASE} implements FilterInterface",
+        "{",
+        "\tpublic function before(RequestInterface \\$request, \\$arguments = null)",
+        "\t{",
+        "\t\t$0",
+        "\t}",
+        "",
+        "\tpublic function after(RequestInterface \\$request, ResponseInterface \\$response, \\$arguments = null)",
+        "\t{",
+        "\t}",
+        "}"
+      ],
+      "description": "Filter"
+    }
+  }
+}

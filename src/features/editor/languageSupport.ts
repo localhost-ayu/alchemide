@@ -1,9 +1,12 @@
 import { css } from "@codemirror/lang-css";
+import { go } from "@codemirror/lang-go";
 import { html } from "@codemirror/lang-html";
 import { javascript } from "@codemirror/lang-javascript";
 import { json } from "@codemirror/lang-json";
 import { markdown } from "@codemirror/lang-markdown";
 import { php } from "@codemirror/lang-php";
+import { python } from "@codemirror/lang-python";
+import { rust } from "@codemirror/lang-rust";
 import { sql } from "@codemirror/lang-sql";
 import type { Extension } from "@codemirror/state";
 import type { LanguageId } from "../../lib/languages";
@@ -30,6 +33,12 @@ export function languageSupport(language: LanguageId): Extension {
       return css();
     case "json":
       return json();
+    case "rust":
+      return rust();
+    case "python":
+      return python();
+    case "go":
+      return go();
     case "plaintext":
       return [];
   }

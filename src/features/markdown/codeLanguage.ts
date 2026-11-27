@@ -11,6 +11,8 @@ export type CodeLanguage =
   | "shellscript"
   | "markdown"
   | "rust"
+  | "python"
+  | "go"
   | "yaml";
 
 const ALIASES: Record<string, CodeLanguage> = {
@@ -36,6 +38,10 @@ const ALIASES: Record<string, CodeLanguage> = {
   markdown: "markdown",
   rs: "rust",
   rust: "rust",
+  py: "python",
+  python: "python",
+  go: "go",
+  golang: "go",
   yml: "yaml",
   yaml: "yaml",
 };

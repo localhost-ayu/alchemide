@@ -18,6 +18,13 @@ describe("toCssVariables", () => {
     expect(variables["--glass-blur"]).toBe("10px");
   });
 
+  test("turns the shape into corner and interface font variables", () => {
+    const variables = toCssVariables({ ...FALLBACK_THEME, shape: { radius: 13, font: "mono" } });
+    expect(variables["--radius"]).toBe("13px");
+    expect(variables["--radius-sm"]).toBe("7px");
+    expect(variables["--font-ui"]).toBe("var(--font-code)");
+  });
+
   test("describes each kind of background", () => {
     const gradient = toCssVariables({
       ...FALLBACK_THEME,
@@ -46,6 +53,29 @@ test("applyTheme writes the variables and the theme name on the root element", (
 
   expect(root.style.getPropertyValue("--color-text")).toBe("#e4e4ea");
   expect(root.dataset.theme).toBe("Reserva");
+});
+
+test("applyTheme describes the mascot and the background fit for CSS", () => {
+  const root = document.createElement("html");
+
+  applyTheme(
+    {
+      ...FALLBACK_THEME,
+      background: { type: "image", path: "a.png", fit: "contain", blur: 0, dim: 0.5 },
+      mascot: { path: "m.png", corner: "top-left", opacity: 0.4, size: 200 },
+    },
+    root,
+  );
+
+  expect(root.dataset.mascotCorner).toBe("top-left");
+  expect(root.dataset.backdropFit).toBe("contain");
+  expect(root.style.getPropertyValue("--mascot-size")).toBe("200px");
+  expect(root.style.getPropertyValue("--mascot-opacity")).toBe("0.4");
+
+  applyTheme(FALLBACK_THEME, root);
+
+  expect(root.dataset.backdropFit).toBe("cover");
+  expect(root.style.getPropertyValue("--mascot-opacity")).toBe("0");
 });
 
 test("applyEffects changes only the requested effect", () => {
