@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-27
+
+Language servers: autocomplete, hover, inline errors and go to definition for PHP, JavaScript/TypeScript and SQL, when the servers are installed.
+
 ### Added
 
 - Language servers: autocomplete, hover, inline errors and go to definition (`F12`, also across
@@ -94,7 +98,8 @@ First release: a lightweight editor for Windows and Linux (including WSL) with m
 
 - Browser mode with a mocked backend (`pnpm dev:web`) and a Linux dev container
 
-[Unreleased]: https://github.com/localhost-ayu/alchemide/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/localhost-ayu/alchemide/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/localhost-ayu/alchemide/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/localhost-ayu/alchemide/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/localhost-ayu/alchemide/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/localhost-ayu/alchemide/compare/v0.1.0...v0.2.0
