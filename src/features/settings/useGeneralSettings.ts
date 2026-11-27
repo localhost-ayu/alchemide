@@ -1,15 +1,22 @@
 import { create } from "zustand";
 import { setCloseOnOutsideClick } from "../../lib/dismiss";
+import {
+  LANGUAGE_PREFERENCES,
+  type LanguagePreference,
+  setLanguagePreference,
+} from "../../lib/i18n";
 import { loadSettings, saveSettings } from "../../lib/ipc";
 
 export type GeneralSettings = {
   reopenLastFolder: boolean;
   closePanelsOnOutsideClick: boolean;
+  language: LanguagePreference;
 };
 
 export const DEFAULT_GENERAL_SETTINGS: GeneralSettings = {
   reopenLastFolder: true,
   closePanelsOnOutsideClick: false,
+  language: "system",
 };
 
 function flag(value: unknown, fallback: boolean): boolean {
@@ -24,7 +31,15 @@ export function readGeneralSettings(raw: unknown): GeneralSettings {
       fields.closePanelsOnOutsideClick,
       DEFAULT_GENERAL_SETTINGS.closePanelsOnOutsideClick,
     ),
+    language:
+      LANGUAGE_PREFERENCES.find((preference) => preference === fields.language) ??
+      DEFAULT_GENERAL_SETTINGS.language,
   };
+}
+
+function apply(general: GeneralSettings): void {
+  setCloseOnOutsideClick(general.closePanelsOnOutsideClick);
+  setLanguagePreference(general.language);
 }
 
 type State = GeneralSettings & {
@@ -34,10 +49,9 @@ type State = GeneralSettings & {
 export const useGeneralSettings = create<State>((set, get) => ({
   ...DEFAULT_GENERAL_SETTINGS,
   update: async (changes) => {
-    const { reopenLastFolder, closePanelsOnOutsideClick } = get();
-    const next = readGeneralSettings({ reopenLastFolder, closePanelsOnOutsideClick, ...changes });
+    const next = readGeneralSettings({ ...get(), ...changes });
     set(next);
-    setCloseOnOutsideClick(next.closePanelsOnOutsideClick);
+    apply(next);
     try {
       const settings = await loadSettings();
       await saveSettings({ ...settings, general: next });
@@ -51,9 +65,10 @@ export async function initGeneralSettings(): Promise<GeneralSettings> {
   try {
     const general = readGeneralSettings((await loadSettings()).general);
     useGeneralSettings.setState(general);
-    setCloseOnOutsideClick(general.closePanelsOnOutsideClick);
+    apply(general);
     return general;
   } catch {
+    apply(DEFAULT_GENERAL_SETTINGS);
     return DEFAULT_GENERAL_SETTINGS;
   }
 }

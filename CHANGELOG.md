@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Interface language: Settings → General → Language (System, Português (Brasil), English), switched live. System follows the operating system language
+
+### Added
+
 - Rename (`F2`) and delete (`Delete`, to the system trash after a confirmation) from the explorer, with a right-click menu that also has New file, New folder and Copy path. Open tabs follow a rename and close on delete
 
 ### Added

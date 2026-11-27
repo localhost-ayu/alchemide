@@ -114,3 +114,24 @@ test("searching filters the settings and says when nothing matches", () => {
   fireEvent.change(search, { target: { value: "nothing like this" } });
   expect(screen.getByText(/No setting matches/)).toBeTruthy();
 });
+
+test("switches the interface language live from General", async () => {
+  render(<SettingsScreen />);
+  await act(async () => {
+    fireEvent.keyDown(window, { key: ",", ctrlKey: true });
+  });
+  await act(async () => {
+    fireEvent.change(screen.getByRole("combobox", { name: "Language" }), {
+      target: { value: "pt-BR" },
+    });
+  });
+  expect(screen.getByRole("heading", { name: "Geral" })).toBeTruthy();
+  expect(screen.getByRole("combobox", { name: "Idioma" })).toBeTruthy();
+
+  await act(async () => {
+    fireEvent.change(screen.getByRole("combobox", { name: "Idioma" }), {
+      target: { value: "en" },
+    });
+  });
+  expect(screen.getByRole("heading", { name: "General" })).toBeTruthy();
+});
