@@ -15,6 +15,7 @@ import type {
   TerminalProfile,
   UpdateInfo,
   UserThemeFile,
+  VscodeTheme,
 } from "./types";
 
 const root = "/home/user/sample-project";
@@ -219,6 +220,67 @@ export function importTheme(): Promise<unknown | null> {
 export function exportTheme(theme: unknown): Promise<boolean> {
   exportedThemes.push(structuredClone(theme));
   return Promise.resolve(true);
+}
+
+const MOCK_VSCODE_THEMES: Record<string, { entry: VscodeTheme; theme: unknown }> = {
+  "/vscode/theme-defaults/themes/dark_modern.json": {
+    entry: {
+      label: "Dark Modern",
+      extension: "theme-defaults",
+      path: "/vscode/theme-defaults/themes/dark_modern.json",
+      dark: true,
+    },
+    theme: {
+      name: "Dark Modern",
+      type: "dark",
+      colors: {
+        "editor.background": "#1F1F1F",
+        "editor.foreground": "#CCCCCC",
+        "sideBar.background": "#181818",
+        focusBorder: "#0078D4",
+      },
+      tokenColors: [
+        { scope: "keyword.control", settings: { foreground: "#C586C0" } },
+        { scope: "string", settings: { foreground: "#CE9178" } },
+        { scope: "comment", settings: { foreground: "#6A9955" } },
+      ],
+    },
+  },
+  "/vscode/theme-solarized-light/themes/solarized-light.json": {
+    entry: {
+      label: "Solarized Light",
+      extension: "theme-solarized-light",
+      path: "/vscode/theme-solarized-light/themes/solarized-light.json",
+      dark: false,
+    },
+    theme: {
+      name: "Solarized Light",
+      type: "light",
+      colors: { "editor.background": "#FDF6E3", "editor.foreground": "#657B83" },
+      tokenColors: [{ scope: "keyword", settings: { foreground: "#859900" } }],
+    },
+  },
+};
+
+let vscodeThemeToPick: unknown | null = null;
+
+export function setMockVscodeThemeToPick(theme: unknown | null): void {
+  vscodeThemeToPick = theme;
+}
+
+export function listVscodeThemes(): Promise<VscodeTheme[]> {
+  return Promise.resolve(Object.values(MOCK_VSCODE_THEMES).map(({ entry }) => ({ ...entry })));
+}
+
+export function loadVscodeTheme(path: string): Promise<unknown> {
+  const found = MOCK_VSCODE_THEMES[path];
+  return found
+    ? Promise.resolve(structuredClone(found.theme))
+    : Promise.reject(new Error("the file is not a valid theme"));
+}
+
+export function pickVscodeTheme(): Promise<unknown | null> {
+  return Promise.resolve(structuredClone(vscodeThemeToPick));
 }
 
 const sampleAssets: Record<AssetKind, { path: string; svg: string }> = {

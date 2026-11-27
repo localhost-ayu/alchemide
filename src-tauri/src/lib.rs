@@ -7,6 +7,7 @@ mod links;
 mod terminal;
 mod themes;
 mod updater;
+mod vscode_themes;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -42,7 +43,10 @@ pub fn run() {
             themes::list_user_themes,
             themes::save_user_theme,
             updater::check_update,
-            updater::install_update
+            updater::install_update,
+            vscode_themes::list_vscode_themes,
+            vscode_themes::load_vscode_theme,
+            vscode_themes::pick_vscode_theme
         ])
         .run(tauri::generate_context!());
     if let Err(error) = result {

@@ -34,3 +34,21 @@ test("edits colors with a live preview and saves them as a new theme", async ({ 
   await expect(html).toHaveAttribute("data-theme", "Catalisador copy");
   await expect(html).toHaveCSS("--color-bg", "#000000");
 });
+
+test("imports an installed VS Code theme from the command palette", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("button", { name: "Open folder" })).toBeVisible();
+
+  await page.keyboard.press("Control+Shift+P");
+  const commands = page.getByRole("combobox", { name: "Run a command" });
+  await commands.fill("import vs code theme");
+  await page.getByRole("option", { name: /^Import VS Code theme…/ }).click();
+
+  const search = page.getByRole("combobox", { name: "Search VS Code themes" });
+  await search.fill("solarized");
+  await search.press("Enter");
+
+  const html = page.locator("html");
+  await expect(html).toHaveAttribute("data-theme", "Solarized Light");
+  await expect(html).toHaveCSS("--color-bg", "#FDF6E3");
+});

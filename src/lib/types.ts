@@ -78,6 +78,13 @@ export type UserThemeFile = {
   theme: unknown;
 };
 
+export type VscodeTheme = {
+  label: string;
+  extension: string;
+  path: string;
+  dark: boolean;
+};
+
 export type UpdateInfo = {
   version: string;
   notes: string | null;
