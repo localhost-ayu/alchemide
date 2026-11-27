@@ -122,3 +122,24 @@ test("applyTheme places a moved mascot freely and on its layer", () => {
   expect(root.style.getPropertyValue("--mascot-x")).toBe("0.25");
   expect(root.style.getPropertyValue("--mascot-y")).toBe("1");
 });
+
+test("applyTheme describes what sits behind open files, with layer as the default", () => {
+  const root = document.createElement("html");
+  const image = { type: "image" as const, path: "a.png", fit: "cover" as const, blur: 0, dim: 0.5 };
+
+  applyTheme({ ...FALLBACK_THEME, background: image }, root);
+  expect(root.dataset.editorBackdrop).toBe("layer");
+  expect(root.style.getPropertyValue("--layer-dim")).toBe("70%");
+  expect(root.style.getPropertyValue("--layer-blur")).toBe("10px");
+
+  applyTheme(
+    { ...FALLBACK_THEME, background: { ...image, editor: { mode: "solid", dim: 0.2, blur: 3 } } },
+    root,
+  );
+  expect(root.dataset.editorBackdrop).toBe("solid");
+  expect(root.style.getPropertyValue("--layer-dim")).toBe("20%");
+
+  applyTheme(FALLBACK_THEME, root);
+  expect(root.dataset.editorBackdrop).toBe("sharp");
+  expect(root.style.getPropertyValue("--layer-blur")).toBe("0px");
+});

@@ -146,3 +146,18 @@ test("reads the mascot layer and position, ignoring invalid ones", () => {
   expect(invalid).not.toHaveProperty("layer");
   expect(invalid).not.toHaveProperty("position");
 });
+
+test("reads what sits behind open files and falls back for invalid values", () => {
+  const background = (editor: unknown) =>
+    parse({ ...minimal, background: { type: "image", path: "a.png", editor } }).theme.background;
+
+  expect(background(undefined)).not.toHaveProperty("editor");
+  expect(background({ mode: "sharp", dim: 0.3, blur: 4 })).toMatchObject({
+    editor: { mode: "sharp", dim: 0.3, blur: 4 },
+  });
+  expect(background({ mode: "neon", dim: 7, blur: -1 })).toMatchObject({
+    editor: { mode: "layer", dim: 0.7, blur: 10 },
+  });
+  const result = parse({ ...minimal, background: { type: "image", path: "a.png", editor: 1 } });
+  expect(result.warnings).toContain("background.editor is not an object; using the default");
+});

@@ -52,3 +52,23 @@ test("imports an installed VS Code theme from the command palette", async ({ pag
   await expect(html).toHaveAttribute("data-theme", "Solarized Light");
   await expect(html).toHaveCSS("--color-bg", "#FDF6E3");
 });
+
+test("blurs a layer over the wallpaper only while a file is open", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("complementary").first()).toBeVisible();
+  await page.keyboard.press("Control+k");
+  await page.keyboard.press("m");
+  await page.getByRole("combobox", { name: "Search themes and effects" }).fill("choose background");
+  await page.keyboard.press("Enter");
+  await expect(page.locator(".backdrop__media")).toBeVisible();
+
+  const editorArea = page.getByRole("main", { name: "Editor" });
+  await expect(editorArea).toHaveCSS("backdrop-filter", "none");
+
+  await page.getByRole("button", { name: "Open folder" }).click();
+  await page.getByRole("button", { name: "README.md" }).click();
+  await expect(editorArea).toHaveCSS("backdrop-filter", "blur(10px)");
+
+  await page.getByRole("button", { name: "Close README.md" }).click();
+  await expect(editorArea).toHaveCSS("backdrop-filter", "none");
+});

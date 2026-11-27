@@ -18,10 +18,27 @@ export type ThemeSyntax = {
 
 export type Fit = "cover" | "contain";
 
+export type EditorBackdropMode = "sharp" | "layer" | "solid";
+
+export type EditorBackdrop = {
+  mode: EditorBackdropMode;
+  dim: number;
+  blur: number;
+};
+
+export const DEFAULT_EDITOR_BACKDROP: EditorBackdrop = { mode: "layer", dim: 0.7, blur: 10 };
+
 export type ThemeBackground =
   | { type: "solid"; color: string }
   | { type: "gradient"; css: string }
-  | { type: "image" | "video"; path: string; fit: Fit; blur: number; dim: number };
+  | {
+      type: "image" | "video";
+      path: string;
+      fit: Fit;
+      blur: number;
+      dim: number;
+      editor?: EditorBackdrop;
+    };
 
 export type MediaBackground = Extract<ThemeBackground, { type: "image" | "video" }>;
 
