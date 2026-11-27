@@ -17,7 +17,11 @@
 
 .editor__empty {
   margin: auto;
-  color: var(--color-faint);
+  padding: 6px 14px;
+  border-radius: var(--radius);
+  background: var(--panel-bg);
+  backdrop-filter: var(--panel-blur);
+  color: var(--color-muted);
 }
 
 .editor__error {

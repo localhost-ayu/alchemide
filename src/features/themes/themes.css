@@ -112,13 +112,41 @@
   position: absolute;
   max-width: 45%;
   max-height: 70%;
-  object-fit: contain;
   width: var(--mascot-size);
   opacity: var(--mascot-opacity);
   pointer-events: none;
   user-select: none;
-  z-index: 1;
+  z-index: 2;
   transition: opacity var(--motion) ease;
+}
+
+.mascot__image {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+[data-mascot-layer="behind"] .mascot {
+  z-index: 0;
+}
+
+[data-mascot-layer="behind"] .app__workspace {
+  position: relative;
+  z-index: 1;
+}
+
+[data-mascot-layer] .mascot[data-locked="false"] {
+  z-index: 3;
+  pointer-events: auto;
+  cursor: grab;
+  outline: 1px dashed color-mix(in srgb, var(--color-accent) 70%, transparent);
+  outline-offset: 4px;
+}
+
+[data-mascot-layer] .mascot[data-locked="false"]:active {
+  cursor: grabbing;
 }
 
 [data-mascot-corner="top-left"] .mascot {
@@ -139,6 +167,12 @@
 [data-mascot-corner="bottom-right"] .mascot {
   bottom: 16px;
   right: 16px;
+}
+
+[data-mascot-corner="free"] .mascot {
+  left: calc(var(--mascot-x) * 100%);
+  top: calc(var(--mascot-y) * 100%);
+  transform: translate(calc(var(--mascot-x) * -100%), calc(var(--mascot-y) * -100%));
 }
 
 [data-mascot="false"] .mascot {

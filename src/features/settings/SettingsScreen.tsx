@@ -23,6 +23,7 @@ export function SettingsScreen({ children }: SettingsScreenProps) {
   const [matches, setMatches] = useState(1);
   const dialogRef = useRef<HTMLDivElement>(null);
   const reopenLastFolder = useGeneralSettings((state) => state.reopenLastFolder);
+  const closeOnOutsideClick = useGeneralSettings((state) => state.closePanelsOnOutsideClick);
   const updateGeneral = useGeneralSettings((state) => state.update);
   const tabSize = useEditorSettings((state) => state.tabSize);
   const update = useEditorSettings((state) => state.update);
@@ -61,7 +62,7 @@ export function SettingsScreen({ children }: SettingsScreenProps) {
     [],
   );
 
-  useDismiss(isOpen, () => setOpen(false));
+  useDismiss(isOpen, () => setOpen(false), dialogRef);
 
   useEffect(() => {
     if (isOpen && dialogRef.current) {
@@ -100,6 +101,16 @@ export function SettingsScreen({ children }: SettingsScreenProps) {
               type="checkbox"
               checked={reopenLastFolder}
               onChange={(event) => updateGeneral({ reopenLastFolder: event.target.checked })}
+            />
+          </label>
+          <label className="settings__field">
+            <span>Close panels when clicking outside them</span>
+            <input
+              type="checkbox"
+              checked={closeOnOutsideClick}
+              onChange={(event) =>
+                updateGeneral({ closePanelsOnOutsideClick: event.target.checked })
+              }
             />
           </label>
         </section>

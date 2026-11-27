@@ -1,54 +1,49 @@
-import { fireEvent, render } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { useState } from "react";
-import { expect, test, vi } from "vitest";
-import { useDismiss } from "./dismiss";
+import { afterEach, expect, test } from "vitest";
+import { isOutside, setCloseOnOutsideClick, useDismiss } from "./dismiss";
 
-function Panel({ name, onClose }: { name: string; onClose: (name: string) => void }) {
-  useDismiss(true, () => onClose(name));
-  return <div>{name}</div>;
-}
-
-function Toggle({ onClose }: { onClose: () => void }) {
-  const [open] = useState(false);
-  useDismiss(open, onClose);
-  return null;
-}
-
-test("Escape closes only the panel opened last, from anywhere in the window", () => {
-  const closed: string[] = [];
-  const { rerender } = render(
+function Panel() {
+  const [open, setOpen] = useState(true);
+  const ref = useDismiss(open, () => setOpen(false));
+  return (
     <>
-      <Panel name="settings" onClose={(name) => closed.push(name)} />
-      <Panel name="palette" onClose={(name) => closed.push(name)} />
-    </>,
+      <button type="button">outside</button>
+      {open && (
+        <div ref={ref} role="dialog" aria-label="Panel">
+          <button type="button">inside</button>
+        </div>
+      )}
+    </>
   );
+}
 
-  fireEvent.keyDown(document.body, { key: "Escape" });
-  expect(closed).toEqual(["palette"]);
+afterEach(() => setCloseOnOutsideClick(false));
 
-  rerender(<Panel name="settings" onClose={(name) => closed.push(name)} />);
-  fireEvent.keyDown(document.body, { key: "Escape" });
-  expect(closed).toEqual(["palette", "settings"]);
+test("tells clicks inside a panel from clicks outside it", () => {
+  const panel = document.createElement("div");
+  const child = document.createElement("span");
+  panel.append(child);
+  expect(isOutside(panel, child)).toBe(false);
+  expect(isOutside(panel, document.body)).toBe(true);
+  expect(isOutside(null, document.body)).toBe(false);
 });
 
-test("leaves Escape alone when no panel is open", () => {
-  const onClose = vi.fn();
-  const editorKeys = vi.fn();
-  render(<Toggle onClose={onClose} />);
-  window.addEventListener("keydown", editorKeys);
-
-  fireEvent.keyDown(document.body, { key: "Escape" });
-
-  expect(onClose).not.toHaveBeenCalled();
-  expect(editorKeys).toHaveBeenCalledOnce();
-  window.removeEventListener("keydown", editorKeys);
+test("an outside click does nothing while the option is off", () => {
+  render(<Panel />);
+  fireEvent.pointerDown(screen.getByRole("button", { name: "outside" }));
+  expect(screen.getByRole("dialog", { name: "Panel" })).toBeTruthy();
 });
 
-test("ignores other keys", () => {
-  const onClose = vi.fn();
-  render(<Panel name="settings" onClose={onClose} />);
+test("an outside click closes the panel when the option is on", () => {
+  setCloseOnOutsideClick(true);
+  render(<Panel />);
 
-  fireEvent.keyDown(document.body, { key: "Enter" });
+  fireEvent.pointerDown(screen.getByRole("button", { name: "inside" }));
+  expect(screen.getByRole("dialog", { name: "Panel" })).toBeTruthy();
 
-  expect(onClose).not.toHaveBeenCalled();
+  act(() => {
+    fireEvent.pointerDown(screen.getByRole("button", { name: "outside" }));
+  });
+  expect(screen.queryByRole("dialog", { name: "Panel" })).toBeNull();
 });

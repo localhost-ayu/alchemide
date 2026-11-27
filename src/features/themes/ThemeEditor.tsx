@@ -42,7 +42,8 @@ const SYNTAX_FIELDS: [keyof ThemeSyntax, string][] = [
 ];
 
 function startSession(): Session {
-  const { theme, custom, userThemes } = useThemeStore.getState();
+  const { theme: chosen, effects, custom, userThemes } = useThemeStore.getState();
+  const theme = { ...chosen, effects: { ...chosen.effects, surface: effects.surface } };
   const userTheme = currentUserTheme();
   const taken = allThemes(userThemes)
     .map(({ name }) => name)
@@ -58,7 +59,7 @@ function startSession(): Session {
 
 function preview({ theme, custom }: Look): void {
   const { effects } = useThemeStore.getState();
-  useThemeStore.getState().preview(theme, effects, custom);
+  useThemeStore.getState().preview(theme, { ...effects, surface: theme.effects.surface }, custom);
 }
 
 export function ThemeEditor() {
@@ -87,7 +88,7 @@ export function ThemeEditor() {
     }
     setSession(null);
   };
-  useDismiss(session !== null, cancel);
+  const panelRef = useDismiss<HTMLElement>(session !== null, cancel);
 
   if (!session) {
     return null;
@@ -115,10 +116,14 @@ export function ThemeEditor() {
     if (look.custom !== original.custom) {
       await useThemeStore.getState().setCustom(look.custom);
     }
+    const { theme, effects, commit } = useThemeStore.getState();
+    if (effects.surface !== draft.effects.surface) {
+      await commit(theme, { ...effects, surface: draft.effects.surface });
+    }
   };
 
   return (
-    <aside className="theme-editor panel" aria-label="Theme editor">
+    <aside ref={panelRef} className="theme-editor panel" aria-label="Theme editor">
       <header className="theme-editor__header">
         <h2>{file ? "Edit theme" : `New theme from ${original.theme.name}`}</h2>
       </header>
