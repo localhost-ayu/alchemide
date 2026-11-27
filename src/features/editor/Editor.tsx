@@ -5,16 +5,18 @@ import { playfulTouchesEnabled, useActivityStore } from "../../lib/activityStore
 import { registerCommands } from "../../lib/commands";
 import { useEditorSettings } from "../../lib/editorSettings";
 import { hasUnsavedTabs, selectActiveTab, type Tab, useEditorStore } from "../../lib/editorStore";
-import { onCloseRequested, onWorkspaceChange, pickFile } from "../../lib/ipc";
+import { gitBlame, onCloseRequested, onWorkspaceChange, pickFile } from "../../lib/ipc";
 import { useLanguageServerStore } from "../../lib/languageServerStore";
 import { joinLines } from "../../lib/lineEndings";
 import {
   createEditorState,
   indentation,
   indentationFor,
+  inlineBlame,
   languageServer,
 } from "./createEditorState";
 import { setShowFile } from "./editorWorkspace";
+import { setBlame, showInlineBlame } from "./inlineBlame";
 import { languageServerExtension, stopLanguageServers } from "./languageServers";
 import { requestCloseTab } from "./requestCloseTab";
 import { saveMessage } from "./saveMessage";
@@ -103,7 +105,8 @@ export function Editor() {
         reportCursor(update.state);
       }
     });
-    const state = createEditorState(tab, onUpdate, useEditorSettings.getState().tabSize);
+    const { tabSize, inlineBlame: showBlame } = useEditorSettings.getState();
+    const state = createEditorState(tab, onUpdate, tabSize, showBlame);
     const session = { state, saved: state.doc, revision: tab.revision };
     sessions.set(path, session);
     void attachRef.current(tab);
@@ -137,6 +140,41 @@ export function Editor() {
       }
     }
   }, [tabs]);
+
+  const showBlame = useEditorSettings((state) => state.inlineBlame);
+  useEffect(() => {
+    const effects = inlineBlame.reconfigure(showBlame ? showInlineBlame() : []);
+    for (const session of sessionsRef.current.values()) {
+      session.state = session.state.update({ effects }).state;
+    }
+    viewRef.current?.dispatch({ effects });
+  }, [showBlame]);
+
+  const activeDirty = useEditorStore((state) => selectActiveTab(state)?.dirty ?? false);
+  useEffect(() => {
+    if (!showBlame || !activePath || activeDirty) {
+      return;
+    }
+    let current = true;
+    gitBlame(activePath)
+      .then((blame) => {
+        const session = sessionsRef.current.get(activePath);
+        if (!current || !session) {
+          return;
+        }
+        const effects = setBlame.of(blame);
+        const view = viewRef.current;
+        if (view && view.state === session.state) {
+          view.dispatch({ effects });
+        } else {
+          session.state = session.state.update({ effects }).state;
+        }
+      })
+      .catch(() => undefined);
+    return () => {
+      current = false;
+    };
+  }, [showBlame, activePath, activeDirty]);
 
   const tabSize = useEditorSettings((state) => state.tabSize);
   useEffect(() => {

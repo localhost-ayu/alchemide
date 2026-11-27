@@ -133,6 +133,33 @@ test("opens a single file with Ctrl+O and a folder with Ctrl+K Ctrl+O", async ({
   await expect(page.getByRole("heading", { name: "sample-project" })).toBeVisible();
 });
 
+test("shows who last changed the cursor line and can be turned off", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Open folder" }).click();
+  await page.getByRole("button", { name: "README.md" }).click();
+  const editor = page.getByRole("textbox", { name: "Editing README.md" });
+  const blame = page.locator(".cm-inline-blame");
+
+  await editor.click();
+  await page.keyboard.press("Control+Home");
+  await expect(blame).toHaveText("You, uncommitted");
+  await page.keyboard.press("ArrowDown");
+  await expect(blame).toHaveText("Sample Author, 10 months ago");
+  await expect(blame).toHaveAttribute("title", "4f1c2a9 feat: first sample commit");
+
+  await page.keyboard.type("x");
+  await expect(blame).toHaveCount(0);
+  await page.keyboard.press("Control+s");
+  await expect(blame).toHaveCount(1);
+
+  await page.keyboard.press("Control+,");
+  await page
+    .getByRole("dialog", { name: "Settings" })
+    .getByRole("checkbox", { name: /git blame/ })
+    .uncheck();
+  await expect(blame).toHaveCount(0);
+});
+
 test("opens the Markdown preview from the button on the tab bar", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "Open folder" }).click();

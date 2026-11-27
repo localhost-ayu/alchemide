@@ -41,6 +41,7 @@ pub fn run() {
             fs::replace_matches,
             fs::search_start,
             fs::write_file,
+            git::git_blame,
             git::git_branches,
             git::git_commit,
             git::git_diff,

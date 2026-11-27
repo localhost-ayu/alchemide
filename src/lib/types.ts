@@ -142,6 +142,17 @@ export type Commit = {
   subject: string;
 };
 
+export type BlameCommit = {
+  author: string;
+  time: number;
+  summary: string;
+};
+
+export type Blame = {
+  commits: Record<string, BlameCommit>;
+  lines: string[];
+};
+
 export type Branch = {
   name: string;
   current: boolean;

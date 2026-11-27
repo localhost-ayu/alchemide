@@ -26,6 +26,7 @@ export function SettingsScreen({ children }: SettingsScreenProps) {
   const closeOnOutsideClick = useGeneralSettings((state) => state.closePanelsOnOutsideClick);
   const updateGeneral = useGeneralSettings((state) => state.update);
   const tabSize = useEditorSettings((state) => state.tabSize);
+  const inlineBlame = useEditorSettings((state) => state.inlineBlame);
   const update = useEditorSettings((state) => state.update);
 
   useEffect(
@@ -129,6 +130,14 @@ export function SettingsScreen({ children }: SettingsScreenProps) {
                 </option>
               ))}
             </select>
+          </label>
+          <label className="settings__field">
+            <span>Show who last changed the cursor line (git blame)</span>
+            <input
+              type="checkbox"
+              checked={inlineBlame}
+              onChange={(event) => update({ inlineBlame: event.target.checked })}
+            />
           </label>
         </section>
         {children}
