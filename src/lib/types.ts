@@ -121,3 +121,23 @@ export type SnippetImport = {
   copied: number;
   found: boolean;
 };
+
+export type ChangedFile = {
+  path: string;
+  originalPath: string | null;
+  staged: string | null;
+  unstaged: string | null;
+};
+
+export type GitStatus = {
+  branch: string | null;
+  files: ChangedFile[];
+};
+
+export type Commit = {
+  hash: string;
+  shortHash: string;
+  author: string;
+  date: string;
+  subject: string;
+};

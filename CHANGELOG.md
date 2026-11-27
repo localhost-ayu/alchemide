@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Keyboard shortcuts in the settings: record a new shortcut (one key or a two-step chord), remove it or reset it; shortcuts used by more than one command are flagged
+- Git dock on the right (small tab or `Ctrl+Shift+G`): changed files with their diff, stage and unstage per file, stage all, commit with a message (`Ctrl+Enter`), and the history with the diff of each commit
 
 ### Added
 

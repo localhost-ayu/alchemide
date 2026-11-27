@@ -1,0 +1,253 @@
+.git-dock {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  border-left: 1px solid var(--color-border);
+  font-size: 13px;
+}
+
+.git-dock__tab {
+  width: 100%;
+  height: 100%;
+  padding: 8px 0 0;
+  border: 0;
+  border-left: 1px solid var(--color-border);
+  background: var(--panel-bg);
+  color: var(--color-muted);
+  font: inherit;
+  align-self: stretch;
+  cursor: pointer;
+}
+
+.git-dock__tab:hover {
+  color: var(--color-accent);
+}
+
+.git-dock__tab span {
+  display: block;
+  font-size: 14px;
+}
+
+.git-dock__header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.git-dock__header > button {
+  border: 0;
+  background: none;
+  color: var(--color-muted);
+  font: inherit;
+  cursor: pointer;
+}
+
+.git-dock__tabs {
+  display: flex;
+  flex: 1;
+  gap: 2px;
+}
+
+.git-dock__tabs button {
+  padding: 4px 8px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--color-muted);
+  font: inherit;
+  cursor: pointer;
+}
+
+.git-dock__tabs button[aria-selected="true"] {
+  background: var(--color-selected);
+  color: var(--color-text);
+}
+
+.git-dock__branch,
+.git-dock__error,
+.git-dock__empty {
+  margin: 0;
+  padding: 6px 12px;
+  font-size: 12px;
+  color: var(--color-muted);
+}
+
+.git-dock__error {
+  color: var(--color-error);
+}
+
+.git-dock__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.git-dock__changes h3 {
+  display: flex;
+  justify-content: space-between;
+  margin: 0;
+  padding: 6px 12px 2px;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.git-dock__changes ul,
+.git-dock__history {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.git-dock__file {
+  display: flex;
+  align-items: center;
+}
+
+.git-dock__file[data-selected="true"],
+.git-dock__history button[data-selected="true"] {
+  background: var(--color-selected);
+}
+
+.git-dock__file-name,
+.git-dock__history button {
+  display: flex;
+  flex: 1;
+  gap: 8px;
+  min-width: 0;
+  padding: 3px 12px;
+  border: 0;
+  background: none;
+  color: var(--color-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.git-dock__file-name span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.git-dock__code {
+  width: 12px;
+  font-family: var(--font-code);
+  color: var(--syntax-function);
+}
+
+.git-dock__code[data-code="A"],
+.git-dock__code[data-code="?"] {
+  color: var(--syntax-string);
+}
+
+.git-dock__code[data-code="D"] {
+  color: var(--color-error);
+}
+
+.git-dock__file-action,
+.git-dock__link {
+  padding: 0 8px;
+  border: 0;
+  background: none;
+  color: var(--color-muted);
+  font: inherit;
+  cursor: pointer;
+}
+
+.git-dock__file-action:hover,
+.git-dock__link:hover {
+  color: var(--color-accent);
+}
+
+.git-dock__commit {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 12px;
+}
+
+.git-dock__commit textarea {
+  min-height: 56px;
+  padding: 6px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--control-bg);
+  color: var(--control-text);
+  font: inherit;
+  resize: vertical;
+}
+
+.git-dock__commit button {
+  padding: 4px 10px;
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-sm);
+  background: var(--color-hover);
+  color: var(--color-text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.git-dock__commit button:disabled {
+  border-color: var(--color-border);
+  color: var(--color-muted);
+  cursor: default;
+}
+
+.git-dock__history button {
+  flex-direction: column;
+  gap: 0;
+}
+
+.git-dock__subject {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.git-dock__meta {
+  font-size: 11px;
+  color: var(--color-muted);
+}
+
+.git-dock__diff {
+  flex: 1.4;
+  min-height: 0;
+  overflow: auto;
+  border-top: 1px solid var(--color-border);
+}
+
+.git-diff {
+  margin: 0;
+  padding: 6px 0;
+  font-family: var(--font-code);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.git-diff__line {
+  display: block;
+  padding: 0 12px;
+  white-space: pre;
+}
+
+.git-diff__line--added {
+  background: color-mix(in srgb, var(--syntax-string) 16%, transparent);
+}
+
+.git-diff__line--removed {
+  background: color-mix(in srgb, var(--color-error) 16%, transparent);
+}
+
+.git-diff__line--hunk {
+  color: var(--syntax-type);
+}
+
+.git-diff__line--meta {
+  color: var(--color-muted);
+}

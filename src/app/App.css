@@ -2,13 +2,14 @@
   --activity-width: 44px;
   --sidebar-width: var(--sidebar-size, 260px);
   --statusbar-height: 24px;
+  --git-width: 22px;
   display: grid;
-  grid-template-columns: var(--activity-width) var(--sidebar-width) 1fr;
+  grid-template-columns: var(--activity-width) var(--sidebar-width) 1fr var(--git-width);
   grid-template-rows: 1fr auto var(--statusbar-height);
   grid-template-areas:
-    "activity explorer editor"
-    "activity explorer terminal"
-    "statusbar statusbar statusbar";
+    "activity explorer editor git"
+    "activity explorer terminal git"
+    "statusbar statusbar statusbar statusbar";
   height: 100vh;
 }
 
@@ -155,6 +156,21 @@
 
 .app__sidebar-view[hidden] {
   display: none;
+}
+
+.app:has(.git-dock) {
+  --git-width: 360px;
+}
+
+.app[data-zen="true"] {
+  --git-width: 0px;
+}
+
+.app__git {
+  grid-area: git;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .app__explorer,

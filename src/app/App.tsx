@@ -2,6 +2,7 @@ import { type CSSProperties, useEffect } from "react";
 import { DockerPanel } from "../features/docker/DockerPanel";
 import { Editor } from "../features/editor/Editor";
 import { Explorer } from "../features/explorer/Explorer";
+import { GitDock } from "../features/git/GitDock";
 import { MarkdownPane } from "../features/markdown/MarkdownPane";
 import { CommandPalette } from "../features/palette/CommandPalette";
 import { QuickOpen } from "../features/palette/QuickOpen";
@@ -175,6 +176,9 @@ export function App() {
             {...resize("terminalHeight", TERMINAL_HEIGHT)}
           />
           <TerminalPanel />
+        </div>
+        <div className="app__git" hidden={zen}>
+          <GitDock />
         </div>
         <footer className="app__statusbar" hidden={!statusBar || zen}>
           <StatusBar />

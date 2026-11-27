@@ -48,6 +48,12 @@ pub enum Error {
     Update(String),
     #[error("there is no update to install")]
     NoUpdate,
+    #[error("git is not installed or not on the PATH")]
+    GitMissing,
+    #[error("the open folder is not a git repository")]
+    NotARepository,
+    #[error("git: {0}")]
+    Git(String),
     #[error("Docker is not installed or not on the PATH")]
     DockerMissing,
     #[error("Docker: {0}")]

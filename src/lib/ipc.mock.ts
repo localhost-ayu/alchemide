@@ -1,11 +1,14 @@
 import type {
   AssetKind,
+  ChangedFile,
+  Commit,
   ContainerAction,
   DockerContainer,
   Entry,
   Environment,
   FileContent,
   Folder,
+  GitStatus,
   LspMessage,
   LspStart,
   ProjectFile,
@@ -780,4 +783,102 @@ export function onLspMessage(handler: (message: LspMessage) => void): Promise<()
 export function onLspExit(handler: (id: number) => void): Promise<() => void> {
   lspExitHandlers.add(handler);
   return Promise.resolve(() => lspExitHandlers.delete(handler));
+}
+
+type MockGit = { files: ChangedFile[]; log: Commit[] };
+
+const INITIAL_GIT: MockGit = {
+  files: [
+    { path: "src/App.tsx", originalPath: null, staged: null, unstaged: "M" },
+    { path: "README.md", originalPath: null, staged: "M", unstaged: null },
+    { path: "notes.txt", originalPath: null, staged: null, unstaged: "?" },
+  ],
+  log: [
+    {
+      hash: "4f1c2a9e0b7d6c5a4b3c2d1e0f9a8b7c6d5e4f3a",
+      shortHash: "4f1c2a9",
+      author: "Sample Author",
+      date: "2026-11-26T10:00:00-03:00",
+      subject: "feat: first sample commit",
+    },
+  ],
+};
+
+let git: MockGit = structuredClone(INITIAL_GIT);
+
+export function resetMockGit(): void {
+  git = structuredClone(INITIAL_GIT);
+}
+
+export function gitStatus(): Promise<GitStatus> {
+  return Promise.resolve({ branch: "main", files: structuredClone(git.files) });
+}
+
+export function gitDiff(path: string, staged: boolean, untracked: boolean): Promise<string> {
+  const label = untracked ? "new file" : staged ? "staged" : "unstaged";
+  return Promise.resolve(
+    `diff --git a/${path} b/${path}\n@@ -1,2 +1,2 @@ ${label}\n-old line\n+new line\n unchanged\n`,
+  );
+}
+
+export function gitStage(paths: string[]): Promise<void> {
+  git.files = git.files.map((file) =>
+    paths.includes(file.path)
+      ? {
+          ...file,
+          staged: file.unstaged === "?" ? "A" : (file.unstaged ?? file.staged),
+          unstaged: null,
+        }
+      : file,
+  );
+  return Promise.resolve();
+}
+
+export function gitStageAll(): Promise<void> {
+  return gitStage(git.files.map((file) => file.path));
+}
+
+export function gitUnstage(paths: string[]): Promise<void> {
+  git.files = git.files.map((file) =>
+    paths.includes(file.path)
+      ? { ...file, unstaged: file.staged === "A" ? "?" : file.staged, staged: null }
+      : file,
+  );
+  return Promise.resolve();
+}
+
+export function gitCommit(message: string): Promise<string> {
+  if (!message.trim()) {
+    return Promise.reject(new Error("git: write a commit message"));
+  }
+  const staged = git.files.filter((file) => file.staged);
+  if (staged.length === 0) {
+    return Promise.reject(new Error("git: nothing to commit"));
+  }
+  const hash = `${(git.log.length + 1).toString(16).padStart(7, "0")}${"a".repeat(33)}`;
+  git.log = [
+    {
+      hash,
+      shortHash: hash.slice(0, 7),
+      author: "Sample Author",
+      date: new Date().toISOString(),
+      subject: message.split("\n")[0] ?? "",
+    },
+    ...git.log,
+  ];
+  git.files = git.files.filter((file) => file.unstaged).map((file) => ({ ...file, staged: null }));
+  return Promise.resolve(hash.slice(0, 7));
+}
+
+export function gitLog(): Promise<Commit[]> {
+  return Promise.resolve(structuredClone(git.log));
+}
+
+export function gitShow(hash: string): Promise<string> {
+  const commit = git.log.find((entry) => entry.hash === hash);
+  return commit
+    ? Promise.resolve(
+        `${commit.subject}\n\ndiff --git a/src/App.tsx b/src/App.tsx\n@@ -1 +1 @@\n-before\n+after\n`,
+      )
+    : Promise.reject(new Error("git: unknown commit"));
 }
