@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- The README explains the two Windows installers and recommends the MSI (per machine, in
+  `Program Files`) on work machines with endpoint protection
+
 ### Fixed
 
 - Quick open, the command palette and the mood picker scroll with the highlighted item when you move past the visible list with the arrow keys
