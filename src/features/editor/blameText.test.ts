@@ -1,5 +1,6 @@
 import { expect, test } from "vitest";
-import { blameLabel, timeAgo, UNCOMMITTED } from "./blameText";
+import { timeAgo } from "../../lib/timeAgo";
+import { blameLabel, UNCOMMITTED } from "./blameText";
 
 const now = 1_800_000_000;
 

@@ -410,16 +410,24 @@ test("switches branches from the Git dock", async ({ page }) => {
   await expect(page.getByRole("complementary").first()).toBeVisible();
   await page.getByRole("button", { name: "Open Git panel" }).click();
   const dock = page.getByRole("complementary", { name: "Git" });
-  const branch = dock.getByRole("combobox", { name: "Branch" });
-  await expect(branch).toHaveValue("main");
+  const branch = dock.getByRole("button", { name: "Branch" });
+  await expect(branch).toContainText("main");
 
   await dock.getByRole("button", { name: "Stage all" }).click();
   await dock.getByRole("textbox", { name: "Commit message" }).fill("chore: save work");
   await dock.getByRole("button", { name: /^Commit/ }).click();
   await expect(dock).toContainText("No changes to commit");
 
-  await branch.selectOption("feature/login");
-  await expect(branch).toHaveValue("feature/login");
+  await branch.click();
+  const picker = page.getByRole("dialog", { name: "Branches" });
+  await expect(picker.getByRole("heading", { name: "Remote branches" })).toBeVisible();
+  await picker.getByRole("button", { name: /feature\/login/ }).click();
+  await expect(branch).toContainText("feature/login");
+
+  await branch.click();
+  await page.getByRole("textbox", { name: /Switch or type/ }).fill("spike");
+  await page.keyboard.press("Enter");
+  await expect(branch).toContainText("spike");
 });
 
 test("the status bar button opens and hides the terminal", async ({ page }) => {

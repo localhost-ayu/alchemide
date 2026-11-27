@@ -3,6 +3,7 @@ import { registerCommands, runCommand } from "../../lib/commands";
 import { type MessageKey, useT } from "../../lib/i18n";
 import { onFsChange } from "../../lib/ipc";
 import type { ChangedFile } from "../../lib/types";
+import { BranchPicker } from "./BranchPicker";
 import { DiffView } from "./DiffView";
 import { changeLabel } from "./diffLines";
 import { useGitStore } from "./useGitStore";
@@ -161,11 +162,10 @@ export function GitDock() {
   const open = useGitStore((state) => state.open);
   const tab = useGitStore((state) => state.tab);
   const branch = useGitStore((state) => state.status?.branch);
-  const branches = useGitStore((state) => state.branches);
   const t = useT();
   const diff = useGitStore((state) => state.diff);
   const error = useGitStore((state) => state.error);
-  const { toggle, setTab, refresh, switchBranch } = useGitStore.getState();
+  const { toggle, setTab, refresh } = useGitStore.getState();
 
   useEffect(
     () =>
@@ -235,23 +235,9 @@ export function GitDock() {
         </button>
       </header>
       {branch && (
-        <label className="git-dock__branch">
-          <span aria-hidden="true">⎇</span>
-          <select
-            aria-label={t("git.branch")}
-            value={branch}
-            onChange={(event) => switchBranch(event.target.value)}
-          >
-            {branches.map((item) => (
-              <option key={item.name} value={item.name}>
-                {item.remoteOnly ? t("git.remoteBranch", { name: item.name }) : item.name}
-              </option>
-            ))}
-            {!branches.some((item) => item.name === branch) && (
-              <option value={branch}>{branch}</option>
-            )}
-          </select>
-        </label>
+        <div className="git-dock__branch">
+          <BranchPicker current={branch} />
+        </div>
       )}
       {error && (
         <p role="alert" className="git-dock__error">

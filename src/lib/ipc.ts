@@ -1,7 +1,6 @@
-import { convertFileSrc, invoke as invokeCommand } from "@tauri-apps/api/core";
+import { convertFileSrc, invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { errorMessage } from "./errors";
 import type {
   AssetKind,
   Blame,
@@ -32,14 +31,6 @@ import type {
   UserThemeFile,
   VscodeTheme,
 } from "./types";
-
-async function invoke<T>(command: string, args?: Record<string, unknown>): Promise<T> {
-  try {
-    return await invokeCommand<T>(command, args);
-  } catch (error) {
-    throw new Error(errorMessage(error));
-  }
-}
 
 export function getEnvironment(): Promise<Environment> {
   return invoke<Environment>("get_environment");
@@ -295,4 +286,8 @@ export function deleteEntry(path: string): Promise<void> {
 
 export function gitFileVersions(path: string): Promise<FileVersions> {
   return invoke<FileVersions>("git_file_versions", { path });
+}
+
+export function gitCreateBranch(name: string): Promise<void> {
+  return invoke<void>("git_create_branch", { name });
 }

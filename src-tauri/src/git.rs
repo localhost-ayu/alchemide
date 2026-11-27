@@ -121,35 +121,44 @@ pub fn is_safe_repo_path(path: &str) -> bool {
 pub struct Branch {
     pub name: String,
     pub current: bool,
-    pub remote_only: bool,
+    pub remote: bool,
+    pub author: String,
+    pub time: i64,
+    pub subject: String,
 }
 
-pub fn parse_branches(local: &str, remote: &str) -> Vec<Branch> {
-    let mut branches: Vec<Branch> = local
-        .lines()
-        .filter_map(|line| {
-            let (marker, name) = line.split_once('\u{1f}')?;
+pub const BRANCH_FORMAT: &str =
+    "--format=%(HEAD)%1f%(refname)%1f%(authorname)%1f%(committerdate:unix)%1f%(contents:subject)%1e";
+
+pub fn parse_branches(output: &str) -> Vec<Branch> {
+    let mut branches: Vec<Branch> = output
+        .split('\u{1e}')
+        .map(|record| record.trim_matches(['\n', '\r']))
+        .filter_map(|record| {
+            let mut fields = record.split('\u{1f}');
+            let current = fields.next()? == "*";
+            let refname = fields.next()?;
+            let (name, remote) = if let Some(name) = refname.strip_prefix("refs/heads/") {
+                (name, false)
+            } else {
+                (refname.strip_prefix("refs/remotes/")?, true)
+            };
+            if name.is_empty() || name.ends_with("/HEAD") {
+                return None;
+            }
             Some(Branch {
-                name: name.trim().to_string(),
-                current: marker == "*",
-                remote_only: false,
+                name: name.to_string(),
+                current,
+                remote,
+                author: fields.next().unwrap_or_default().to_string(),
+                time: fields.next().and_then(|t| t.parse().ok()).unwrap_or(0),
+                subject: fields.next().unwrap_or_default().to_string(),
             })
         })
-        .filter(|branch| !branch.name.is_empty() && !branch.name.starts_with('('))
         .collect();
-    for line in remote.lines().map(str::trim) {
-        let Some((_, name)) = line.split_once('/') else {
-            continue;
-        };
-        if name == "HEAD" || name.is_empty() || branches.iter().any(|b| b.name == name) {
-            continue;
-        }
-        branches.push(Branch {
-            name: name.to_string(),
-            current: false,
-            remote_only: true,
-        });
-    }
+    branches.sort_by(|a, b| {
+        (a.remote, !a.current, -a.time, &a.name).cmp(&(b.remote, !b.current, -b.time, &b.name))
+    });
     branches
 }
 
@@ -469,19 +478,23 @@ pub async fn git_commit(message: String, workspace: State<'_, Workspace>) -> Res
 pub async fn git_branches(workspace: State<'_, Workspace>) -> Result<Vec<Branch>> {
     let dir = repository_root(&workspace)?;
     blocking(move || {
-        let local = run(
+        let output = run(
             &dir,
-            &["branch", "--format=%(HEAD)%1f%(refname:short)"],
+            &["for-each-ref", BRANCH_FORMAT, "refs/heads", "refs/remotes"],
             &[],
         )?;
-        let remote = run(
-            &dir,
-            &["branch", "--remotes", "--format=%(refname:short)"],
-            &[],
-        )?;
-        Ok(parse_branches(&text(local), &text(remote)))
+        Ok(parse_branches(&text(output)))
     })
     .await
+}
+
+#[tauri::command]
+pub async fn git_create_branch(name: String, workspace: State<'_, Workspace>) -> Result<()> {
+    if !is_branch_name(&name) {
+        return Err(Error::Git("not a branch name".into()));
+    }
+    let dir = repository_root(&workspace)?;
+    blocking(move || run(&dir, &["switch", "--quiet", "--create", &name], &[]).map(|_| ())).await
 }
 
 #[tauri::command]
@@ -599,22 +612,30 @@ mod tests {
     }
 
     #[test]
-    fn lists_local_branches_then_remote_ones_without_a_local_copy() {
-        let local = " \u{1f}feature/login\n*\u{1f}main\n \u{1f}(HEAD detached at abc)\n";
-        let remote = "origin/HEAD\norigin/main\norigin/release\nupstream/feature/login\n";
-        let branches = parse_branches(local, remote);
+    fn lists_local_then_remote_branches_with_their_last_commit() {
+        let output = " \u{1f}refs/heads/old\u{1f}Bia\u{1f}100\u{1f}fix: old\u{1e}\n\
+            *\u{1f}refs/heads/main\u{1f}Ana\u{1f}50\u{1f}feat: start\u{1e}\n\
+            \u{1f}refs/heads/new\u{1f}Ana\u{1f}300\u{1f}feat: new\u{1e}\n\
+            \u{1f}refs/remotes/origin/HEAD\u{1f}Ana\u{1f}50\u{1f}x\u{1e}\n\
+            \u{1f}refs/remotes/origin/feature/us1\u{1f}Rodrigo\u{1f}200\u{1f}Seta proj\u{1e}\n\
+            \u{1f}refs/tags/v1\u{1f}Ana\u{1f}50\u{1f}tag\u{1e}";
+        let branches = parse_branches(output);
         let summary: Vec<_> = branches
             .iter()
-            .map(|b| (b.name.as_str(), b.current, b.remote_only))
+            .map(|b| (b.name.as_str(), b.current, b.remote))
             .collect();
         assert_eq!(
             summary,
             [
-                ("feature/login", false, false),
                 ("main", true, false),
-                ("release", false, true),
+                ("new", false, false),
+                ("old", false, false),
+                ("origin/feature/us1", false, true),
             ]
         );
+        assert_eq!(branches[3].author, "Rodrigo");
+        assert_eq!(branches[3].time, 200);
+        assert_eq!(branches[3].subject, "Seta proj");
     }
 
     #[test]
@@ -722,15 +743,9 @@ mod tests {
 
         git(repo, &["branch", "other"]);
         git(repo, &["switch", "--quiet", "other"]);
-        let local = text(
-            run(
-                repo,
-                &["branch", "--format=%(HEAD)%1f%(refname:short)"],
-                &[],
-            )
-            .expect("branches"),
-        );
-        let branches = parse_branches(&local, "");
+        let refs =
+            text(run(repo, &["for-each-ref", BRANCH_FORMAT, "refs/heads"], &[]).expect("branches"));
+        let branches = parse_branches(&refs);
         assert!(branches.iter().any(|b| b.name == "other" && b.current));
         assert!(branches.iter().any(|b| b.name == "main" && !b.current));
 

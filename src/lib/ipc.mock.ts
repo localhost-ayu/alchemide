@@ -921,18 +921,31 @@ export function gitBlame(path: string): Promise<Blame> {
   });
 }
 
-const MOCK_REMOTE_BRANCHES = ["release"];
+const MOCK_REMOTE_BRANCHES = ["origin/main", "origin/release"];
+const MOCK_BRANCH_TIME = 1_764_000_000;
 
 export function gitBranches(): Promise<Branch[]> {
-  const local = git.branches.map((name) => ({
+  const branch = (name: string, remote: boolean, index: number): Branch => ({
     name,
-    current: name === git.branch,
-    remoteOnly: false,
-  }));
-  const remote = MOCK_REMOTE_BRANCHES.filter((name) => !git.branches.includes(name)).map(
-    (name) => ({ name, current: false, remoteOnly: true }),
-  );
-  return Promise.resolve([...local, ...remote]);
+    current: !remote && name === git.branch,
+    remote,
+    author: "Sample Author",
+    time: MOCK_BRANCH_TIME - index * 86_400,
+    subject: "feat: first sample commit",
+  });
+  return Promise.resolve([
+    ...git.branches.map((name, index) => branch(name, false, index)),
+    ...MOCK_REMOTE_BRANCHES.map((name, index) => branch(name, true, index)),
+  ]);
+}
+
+export function gitCreateBranch(name: string): Promise<void> {
+  if (git.branches.includes(name)) {
+    return Promise.reject(new Error(`git: a branch named '${name}' already exists`));
+  }
+  git.branches = [...git.branches, name];
+  git.branch = name;
+  return Promise.resolve();
 }
 
 export function gitSwitch(branch: string): Promise<void> {
@@ -942,7 +955,7 @@ export function gitSwitch(branch: string): Promise<void> {
     );
   }
   if (!git.branches.includes(branch)) {
-    if (!MOCK_REMOTE_BRANCHES.includes(branch)) {
+    if (!MOCK_REMOTE_BRANCHES.includes(`origin/${branch}`)) {
       return Promise.reject(new Error(`git: invalid reference: ${branch}`));
     }
     git.branches = [...git.branches, branch];

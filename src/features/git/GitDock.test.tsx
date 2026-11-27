@@ -33,7 +33,7 @@ test("Ctrl+Shift+G opens the dock with the branch and the changes", async () => 
     fireEvent.keyDown(window, { key: "G", ctrlKey: true, shiftKey: true });
   });
 
-  expect(screen.getByRole("combobox", { name: "Branch" })).toHaveProperty("value", "main");
+  expect(screen.getByRole("button", { name: "Branch" }).textContent).toContain("main");
   const staged = screen.getByRole("region", { name: "Staged changes" });
   const changes = screen.getByRole("region", { name: "Changes" });
   expect(within(staged).getByText("README.md")).toBeTruthy();
@@ -100,20 +100,25 @@ test("unstages a file back to the changes", async () => {
   ).toBeTruthy();
 });
 
-test("lists the branches and switches once the changes are committed", async () => {
+test("lists branches with their last commit, switches once the changes are committed, and creates one", async () => {
   await openDock();
-  const branch = () => screen.getByRole("combobox", { name: "Branch" }) as HTMLSelectElement;
-  expect([...branch().options].map((option) => option.textContent)).toEqual([
-    "main",
-    "feature/login",
-    "release (remote)",
-  ]);
+  const openPicker = async () => {
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Branch" }));
+    });
+    return screen.getByRole("dialog", { name: "Branches" });
+  };
 
+  let picker = await openPicker();
+  expect(within(picker).getByRole("heading", { name: "Local branches" })).toBeTruthy();
+  expect(within(picker).getByRole("heading", { name: "Remote branches" })).toBeTruthy();
+  expect(within(picker).getByRole("button", { name: /origin\/release/ }).textContent).toContain(
+    "Sample Author",
+  );
   await act(async () => {
-    fireEvent.change(branch(), { target: { value: "feature/login" } });
+    fireEvent.click(within(picker).getByRole("button", { name: /feature\/login/ }));
   });
   expect(screen.getByRole("alert").textContent).toMatch(/would be overwritten/);
-  expect(branch().value).toBe("main");
 
   await act(async () => {
     fireEvent.click(screen.getByRole("button", { name: "Stage all" }));
@@ -124,11 +129,15 @@ test("lists the branches and switches once the changes are committed", async () 
   await act(async () => {
     fireEvent.click(screen.getByRole("button", { name: /^Commit/ }));
   });
+
+  picker = await openPicker();
+  const search = within(picker).getByRole("textbox", { name: /Switch or type/ });
+  fireEvent.change(search, { target: { value: "spike" } });
+  expect(within(picker).getByRole("button", { name: /Create branch “spike”/ })).toBeTruthy();
   await act(async () => {
-    fireEvent.change(branch(), { target: { value: "release" } });
+    fireEvent.keyDown(search, { key: "Enter" });
   });
-  expect(branch().value).toBe("release");
-  expect(screen.queryByRole("alert")).toBeNull();
+  expect(screen.getByRole("button", { name: "Branch" }).textContent).toContain("spike");
 });
 
 test("a failed commit keeps its message on screen after the refresh", async () => {
