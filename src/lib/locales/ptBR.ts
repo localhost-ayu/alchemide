@@ -425,4 +425,11 @@ export const ptBR: Messages = {
   "git.commitLocalTitle": "Ainda não enviado",
   "git.commitRemoteTitle": "Já está no remoto",
   "git.commitMeta": "{hash} · {author} · {age}",
+  "projects.title": "Projetos",
+  "projects.switch": "Trocar de projeto",
+  "projects.recent": "Projetos recentes",
+  "projects.search": "Buscar projetos…",
+  "projects.openFolder": "Abrir pasta…",
+  "projects.none": "Nenhum projeto recente encontrado",
+  "projects.command": "Abrir um projeto recente",
 };

@@ -7,6 +7,7 @@ import {
   deleteEntry,
   listDir,
   openFolder,
+  openRecentFolder,
   renameEntry,
   reopenLastFolder,
 } from "../../lib/ipc";
@@ -37,6 +38,7 @@ type WorkspaceState = {
   selected: string | null;
   error: string | null;
   pickFolder: () => Promise<void>;
+  openRecent: (path: string) => Promise<void>;
   restoreLastFolder: () => Promise<void>;
   loadDir: (path: string) => Promise<void>;
   toggleDir: (path: string) => Promise<void>;
@@ -216,6 +218,7 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
   selected: null,
   error: null,
   pickFolder: () => showFolder(openFolder),
+  openRecent: (path) => showFolder(() => openRecentFolder(path)),
   restoreLastFolder: () => showFolder(reopenLastFolder),
   loadDir: async (path) => {
     try {

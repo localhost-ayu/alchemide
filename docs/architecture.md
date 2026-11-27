@@ -86,6 +86,9 @@ regular browser without compiling Rust, and the end-to-end tests run against tha
 - The last opened folder is remembered in `state.json`, which only Rust writes, not in
   `settings.json` (the webview can rewrite that one). `reopen_last_folder` reads it on start, so
   the webview never names a folder to open.
+- `state.json` also keeps the 12 most recent folders (`recentFolders`, newest first). The project
+  switcher lists them through `recent_folders`, and `open_recent_folder` opens only a path that
+  is in that list, so the webview still never names an arbitrary folder to open.
 - The asset protocol is enabled only for `backgrounds/*` and `mascots/*` inside the app config
   folder, so the webview can show the user's background and mascot and nothing else on disk.
   `asset_path` also rejects any path outside those two folders.

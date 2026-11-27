@@ -291,3 +291,11 @@ export function gitFileVersions(path: string): Promise<FileVersions> {
 export function gitCreateBranch(name: string): Promise<void> {
   return invoke<void>("git_create_branch", { name });
 }
+
+export function recentFolders(): Promise<Folder[]> {
+  return invoke<Folder[]>("recent_folders");
+}
+
+export function openRecentFolder(path: string): Promise<Folder> {
+  return invoke<Folder>("open_recent_folder", { path });
+}

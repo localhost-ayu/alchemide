@@ -421,4 +421,11 @@ export const en = {
   "git.commitLocalTitle": "Not pushed yet",
   "git.commitRemoteTitle": "Already on the remote",
   "git.commitMeta": "{hash} · {author} · {age}",
+  "projects.title": "Projects",
+  "projects.switch": "Switch project",
+  "projects.recent": "Recent projects",
+  "projects.search": "Search projects…",
+  "projects.openFolder": "Open folder…",
+  "projects.none": "No recent project matches",
+  "projects.command": "Open a recent project",
 } as const satisfies Record<string, string>;
