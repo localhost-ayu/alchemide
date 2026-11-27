@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Terminal font size, line height, ligatures on or off and interface zoom in the settings, with a
   live font sample
 - Zoom in, zoom out and reset zoom: `Ctrl+=`, `Ctrl+-`, `Ctrl+0`
+- Rust, Python and Go: syntax highlighting in the editor (`.rs`, `.py`, `.pyw`, `.pyi`, `.go`) and
+  in Markdown code blocks
 
 ## [0.4.0] - 2026-11-27
 

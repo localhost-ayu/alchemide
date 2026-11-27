@@ -6,7 +6,8 @@ A lightweight, mood-themed code editor built with Tauri, React and CodeMirror.
 
 ## Features
 
-- Syntax highlighting for PHP, JavaScript, TypeScript, JSX/TSX, SQL, Markdown, HTML and CSS
+- Syntax highlighting for PHP, JavaScript, TypeScript, JSX/TSX, SQL, Markdown, HTML, CSS, JSON,
+  Rust, Python and Go
 - Collapsible file explorer that respects `.gitignore`
 - Built-in terminal with automatic Windows, Linux and WSL profiles
 - Markdown preview
