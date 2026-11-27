@@ -14,7 +14,6 @@ export function Tree({ root }: TreeProps) {
     return null;
   }
   return (
-    // biome-ignore lint/a11y/noNoninteractiveElementInteractions: F2 and Delete act on the focused file button inside the list
     <ul
       className="tree"
       aria-label="Files"
