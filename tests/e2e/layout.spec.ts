@@ -188,3 +188,29 @@ test("zen mode hides everything but the editor and comes back", async ({ page })
   await expect(explorer).toBeVisible();
   await expect(activity).toBeVisible();
 });
+
+test("select fields stay readable in light and dark themes", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("complementary").first()).toBeVisible();
+
+  for (const theme of ["Catalisador", "Pêssego"]) {
+    await page.keyboard.press("Control+,");
+    const settings = page.getByRole("dialog", { name: "Settings" });
+    const select = settings.getByRole("combobox", { name: "Theme" });
+    await select.selectOption(theme);
+    const style = await select.evaluate((element) => {
+      const computed = getComputedStyle(element);
+      return {
+        appearance: computed.appearance,
+        background: computed.backgroundColor,
+        color: computed.color,
+        scheme: getComputedStyle(document.documentElement).colorScheme,
+      };
+    });
+    expect(style.appearance).toBe("none");
+    expect(style.background).toMatch(/^rgb\(/);
+    expect(style.background).not.toBe(style.color);
+    expect(style.scheme).toBe(theme === "Pêssego" ? "light" : "dark");
+    await page.keyboard.press("Escape");
+  }
+});

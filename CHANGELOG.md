@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Select fields (theme, tab size, zoom, new terminal) are readable in every theme on Linux: they get an opaque background and a text color chosen for contrast, and native widgets follow the theme's light or dark scheme
+
 ## [0.6.1] - 2026-11-27
 
 Patch release: code blocks in the Markdown preview get their colors on slow or busy machines too.

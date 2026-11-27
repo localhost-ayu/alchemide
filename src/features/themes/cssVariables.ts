@@ -1,3 +1,4 @@
+import { controlColors } from "./controlColors";
 import type { Theme, UiFont } from "./theme";
 
 const UI_FONT_STACKS: Record<UiFont, string> = {
@@ -34,6 +35,7 @@ function blurOf(theme: Theme): number {
 
 export function toCssVariables(theme: Theme): Record<string, string> {
   const { ui, syntax, glass, background, mascot, shape } = theme;
+  const controls = controlColors(ui);
   return {
     "--color-bg": ui.bg,
     "--color-panel": ui.panel,
@@ -58,5 +60,8 @@ export function toCssVariables(theme: Theme): Record<string, string> {
     "--radius": `${shape.radius}px`,
     "--radius-sm": `${Math.round(shape.radius / 2)}px`,
     "--font-ui": UI_FONT_STACKS[shape.font],
+    "--control-bg": controls.background,
+    "--control-text": controls.text,
+    "--color-scheme": controls.scheme,
   };
 }
