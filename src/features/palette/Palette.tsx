@@ -1,4 +1,5 @@
 import { type KeyboardEvent, useState } from "react";
+import { useDismiss } from "../../lib/dismiss";
 import { useKeepInView } from "../../lib/useKeepInView";
 
 export type PaletteItem = {
@@ -30,6 +31,7 @@ export function Palette({
   onClose,
 }: PaletteProps) {
   const [index, setIndex] = useState(0);
+  useDismiss(true, onClose);
   const highlighted = items[Math.min(index, items.length - 1)];
   useKeepInView(highlighted && `palette-${highlighted.id}`);
 
@@ -46,9 +48,6 @@ export function Palette({
       if (highlighted) {
         onChoose(highlighted);
       }
-    } else if (event.key === "Escape") {
-      event.preventDefault();
-      onClose();
     }
   };
 

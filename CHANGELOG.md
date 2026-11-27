@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- `Esc` closes the open panel (settings, theme editor, palettes and pickers) from anywhere, not only when the focus is inside it; with no panel open, `Esc` still reaches the editor and the terminal
+
 ## [0.6.2] - 2026-11-27
 
 Patch release: select fields are readable in every theme on Linux and WSL.
