@@ -13,7 +13,7 @@
 
 .environment-badge {
   padding: 0 6px;
-  border-radius: 3px;
+  border-radius: var(--radius-sm);
   background: var(--color-selected);
   color: var(--color-accent);
 }
@@ -86,4 +86,18 @@
     opacity: 0;
     transform: translateY(4px);
   }
+}
+
+.statusbar__lsp {
+  color: var(--color-muted);
+  cursor: default;
+}
+
+.statusbar__lsp[data-status="ready"] {
+  color: var(--color-accent);
+}
+
+.statusbar__lsp[data-status="stopped"],
+.statusbar__lsp[data-status="error"] {
+  color: var(--color-warning);
 }

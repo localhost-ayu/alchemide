@@ -41,17 +41,21 @@ function actionOptions(custom: CustomLook): MoodOption[] {
   }));
 }
 
+const USER_GROUP = "Meus temas";
+
+function themeOption(theme: Theme, group: string): MoodOption {
+  return { kind: "theme", id: `theme:${theme.name}`, label: theme.name, group, theme };
+}
+
 export function moodOptions(
   themes: Theme[] = BUILTIN_THEMES,
   custom: CustomLook = { background: null, mascot: null },
+  userThemes: Theme[] = [],
 ): MoodOption[] {
-  const themeOptions: MoodOption[] = themes.map((theme) => ({
-    kind: "theme",
-    id: `theme:${theme.name}`,
-    label: theme.name,
-    group: GROUPS[theme.mood] ?? "Outros",
-    theme,
-  }));
+  const themeOptions: MoodOption[] = [
+    ...themes.map((theme) => themeOption(theme, GROUPS[theme.mood] ?? "Outros")),
+    ...userThemes.map((theme) => themeOption(theme, USER_GROUP)),
+  ];
   const presetOptions: MoodOption[] = PRESETS.map((preset) => ({
     kind: "preset",
     id: `preset:${preset.name}`,

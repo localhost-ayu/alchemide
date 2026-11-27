@@ -1,12 +1,14 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, expect, test } from "vitest";
-import { loadSettings, saveSettings } from "../../lib/ipc.mock";
+import { loadSettings, saveSettings, setMockUserThemes } from "../../lib/ipc.mock";
+import { userThemeSource } from "../../test/themes";
 import { MoodPicker } from "./MoodPicker";
 import { initThemes, useThemeStore } from "./useThemeStore";
 
 const root = document.documentElement;
 
 beforeEach(async () => {
+  setMockUserThemes({});
   await saveSettings({});
   await initThemes();
 });
@@ -82,4 +84,22 @@ test("falls back to the default theme when the saved one no longer exists", asyn
   await initThemes();
 
   expect(root.dataset.theme).toBe("Catalisador");
+});
+
+test("lists your themes under their own group and remembers the choice", async () => {
+  setMockUserThemes({ "noite.json": userThemeSource("Noite") });
+  await initThemes();
+  render(<MoodPicker />);
+  const search = openPicker();
+
+  fireEvent.change(search, { target: { value: "meus temas" } });
+  expect(screen.getAllByRole("option").map((option) => option.textContent)).toEqual([
+    "NoiteMeus temas",
+  ]);
+  await act(async () => {
+    fireEvent.keyDown(search, { key: "Enter" });
+  });
+
+  expect(root.dataset.theme).toBe("Noite");
+  expect(await loadSettings()).toMatchObject({ theme: "Noite" });
 });

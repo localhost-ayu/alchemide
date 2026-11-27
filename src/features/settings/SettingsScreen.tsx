@@ -1,19 +1,22 @@
 import { type ReactNode, useEffect, useState } from "react";
 import { registerCommands } from "../../lib/commands";
-import { TAB_SIZES, useEditorSettings } from "../../lib/editorSettings";
+import { nextZoom, TAB_SIZES, useEditorSettings } from "../../lib/editorSettings";
+import { TextSettings } from "./TextSettings";
 import "./Settings.css";
 
 type SettingsScreenProps = {
   children?: ReactNode;
 };
 
+function changeZoom(direction: 1 | -1): void {
+  const { zoom, update } = useEditorSettings.getState();
+  void update({ zoom: nextZoom(zoom, direction) });
+}
+
 export function SettingsScreen({ children }: SettingsScreenProps) {
   const [isOpen, setOpen] = useState(false);
-  const fontFamily = useEditorSettings((state) => state.fontFamily);
-  const fontSize = useEditorSettings((state) => state.fontSize);
   const tabSize = useEditorSettings((state) => state.tabSize);
   const update = useEditorSettings((state) => state.update);
-  const [fontDraft, setFontDraft] = useState(fontFamily);
 
   useEffect(
     () =>
@@ -22,10 +25,25 @@ export function SettingsScreen({ children }: SettingsScreenProps) {
           id: "settings.open",
           title: "Open settings",
           keys: "Ctrl+,",
-          run: () => {
-            setFontDraft(useEditorSettings.getState().fontFamily);
-            setOpen(true);
-          },
+          run: () => setOpen(true),
+        },
+        {
+          id: "view.zoomIn",
+          title: "Zoom in",
+          keys: "Ctrl+=",
+          run: () => changeZoom(1),
+        },
+        {
+          id: "view.zoomOut",
+          title: "Zoom out",
+          keys: "Ctrl+-",
+          run: () => changeZoom(-1),
+        },
+        {
+          id: "view.zoomReset",
+          title: "Reset zoom",
+          keys: "Ctrl+0",
+          run: () => useEditorSettings.getState().update({ zoom: 1 }),
         },
       ]),
     [],
@@ -52,32 +70,9 @@ export function SettingsScreen({ children }: SettingsScreenProps) {
             ×
           </button>
         </header>
+        <TextSettings />
         <section className="settings__section">
           <h3>Editor</h3>
-          <label className="settings__field">
-            <span>Font</span>
-            <input
-              value={fontDraft}
-              placeholder="Maple Mono"
-              onChange={(event) => setFontDraft(event.target.value)}
-              onBlur={() => update({ fontFamily: fontDraft })}
-              onKeyDown={(event) => {
-                if (event.key === "Enter") {
-                  update({ fontFamily: fontDraft });
-                }
-              }}
-            />
-          </label>
-          <label className="settings__field">
-            <span>Font size</span>
-            <input
-              type="number"
-              min={10}
-              max={28}
-              value={fontSize}
-              onChange={(event) => update({ fontSize: Number(event.target.value) })}
-            />
-          </label>
           <label className="settings__field">
             <span>Tab size</span>
             <select

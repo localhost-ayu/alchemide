@@ -77,20 +77,35 @@ regular browser without compiling Rust, and the end-to-end tests run against tha
   updater plugin's Rust API, against `latest.json` in the latest GitHub release, and only
   installed when the signature matches the public key in `tauri.conf.json`. The webview has no
   updater permission. The check can be turned off in the settings.
+- Language servers (`lsp/`) are started by `lsp_start` from a fixed list, found on `PATH` and
+  run without a shell. Messages are framed with `Content-Length` in Rust; `lsp_send` writes to
+  stdin and a reader thread sends each message as `lsp-message`, with `lsp-exit` when the process
+  ends. One server runs per family and open folder, and the webview never names a program.
+  The frontend side is `@codemirror/lsp-client` with a transport over these events
+  (`features/editor/languageServers.ts`); see [decision 0005](decisions/0005-language-servers.md).
 - Links from the Markdown preview go through `open_external`, which accepts only `http`,
   `https` and `mailto` and calls the opener crate from Rust; the opener plugin is not registered,
   so the webview has no way to open arbitrary files or programs.
 
 ## User content
 
-Wallpapers, mascots and settings live in the user's config folder (`%APPDATA%` on Windows,
+Wallpapers, mascots, user themes and settings live in the user's config folder (`%APPDATA%` on Windows,
 `~/.config` on Linux). The app stores only paths relative to that folder; none of that
 content ships with the app or enters the repository.
+
+User themes are JSON files in `themes/` in the same folder. Importing and exporting a theme opens
+the native dialog from Rust (`import_theme`, `export_theme`), like choosing a folder or an asset, so
+the webview still has no dialog or file system permission. Rust only lists, writes and deletes
+them, accepting plain `*.json` names inside that folder; the frontend validates each one with the
+built-in theme rules and skips invalid files with a warning
+([decision 0004](decisions/0004-user-themes.md)).
 
 Settings live in `settings.json` in the same folder (`config.rs`). Rust treats the file as an
 opaque JSON object, written atomically, and falls back to `{}` when it is missing or broken; the
 frontend validates each field it reads. Keys today: `theme`, `effects`, `background`, `mascot`
-and `editor` (`fontFamily`, `fontSize`, `tabSize`).
+and `editor` (`fontFamily`, `fontSize`, `terminalFontSize`, `lineHeight`, `ligatures`, `zoom`,
+`tabSize`). Bundled fonts are listed in `src/lib/fonts.ts` and loaded on demand; the zoom is
+applied to the whole webview by the `set_zoom` command ([decision 0006](decisions/0006-bundled-fonts-and-zoom.md)).
 
 The settings screen belongs to `features/settings`, but the look section comes from
 `features/themes`: `App` passes it in as a child, so the two features never import each other.

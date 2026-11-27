@@ -26,14 +26,5 @@ export function Mascot() {
   if (!mascot || !url) {
     return null;
   }
-  return (
-    <img
-      className="mascot"
-      data-corner={mascot.corner}
-      src={url}
-      alt=""
-      aria-hidden="true"
-      style={{ width: `${mascot.size}px`, opacity: mascot.opacity }}
-    />
-  );
+  return <img className="mascot" src={url} alt="" aria-hidden="true" />;
 }

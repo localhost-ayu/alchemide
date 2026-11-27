@@ -73,6 +73,28 @@ export type ReplaceSummary = {
   replacements: number;
 };
 
+export type LspStart =
+  | { kind: "ready"; id: number; root: string; name: string }
+  | { kind: "missing"; name: string; install: string }
+  | { kind: "unsupported" };
+
+export type LspMessage = {
+  id: number;
+  message: string;
+};
+
+export type UserThemeFile = {
+  file: string;
+  theme: unknown;
+};
+
+export type VscodeTheme = {
+  label: string;
+  extension: string;
+  path: string;
+  dark: boolean;
+};
+
 export type UpdateInfo = {
   version: string;
   notes: string | null;

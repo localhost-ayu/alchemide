@@ -6,6 +6,8 @@ export function applyTheme(theme: Theme, root: HTMLElement = document.documentEl
     root.style.setProperty(name, value);
   }
   root.dataset.theme = theme.name;
+  root.dataset.mascotCorner = theme.mascot?.corner ?? "bottom-right";
+  root.dataset.backdropFit = "fit" in theme.background ? theme.background.fit : "cover";
 }
 
 export function applyEffects(

@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 import catalisador from "./builtin/catalisador.json";
 import { FALLBACK_THEME } from "./fallbackTheme";
-import { DEFAULT_EFFECTS, parseTheme } from "./parseTheme";
+import { DEFAULT_EFFECTS, parseTheme, readTheme } from "./parseTheme";
 
 const minimal = {
   name: "Minimal",
@@ -107,5 +107,29 @@ describe("parseTheme", () => {
     const { theme, warnings } = parse({ ...minimal, syntax: { ...minimal.syntax, type: "blue" } });
     expect(theme.syntax.type).toBe("#ff22ff");
     expect(warnings).toEqual(["syntax.type is not a hex color; using a default"]);
+  });
+});
+
+test("reads the shape and falls back to the default for missing or invalid values", () => {
+  const base = {
+    name: "Forma",
+    ui: { bg: "#000000", panel: "#111111", accent: "#22aa22", accent2: "#aa22aa", text: "#eeeeee" },
+    syntax: {
+      keyword: "#aa22aa",
+      string: "#22aa22",
+      function: "#aaaa22",
+      comment: "#777777",
+      variable: "#eeeeee",
+    },
+  };
+
+  expect(readTheme(base).theme?.shape).toEqual({ radius: 8, font: "system" });
+  expect(readTheme({ ...base, shape: { radius: 12.6, font: "serif" } }).theme?.shape).toEqual({
+    radius: 13,
+    font: "serif",
+  });
+  expect(readTheme({ ...base, shape: { radius: 99, font: "comic" } }).theme?.shape).toEqual({
+    radius: 8,
+    font: "system",
   });
 });
