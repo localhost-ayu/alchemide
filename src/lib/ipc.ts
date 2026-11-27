@@ -3,12 +3,14 @@ import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import type {
   AssetKind,
+  Commit,
   ContainerAction,
   DockerContainer,
   Entry,
   Environment,
   FileContent,
   Folder,
+  GitStatus,
   LspMessage,
   LspStart,
   ProjectFile,
@@ -217,4 +219,36 @@ export function dockerContainers(): Promise<DockerContainer[]> {
 
 export function dockerAction(id: string, action: ContainerAction): Promise<void> {
   return invoke<void>("docker_action", { id, action });
+}
+
+export function gitStatus(): Promise<GitStatus> {
+  return invoke<GitStatus>("git_status");
+}
+
+export function gitDiff(path: string, staged: boolean, untracked: boolean): Promise<string> {
+  return invoke<string>("git_diff", { path, staged, untracked });
+}
+
+export function gitStage(paths: string[]): Promise<void> {
+  return invoke<void>("git_stage", { paths });
+}
+
+export function gitStageAll(): Promise<void> {
+  return invoke<void>("git_stage_all");
+}
+
+export function gitUnstage(paths: string[]): Promise<void> {
+  return invoke<void>("git_unstage", { paths });
+}
+
+export function gitCommit(message: string): Promise<string> {
+  return invoke<string>("git_commit", { message });
+}
+
+export function gitLog(): Promise<Commit[]> {
+  return invoke<Commit[]>("git_log");
+}
+
+export function gitShow(hash: string): Promise<string> {
+  return invoke<string>("git_show", { hash });
 }

@@ -4,6 +4,7 @@ mod docker;
 mod env;
 mod error;
 mod fs;
+mod git;
 mod links;
 mod lsp;
 mod snippets;
@@ -28,6 +29,8 @@ pub fn run() {
             assets::import_asset,
             config::load_settings,
             config::save_settings,
+            docker::docker_action,
+            docker::docker_containers,
             env::get_environment,
             fs::list_dir,
             fs::list_files,
@@ -37,6 +40,14 @@ pub fn run() {
             fs::replace_matches,
             fs::search_start,
             fs::write_file,
+            git::git_commit,
+            git::git_diff,
+            git::git_log,
+            git::git_show,
+            git::git_stage,
+            git::git_stage_all,
+            git::git_status,
+            git::git_unstage,
             links::open_external,
             lsp::lsp_send,
             lsp::lsp_start,
@@ -45,8 +56,6 @@ pub fn run() {
             snippets::list_user_snippets,
             terminal::terminal_close,
             terminal::terminal_open,
-            docker::docker_containers,
-            docker::docker_action,
             terminal::terminal_profiles,
             terminal::terminal_resize,
             terminal::terminal_write,

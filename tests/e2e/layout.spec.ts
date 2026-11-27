@@ -229,3 +229,21 @@ test("Esc closes the settings even when the focus is not inside them", async ({ 
 
   await expect(settings).toBeHidden();
 });
+
+test("stages and commits from the Git dock", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("complementary").first()).toBeVisible();
+
+  await page.getByRole("button", { name: "Open Git panel" }).click();
+  const dock = page.getByRole("complementary", { name: "Git" });
+  await expect(dock).toContainText("main");
+  await dock.getByRole("button", { name: "Stage all" }).click();
+  await dock.getByRole("textbox", { name: "Commit message" }).fill("feat: from the dock");
+  await dock.getByRole("button", { name: /^Commit/ }).click();
+  await expect(dock).toContainText("No changes to commit");
+
+  await dock.getByRole("tab", { name: "History" }).click();
+  await expect(dock.getByRole("list", { name: "History" })).toContainText("feat: from the dock");
+  await dock.getByRole("button", { name: "Close Git panel" }).click();
+  await expect(dock).toBeHidden();
+});
