@@ -2,9 +2,11 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import {
   CHORD_WINDOW_MS,
   dispatchKey,
+  findConflicts,
   keyBelongsToApp,
   registerCommands,
   resetChord,
+  setRecording,
   strokeOf,
   useCommandStore,
 } from "./commands";
@@ -118,4 +120,35 @@ test("unregistering removes only the commands it added", () => {
   extra();
   expect(Object.keys(useCommandStore.getState().commands)).toContain("explorer");
   expect(Object.keys(useCommandStore.getState().commands)).not.toContain("extra");
+});
+
+describe("custom shortcuts", () => {
+  afterEach(() => {
+    useCommandStore.setState({ overrides: {} });
+    setRecording(false);
+  });
+
+  test("an override replaces the default keys and a null one removes them", () => {
+    useCommandStore.setState({ overrides: { explorer: "Ctrl+Shift+E", terminal: null } });
+
+    dispatchKey(key({ key: "b", ctrlKey: true }));
+    dispatchKey(key({ key: "`", ctrlKey: true }));
+    dispatchKey(key({ key: "E", ctrlKey: true, shiftKey: true }));
+
+    expect(runs).toEqual(["explorer"]);
+  });
+
+  test("nothing runs while a shortcut is being recorded", () => {
+    setRecording(true);
+    dispatchKey(key({ key: "b", ctrlKey: true }));
+    expect(runs).toEqual([]);
+  });
+
+  test("finds commands that share the same keys", () => {
+    const commands = Object.values(useCommandStore.getState().commands);
+    expect(findConflicts(commands, {})).toEqual({});
+    expect(findConflicts(commands, { mascot: "Ctrl+B" })).toEqual({
+      "Ctrl+B": ["explorer", "mascot"],
+    });
+  });
 });

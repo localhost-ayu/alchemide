@@ -2,6 +2,7 @@ import { type ReactNode, useEffect, useRef, useState } from "react";
 import { registerCommands } from "../../lib/commands";
 import { useDismiss } from "../../lib/dismiss";
 import { nextZoom, TAB_SIZES, useEditorSettings } from "../../lib/editorSettings";
+import { ShortcutSettings } from "./ShortcutSettings";
 import { filterSettings } from "./settingsSearch";
 import { TextSettings } from "./TextSettings";
 import { useGeneralSettings } from "./useGeneralSettings";
@@ -120,6 +121,7 @@ export function SettingsScreen({ children }: SettingsScreenProps) {
           </label>
         </section>
         {children}
+        <ShortcutSettings />
       </div>
     </div>
   );
