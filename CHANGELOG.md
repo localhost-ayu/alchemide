@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- The Git history shows how long ago each commit was made and whether it is only local or already on the remote
 - Branch picker in the Git dock: local and remote branches with the last commit author, how long ago and its subject, a search field, and creating a branch from the typed name
 
 ### Added

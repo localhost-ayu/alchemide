@@ -388,3 +388,16 @@
   color: var(--control-text);
   font: inherit;
 }
+
+.git-dock__pushed {
+  margin-left: 6px;
+  padding: 0 5px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 10px;
+}
+
+.git-dock__pushed[data-pushed="false"] {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}

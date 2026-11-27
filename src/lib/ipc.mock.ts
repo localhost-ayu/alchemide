@@ -811,6 +811,7 @@ const INITIAL_GIT: MockGit = {
       author: "Sample Author",
       date: "2026-11-26T10:00:00-03:00",
       subject: "feat: first sample commit",
+      pushed: true,
     },
   ],
 };
@@ -874,6 +875,7 @@ export function gitCommit(message: string): Promise<string> {
       author: "Sample Author",
       date: new Date().toISOString(),
       subject: message.split("\n")[0] ?? "",
+      pushed: false,
     },
     ...git.log,
   ];

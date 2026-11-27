@@ -416,4 +416,9 @@ export const en = {
   "git.branchMeta": "{author} · {age} · {subject}",
   "git.noBranches": "No branch matches",
   "git.createdBranch": "Created {name}",
+  "git.commitLocal": "local",
+  "git.commitRemote": "remote",
+  "git.commitLocalTitle": "Not pushed yet",
+  "git.commitRemoteTitle": "Already on the remote",
+  "git.commitMeta": "{hash} · {author} · {age}",
 } as const satisfies Record<string, string>;

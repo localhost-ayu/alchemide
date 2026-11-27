@@ -46,6 +46,7 @@ pub struct Commit {
     pub author: String,
     pub date: String,
     pub subject: String,
+    pub pushed: Option<bool>,
 }
 
 fn status_code(code: char) -> Option<char> {
@@ -103,6 +104,7 @@ pub fn parse_log(output: &str) -> Vec<Commit> {
                 author: fields.next()?.to_string(),
                 date: fields.next()?.to_string(),
                 subject: fields.next().unwrap_or_default().to_string(),
+                pushed: None,
             })
         })
         .collect()
@@ -263,6 +265,16 @@ pub fn parse_numstat(output: &str) -> HashMap<String, (u32, u32)> {
 
 pub fn count_lines(text: &str) -> u32 {
     u32::try_from(text.lines().count()).unwrap_or(u32::MAX)
+}
+
+pub fn mark_pushed(commits: &mut [Commit], unpushed: Option<&str>) {
+    let Some(unpushed) = unpushed else {
+        return;
+    };
+    let local: std::collections::HashSet<&str> = unpushed.lines().map(str::trim).collect();
+    for commit in commits {
+        commit.pushed = Some(!local.contains(commit.hash.as_str()));
+    }
 }
 
 pub fn is_commit_hash(hash: &str) -> bool {
@@ -530,10 +542,15 @@ pub async fn git_log(workspace: State<'_, Workspace>) -> Result<Vec<Commit>> {
     blocking(move || {
         let limit = format!("--max-count={LOG_LIMIT}");
         let format = format!("--pretty=format:{LOG_FORMAT}");
-        match run(&dir, &["log", &limit, &format], &[]) {
-            Ok(output) => Ok(parse_log(&text(output))),
-            Err(_) => Ok(Vec::new()),
-        }
+        let Ok(output) = run(&dir, &["log", &limit, &format], &[]) else {
+            return Ok(Vec::new());
+        };
+        let mut commits = parse_log(&text(output));
+        let unpushed = run(&dir, &["rev-list", "@{upstream}..HEAD"], &[])
+            .ok()
+            .map(text);
+        mark_pushed(&mut commits, unpushed.as_deref());
+        Ok(commits)
     })
     .await
 }
@@ -688,6 +705,19 @@ mod tests {
         assert_eq!(counts["new.ts"], (2, 0));
         assert_eq!(count_lines("a\nb\n"), 2);
         assert_eq!(count_lines(""), 0);
+    }
+
+    #[test]
+    fn marks_commits_as_pushed_only_when_there_is_an_upstream() {
+        let mut commits = parse_log(
+            "aaa\u{1f}a\u{1f}Ana\u{1f}2026-01-01\u{1f}new\u{1e}bbb\u{1f}b\u{1f}Ana\u{1f}2026-01-01\u{1f}old\u{1e}",
+        );
+        mark_pushed(&mut commits, None);
+        assert_eq!(commits[0].pushed, None);
+
+        mark_pushed(&mut commits, Some("aaa\n"));
+        assert_eq!(commits[0].pushed, Some(false));
+        assert_eq!(commits[1].pushed, Some(true));
     }
 
     #[test]
