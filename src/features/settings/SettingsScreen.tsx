@@ -1,5 +1,6 @@
 import { type ReactNode, useEffect, useState } from "react";
 import { registerCommands } from "../../lib/commands";
+import { useDismiss } from "../../lib/dismiss";
 import { nextZoom, TAB_SIZES, useEditorSettings } from "../../lib/editorSettings";
 import { TextSettings } from "./TextSettings";
 import "./Settings.css";
@@ -49,21 +50,14 @@ export function SettingsScreen({ children }: SettingsScreenProps) {
     [],
   );
 
+  useDismiss(isOpen, () => setOpen(false));
+
   if (!isOpen) {
     return null;
   }
   return (
     <div className="settings__overlay">
-      <div
-        className="settings panel"
-        role="dialog"
-        aria-label="Settings"
-        onKeyDown={(event) => {
-          if (event.key === "Escape") {
-            setOpen(false);
-          }
-        }}
-      >
+      <div className="settings panel" role="dialog" aria-label="Settings">
         <header className="settings__header">
           <h2>Settings</h2>
           <button type="button" aria-label="Close settings" onClick={() => setOpen(false)}>

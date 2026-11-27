@@ -18,20 +18,24 @@ export function terminalTheme(read: Read, playful: boolean): ITheme {
   const type = read("--syntax-type");
   const comment = read("--syntax-comment");
   const accent2 = read("--color-accent-2");
+  const bg = read("--color-bg");
+  const light = read("--color-scheme") === "light";
+  const dark = light ? text : bg;
+  const bright = light ? bg : text;
   return {
-    background: "#00000000",
+    background: read("--color-panel") || bg,
     foreground: text,
     cursor: playful ? REAGENT_GREEN : text,
-    cursorAccent: read("--color-bg"),
+    cursorAccent: bg,
     selectionBackground: withAlpha(accent2, "55"),
-    black: read("--color-bg"),
+    black: dark,
     red: accent2,
     green: string,
     yellow: fn,
     blue: type,
     magenta: keyword,
     cyan: type,
-    white: text,
+    white: bright,
     brightBlack: comment,
     brightRed: accent2,
     brightGreen: string,
@@ -39,7 +43,7 @@ export function terminalTheme(read: Read, playful: boolean): ITheme {
     brightBlue: type,
     brightMagenta: keyword,
     brightCyan: type,
-    brightWhite: text,
+    brightWhite: bright,
   };
 }
 

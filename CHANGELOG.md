@@ -11,6 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `Ctrl+O` opens a single file with the system dialog, even outside the open folder; `Ctrl+K Ctrl+O` opens a folder. Both are in the command palette
 
+### Changed
+
+- `Esc` closes the open panel (settings, theme editor, palettes and pickers) from anywhere, not only when the focus is inside it; with no panel open, `Esc` still reaches the editor and the terminal
+
+### Fixed
+
+- The terminal uses the theme's panel color instead of a transparent background, which showed black on Linux, and keeps black and white text readable on light themes
+
 ## [0.6.2] - 2026-11-27
 
 Patch release: select fields are readable in every theme on Linux and WSL.
