@@ -4,10 +4,11 @@ type ColorFieldProps = {
   label: string;
   value: string;
   background?: string;
+  suggestions?: string;
   onChange: (value: string) => void;
 };
 
-export function ColorField({ label, value, background, onChange }: ColorFieldProps) {
+export function ColorField({ label, value, background, suggestions, onChange }: ColorFieldProps) {
   const ratio = background ? contrast(value, background) : null;
   const isLow = ratio !== null && ratio < AA_CONTRAST;
 
@@ -16,6 +17,7 @@ export function ColorField({ label, value, background, onChange }: ColorFieldPro
       <input
         type="color"
         aria-label={label}
+        list={suggestions}
         value={toColorInput(value)}
         onChange={(event) => onChange(fromColorInput(event.target.value, value))}
       />

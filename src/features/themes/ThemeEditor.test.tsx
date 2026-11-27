@@ -245,3 +245,41 @@ test("suggests a panel opacity that keeps text readable over a background image"
   expect(root.style.getPropertyValue("--glass-opacity")).toBe(`${percent}%`);
   expect(screen.queryByText(/hard to read/)).toBeNull();
 });
+
+test("offers recent colors in every color picker and remembers the ones you saved", async () => {
+  await saveSettings({ recentColors: ["#123456"] });
+  render(<ThemeEditor />);
+  await act(async () => {
+    openEditor();
+  });
+
+  const suggestions = [...document.querySelectorAll("#theme-editor-colors option")].map(
+    (option) => (option as HTMLOptionElement).value,
+  );
+  expect(suggestions[0]).toBe("#123456");
+  expect(screen.getByLabelText("Keywords").getAttribute("list")).toBe("theme-editor-colors");
+
+  pick("Keywords", "#ff0000");
+  await act(async () => {
+    fireEvent.click(screen.getByRole("button", { name: "Save as new theme" }));
+  });
+
+  expect((await loadSettings()).recentColors).toEqual(["#ff0000", "#123456"]);
+});
+
+test("undo brings back the theme without closing, and defaults applies the default look", () => {
+  render(<ThemeEditor />);
+  openEditor();
+  pick("Background", "#000000");
+  fireEvent.click(screen.getByRole("button", { name: "Round" }));
+
+  fireEvent.click(screen.getByRole("button", { name: "Undo changes" }));
+  expect(root.style.getPropertyValue("--color-bg")).toBe("#120f1a");
+  expect(root.style.getPropertyValue("--radius")).toBe("8px");
+  expect(screen.getByRole("textbox", { name: "Name" })).toHaveProperty("value", "Catalisador copy");
+
+  pick("Background", "#000000");
+  fireEvent.click(screen.getByRole("button", { name: "Defaults" }));
+  expect(root.style.getPropertyValue("--color-bg")).toBe("#120f1a");
+  expect(screen.getByRole("complementary", { name: "Theme editor" })).toBeTruthy();
+});

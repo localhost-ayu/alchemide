@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { registerCommands } from "../../lib/commands";
+import { DEFAULT_THEME } from "./builtinThemes";
 import { ColorField } from "./ColorField";
 import type { Look } from "./customLook";
 import { LookFields } from "./LookFields";
+import { addRecentColors, changedColors, loadRecentColors } from "./recentColors";
 import { ShapeFields } from "./ShapeFields";
 import { StartingPoints } from "./StartingPoints";
 import { applyStartingPoint } from "./startingPoint";
@@ -17,6 +19,8 @@ type Session = {
   file: string | null;
   taken: string[];
 };
+
+const SUGGESTIONS_ID = "theme-editor-colors";
 
 const UI_FIELDS: [keyof ThemeUi, string][] = [
   ["bg", "Background"],
@@ -58,6 +62,7 @@ function preview({ theme, custom }: Look): void {
 
 export function ThemeEditor() {
   const [session, setSession] = useState<Session | null>(null);
+  const [recentColors, setRecentColors] = useState<string[]>([]);
 
   useEffect(
     () =>
@@ -66,7 +71,10 @@ export function ThemeEditor() {
           id: "themes.edit",
           title: "Edit current theme",
           keys: "Ctrl+K E",
-          run: () => setSession(startSession()),
+          run: async () => {
+            setSession(startSession());
+            setRecentColors(await loadRecentColors());
+          },
         },
       ]),
     [],
@@ -89,12 +97,16 @@ export function ThemeEditor() {
     preview(original);
     setSession(null);
   };
+  const undo = () => setLook({ ...original, theme: { ...original.theme, name: draft.name } });
+  const restoreDefaults = () =>
+    setLook({ ...look, theme: applyStartingPoint(draft, DEFAULT_THEME) });
   const save = async () => {
     if (problem) {
       return;
     }
     setSession(null);
     await saveEditedTheme({ ...draft, name: draft.name.trim() }, file);
+    await addRecentColors(changedColors(original.theme, draft)).catch(() => undefined);
     if (look.custom !== original.custom) {
       await useThemeStore.getState().setCustom(look.custom);
     }
@@ -139,6 +151,7 @@ export function ThemeEditor() {
             label={label}
             value={draft.ui[key]}
             background={key === "text" ? draft.ui.bg : undefined}
+            suggestions={SUGGESTIONS_ID}
             onChange={(value) => update({ ui: { ...draft.ui, [key]: value } })}
           />
         ))}
@@ -149,13 +162,34 @@ export function ThemeEditor() {
             label={label}
             value={draft.syntax[key]}
             background={draft.ui.bg}
+            suggestions={SUGGESTIONS_ID}
             onChange={(value) => update({ syntax: { ...draft.syntax, [key]: value } })}
           />
         ))}
         <ShapeFields shape={draft.shape} onChange={(shape) => update({ shape })} />
         <LookFields look={look} onChange={setLook} />
       </div>
+      <datalist id={SUGGESTIONS_ID}>
+        {[
+          ...new Set([
+            ...recentColors,
+            ...Object.values(draft.ui).map((color) => color.slice(0, 7).toLowerCase()),
+          ]),
+        ].map((color) => (
+          <option key={color} value={color} />
+        ))}
+      </datalist>
       <footer className="theme-editor__footer">
+        <button type="button" className="theme-editor__secondary" onClick={undo}>
+          Undo changes
+        </button>
+        <button
+          type="button"
+          className="theme-editor__secondary theme-editor__defaults"
+          onClick={restoreDefaults}
+        >
+          Defaults
+        </button>
         <button type="button" onClick={cancel}>
           Cancel
         </button>

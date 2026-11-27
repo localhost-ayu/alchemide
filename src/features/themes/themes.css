@@ -259,6 +259,15 @@
   cursor: pointer;
 }
 
+.theme-editor__footer .theme-editor__defaults {
+  margin-right: auto;
+}
+
+.theme-editor__footer .theme-editor__secondary {
+  background: none;
+  color: var(--color-muted);
+}
+
 .theme-editor__footer .theme-editor__save {
   border-color: var(--color-accent);
 }
