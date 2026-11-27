@@ -1,5 +1,6 @@
 import { type KeyboardEvent as ReactKeyboardEvent, useEffect, useMemo, useState } from "react";
 import { registerCommands } from "../../lib/commands";
+import { useDismiss } from "../../lib/dismiss";
 import { listVscodeThemes } from "../../lib/ipc";
 import type { VscodeTheme } from "../../lib/types";
 import { importVscodeTheme, importVscodeThemeFile } from "./themeLibrary";
@@ -54,11 +55,12 @@ export function VscodeThemePicker() {
     [],
   );
 
+  const close = () => setThemes(null);
+  useDismiss(themes !== null, close);
+
   if (!themes) {
     return null;
   }
-
-  const close = () => setThemes(null);
 
   const choose = (theme: VscodeTheme | undefined) => {
     if (!theme) {
@@ -79,9 +81,6 @@ export function VscodeThemePicker() {
     } else if (event.key === "Enter") {
       event.preventDefault();
       choose(highlighted);
-    } else if (event.key === "Escape") {
-      event.preventDefault();
-      close();
     }
   };
 

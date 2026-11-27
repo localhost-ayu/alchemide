@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- `Esc` closes the open panel (settings, theme editor, palettes and pickers) from anywhere, not only when the focus is inside it; with no panel open, `Esc` still reaches the editor and the terminal
+
 ### Fixed
 
 - The terminal uses the theme's panel color instead of a transparent background, which showed black on Linux, and keeps black and white text readable on light themes

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { registerCommands } from "../../lib/commands";
+import { useDismiss } from "../../lib/dismiss";
 import { DEFAULT_THEME } from "./builtinThemes";
 import { ColorField } from "./ColorField";
 import type { Look } from "./customLook";
@@ -80,6 +81,14 @@ export function ThemeEditor() {
     [],
   );
 
+  const cancel = () => {
+    if (session) {
+      preview(session.original);
+    }
+    setSession(null);
+  };
+  useDismiss(session !== null, cancel);
+
   if (!session) {
     return null;
   }
@@ -93,10 +102,6 @@ export function ThemeEditor() {
     preview(next);
   };
   const update = (changes: Partial<Theme>) => setLook({ ...look, theme: { ...draft, ...changes } });
-  const cancel = () => {
-    preview(original);
-    setSession(null);
-  };
   const undo = () => setLook({ ...original, theme: { ...original.theme, name: draft.name } });
   const restoreDefaults = () =>
     setLook({ ...look, theme: applyStartingPoint(draft, DEFAULT_THEME) });
@@ -113,15 +118,7 @@ export function ThemeEditor() {
   };
 
   return (
-    <aside
-      className="theme-editor panel"
-      aria-label="Theme editor"
-      onKeyDown={(event) => {
-        if (event.key === "Escape") {
-          cancel();
-        }
-      }}
-    >
+    <aside className="theme-editor panel" aria-label="Theme editor">
       <header className="theme-editor__header">
         <h2>{file ? "Edit theme" : `New theme from ${original.theme.name}`}</h2>
       </header>
