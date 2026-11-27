@@ -82,6 +82,16 @@ export function setMockEnvironment(next: Environment): void {
   environment = next;
 }
 
+let lastFolderRemembered = false;
+
+export function setMockLastFolder(remembered: boolean): void {
+  lastFolderRemembered = remembered;
+}
+
+export function reopenLastFolder(): Promise<Folder | null> {
+  return lastFolderRemembered ? openFolder() : Promise.resolve(null);
+}
+
 export function openFolder(): Promise<Folder | null> {
   const folder = { name: "sample-project", path: root };
   for (const handler of workspaceHandlers) {

@@ -33,6 +33,7 @@ pub fn run() {
             fs::list_files,
             fs::open_folder,
             fs::read_file,
+            fs::reopen_last_folder,
             fs::replace_matches,
             fs::search_start,
             fs::write_file,

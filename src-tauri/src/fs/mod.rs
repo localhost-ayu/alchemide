@@ -97,11 +97,29 @@ pub async fn open_folder(
         return Ok(None);
     };
     let root = picked.into_path().map_err(|_| Error::NotLocalFolder)?;
+    open_root(app_handle, &workspace, root).map(Some)
+}
+
+fn open_root(app: AppHandle, workspace: &Workspace, root: PathBuf) -> Result<Folder> {
     let folder = describe_folder(&root);
-    let watcher = watcher::create(app_handle.clone())?;
+    let watcher = watcher::create(app.clone())?;
+    if let Ok(dir) = crate::config::config_dir() {
+        let _ = crate::config::remember_last_folder(&dir, &root);
+    }
     workspace.start(Session { root, watcher });
-    let _ = app_handle.emit(WORKSPACE_CHANGED_EVENT, &folder);
-    Ok(Some(folder))
+    let _ = app.emit(WORKSPACE_CHANGED_EVENT, &folder);
+    Ok(folder)
+}
+
+#[tauri::command]
+pub async fn reopen_last_folder(
+    app: AppHandle,
+    workspace: State<'_, Workspace>,
+) -> Result<Option<Folder>> {
+    let Some(root) = crate::config::last_folder(&crate::config::config_dir()?) else {
+        return Ok(None);
+    };
+    open_root(app, &workspace, root).map(Some)
 }
 
 #[tauri::command]

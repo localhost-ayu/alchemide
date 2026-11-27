@@ -229,3 +229,20 @@ test("Esc closes the settings even when the focus is not inside them", async ({ 
 
   await expect(settings).toBeHidden();
 });
+
+test("searches the settings", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("complementary").first()).toBeVisible();
+
+  await page.keyboard.press("Control+,");
+  const settings = page.getByRole("dialog", { name: "Settings" });
+  const search = settings.getByRole("searchbox", { name: "Search settings" });
+  await expect(search).toBeFocused();
+  await search.fill("tab size");
+
+  await expect(settings.getByRole("combobox", { name: "Tab size" })).toBeVisible();
+  await expect(settings.getByRole("combobox", { name: "Theme" })).toBeHidden();
+  await expect(
+    settings.getByRole("checkbox", { name: "Reopen the last folder on start" }),
+  ).toBeHidden();
+});
