@@ -9,6 +9,9 @@ const emptyRect = () => new DOMRect(0, 0, 0, 0);
 if (!Range.prototype.getClientRects) {
   Range.prototype.getClientRects = emptyRects;
 }
+if (!Element.prototype.scrollIntoView) {
+  Element.prototype.scrollIntoView = () => {};
+}
 if (!Range.prototype.getBoundingClientRect) {
   Range.prototype.getBoundingClientRect = emptyRect;
 }
