@@ -463,3 +463,17 @@ test("unlocks the mascot and drags it anywhere", async ({ page }) => {
   const moved = await mascot.boundingBox();
   expect(moved?.x ?? 0).toBeLessThan((box?.x ?? 0) - 100);
 });
+
+test("switches the interface to Portuguese and back", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("complementary").first()).toBeVisible();
+  await page.keyboard.press("Control+,");
+  const settings = page.getByRole("dialog", { name: "Settings" });
+
+  await settings.getByRole("combobox", { name: "Language" }).selectOption("pt-BR");
+  await expect(settings.getByRole("heading", { name: "Geral" })).toBeVisible();
+  await expect(page.locator("html")).toHaveAttribute("lang", "pt-BR");
+
+  await settings.getByRole("combobox", { name: "Idioma" }).selectOption("en");
+  await expect(page.getByRole("heading", { name: "General" })).toBeVisible();
+});

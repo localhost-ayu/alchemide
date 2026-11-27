@@ -7,11 +7,13 @@ import { initTerminalSettings } from "./features/terminal/useTerminalSettings";
 import { initMascotLock } from "./features/themes/mascotLock";
 import { initThemes } from "./features/themes/useThemeStore";
 import { initEditorSettings } from "./lib/editorSettings";
+import { setLanguagePreference } from "./lib/i18n";
 import { initKeybindings } from "./lib/keybindings";
 import { initLayout } from "./lib/layoutStore";
 import { useSnippetStore } from "./lib/snippetStore";
 import "./styles/global.css";
 
+setLanguagePreference("system");
 initThemes();
 initMascotLock();
 initKeybindings();

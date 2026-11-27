@@ -2,6 +2,7 @@ import { type ReactNode, useEffect, useRef, useState } from "react";
 import { registerCommands } from "../../lib/commands";
 import { useDismiss } from "../../lib/dismiss";
 import { nextZoom, TAB_SIZES, useEditorSettings } from "../../lib/editorSettings";
+import { LANGUAGE_PREFERENCES, useT } from "../../lib/i18n";
 import { ShortcutSettings } from "./ShortcutSettings";
 import { filterSettings } from "./settingsSearch";
 import { TextSettings } from "./TextSettings";
@@ -22,6 +23,8 @@ export function SettingsScreen({ children }: SettingsScreenProps) {
   const [query, setQuery] = useState("");
   const [matches, setMatches] = useState(1);
   const dialogRef = useRef<HTMLDivElement>(null);
+  const t = useT();
+  const language = useGeneralSettings((state) => state.language);
   const reopenLastFolder = useGeneralSettings((state) => state.reopenLastFolder);
   const closeOnOutsideClick = useGeneralSettings((state) => state.closePanelsOnOutsideClick);
   const updateGeneral = useGeneralSettings((state) => state.update);
@@ -95,9 +98,28 @@ export function SettingsScreen({ children }: SettingsScreenProps) {
         </header>
         {matches === 0 && <p className="settings__empty">No setting matches “{query}”</p>}
         <section className="settings__section">
-          <h3>General</h3>
+          <h3>{t("settings.general")}</h3>
           <label className="settings__field">
-            <span>Reopen the last folder on start</span>
+            <span>{t("settings.language")}</span>
+            <select
+              value={language}
+              onChange={(event) =>
+                updateGeneral({
+                  language:
+                    LANGUAGE_PREFERENCES.find((option) => option === event.target.value) ??
+                    "system",
+                })
+              }
+            >
+              {LANGUAGE_PREFERENCES.map((option) => (
+                <option key={option} value={option}>
+                  {t(`language.${option}`)}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="settings__field">
+            <span>{t("settings.reopenLastFolder")}</span>
             <input
               type="checkbox"
               checked={reopenLastFolder}
@@ -105,7 +127,7 @@ export function SettingsScreen({ children }: SettingsScreenProps) {
             />
           </label>
           <label className="settings__field">
-            <span>Close panels when clicking outside them</span>
+            <span>{t("settings.closeOnOutsideClick")}</span>
             <input
               type="checkbox"
               checked={closeOnOutsideClick}
