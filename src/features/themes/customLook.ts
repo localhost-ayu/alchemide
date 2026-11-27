@@ -44,7 +44,7 @@ export type Look = {
   custom: CustomLook;
 };
 
-export type BackgroundChanges = Partial<Pick<MediaBackground, "fit" | "blur" | "dim">>;
+export type BackgroundChanges = Partial<Pick<MediaBackground, "fit" | "blur" | "dim" | "editor">>;
 export type MascotChanges = Partial<Omit<ThemeMascot, "path">>;
 
 function asMedia(background: ThemeBackground | null): MediaBackground | null {

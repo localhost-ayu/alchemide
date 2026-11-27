@@ -6,8 +6,15 @@ import {
   shownBackground,
   shownMascot,
 } from "./customLook";
+import { setMascotLocked, useMascotLock } from "./mascotLock";
 import { RangeField } from "./RangeField";
-import type { Corner, Fit } from "./theme";
+import {
+  type Corner,
+  DEFAULT_EDITOR_BACKDROP,
+  type EditorBackdrop,
+  type EditorBackdropMode,
+  type Fit,
+} from "./theme";
 
 type LookFieldsProps = {
   look: Look;
@@ -21,6 +28,15 @@ const CORNERS: [Corner, string][] = [
   ["bottom-right", "Bottom right"],
 ];
 
+const EDITOR_MODES: [EditorBackdropMode, string][] = [
+  ["layer", "A blurred layer"],
+  ["sharp", "The window background"],
+  ["solid", "The theme color"],
+];
+
+const toEditorMode = (value: string): EditorBackdropMode =>
+  EDITOR_MODES.find(([mode]) => mode === value)?.[0] ?? DEFAULT_EDITOR_BACKDROP.mode;
+
 const toFit = (value: string): Fit => (value === "contain" ? "contain" : "cover");
 const toCorner = (value: string): Corner =>
   CORNERS.find(([corner]) => corner === value)?.[0] ?? "bottom-right";
@@ -32,6 +48,19 @@ export function LookFields({ look, onChange }: LookFieldsProps) {
   const { glass } = look.theme;
   const background = shownBackground(look);
   const mascot = shownMascot(look);
+  const locked = useMascotLock((state) => state.locked);
+  const surface = look.theme.effects.surface;
+  const setSurface = (glassy: boolean) =>
+    onChange({
+      ...look,
+      theme: {
+        ...look.theme,
+        effects: { ...look.theme.effects, surface: glassy ? "glass" : "solid" },
+      },
+    });
+  const editorBackdrop = background?.editor ?? DEFAULT_EDITOR_BACKDROP;
+  const setEditorBackdrop = (changes: Partial<EditorBackdrop>) =>
+    onChange(changeBackground(look, { editor: { ...editorBackdrop, ...changes } }));
   const setGlass = (changes: Partial<typeof glass>) =>
     onChange({ ...look, theme: { ...look.theme, glass: { ...glass, ...changes } } });
   const suggested =
@@ -46,6 +75,14 @@ export function LookFields({ look, onChange }: LookFieldsProps) {
   return (
     <>
       <h3>Glass</h3>
+      <label className="settings__field theme-editor__switch">
+        <span>Glass panels</span>
+        <input
+          type="checkbox"
+          checked={surface === "glass"}
+          onChange={(event) => setSurface(event.target.checked)}
+        />
+      </label>
       <RangeField
         label="Panel opacity"
         value={glass.panelOpacity}
@@ -112,6 +149,41 @@ export function LookFields({ look, onChange }: LookFieldsProps) {
               <option value="contain">Show it whole</option>
             </select>
           </label>
+          <label className="theme-editor__select">
+            <span>Behind open files</span>
+            <select
+              value={editorBackdrop.mode}
+              onChange={(event) => setEditorBackdrop({ mode: toEditorMode(event.target.value) })}
+            >
+              {EDITOR_MODES.map(([mode, label]) => (
+                <option key={mode} value={mode}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </label>
+          {editorBackdrop.mode === "layer" && (
+            <>
+              <RangeField
+                label="Layer dim"
+                value={editorBackdrop.dim}
+                min={0}
+                max={1}
+                step={0.01}
+                format={percent}
+                onChange={(dim) => setEditorBackdrop({ dim })}
+              />
+              <RangeField
+                label="Layer blur"
+                value={editorBackdrop.blur}
+                min={0}
+                max={40}
+                step={1}
+                format={pixels}
+                onChange={(blur) => setEditorBackdrop({ blur })}
+              />
+            </>
+          )}
         </>
       ) : (
         <p className="theme-editor__hint">Choose a background image with Ctrl+K M to adjust it.</p>
@@ -142,7 +214,9 @@ export function LookFields({ look, onChange }: LookFieldsProps) {
             <select
               value={mascot.corner}
               onChange={(event) =>
-                onChange(changeMascot(look, { corner: toCorner(event.target.value) }))
+                onChange(
+                  changeMascot(look, { corner: toCorner(event.target.value), position: undefined }),
+                )
               }
             >
               {CORNERS.map(([corner, label]) => (
@@ -152,6 +226,39 @@ export function LookFields({ look, onChange }: LookFieldsProps) {
               ))}
             </select>
           </label>
+          <label className="theme-editor__select">
+            <span>Layer</span>
+            <select
+              value={mascot.layer ?? "behind"}
+              onChange={(event) =>
+                onChange(
+                  changeMascot(look, {
+                    layer: event.target.value === "front" ? "front" : "behind",
+                  }),
+                )
+              }
+            >
+              <option value="behind">Behind the code</option>
+              <option value="front">In front of the code</option>
+            </select>
+          </label>
+          <label className="settings__field theme-editor__switch">
+            <span>Locked (clicks pass through)</span>
+            <input
+              type="checkbox"
+              checked={locked}
+              onChange={(event) => setMascotLocked(event.target.checked)}
+            />
+          </label>
+          {mascot.position && (
+            <button
+              type="button"
+              className="theme-editor__secondary"
+              onClick={() => onChange(changeMascot(look, { position: undefined }))}
+            >
+              Back to the corner
+            </button>
+          )}
         </>
       ) : (
         <p className="theme-editor__hint">Choose a mascot image with Ctrl+K M to adjust it.</p>

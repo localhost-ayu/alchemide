@@ -1,5 +1,5 @@
 import { controlColors } from "./controlColors";
-import type { Theme, UiFont } from "./theme";
+import { DEFAULT_EDITOR_BACKDROP, type EditorBackdrop, type Theme, type UiFont } from "./theme";
 
 const UI_FONT_STACKS: Record<UiFont, string> = {
   system: "system-ui, sans-serif",
@@ -29,6 +29,14 @@ function dimOf(theme: Theme): number {
   return "dim" in theme.background ? theme.background.dim : 0;
 }
 
+export function editorBackdropOf(theme: Theme): EditorBackdrop | null {
+  const { background } = theme;
+  if (background.type !== "image" && background.type !== "video") {
+    return null;
+  }
+  return background.editor ?? DEFAULT_EDITOR_BACKDROP;
+}
+
 function blurOf(theme: Theme): number {
   return "blur" in theme.background ? theme.background.blur : 0;
 }
@@ -55,8 +63,12 @@ export function toCssVariables(theme: Theme): Record<string, string> {
     "--backdrop-image": backgroundImage(theme),
     "--backdrop-dim": hasMedia(theme) ? `${Math.round(dimOf(theme) * 100)}%` : "0%",
     "--backdrop-blur": hasMedia(theme) ? `${blurOf(theme)}px` : "0px",
+    "--layer-dim": `${Math.round((editorBackdropOf(theme)?.dim ?? 0) * 100)}%`,
+    "--layer-blur": `${editorBackdropOf(theme)?.blur ?? 0}px`,
     "--mascot-size": `${mascot?.size ?? 0}px`,
     "--mascot-opacity": String(mascot?.opacity ?? 0),
+    "--mascot-x": String(mascot?.position?.x ?? 0),
+    "--mascot-y": String(mascot?.position?.y ?? 0),
     "--radius": `${shape.radius}px`,
     "--radius-sm": `${Math.round(shape.radius / 2)}px`,
     "--font-ui": UI_FONT_STACKS[shape.font],

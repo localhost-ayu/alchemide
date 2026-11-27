@@ -1,14 +1,18 @@
-import type {
-  Corner,
-  Effects,
-  Fit,
-  Theme,
-  ThemeBackground,
-  ThemeMascot,
-  ThemeShape,
-  ThemeSyntax,
-  ThemeUi,
-  UiFont,
+import {
+  type Corner,
+  DEFAULT_EDITOR_BACKDROP,
+  type EditorBackdrop,
+  type EditorBackdropMode,
+  type Effects,
+  type Fit,
+  type MascotPosition,
+  type Theme,
+  type ThemeBackground,
+  type ThemeMascot,
+  type ThemeShape,
+  type ThemeSyntax,
+  type ThemeUi,
+  type UiFont,
 } from "./theme";
 
 export type ParsedTheme = {
@@ -93,6 +97,24 @@ function readSyntax(section: Fields, ui: ThemeUi, warnings: string[]): ThemeSynt
   return { ...required, type: optional("type", ui.accent2), number: optional("number", ui.accent) };
 }
 
+const EDITOR_MODES: EditorBackdropMode[] = ["sharp", "layer", "solid"];
+
+export function readEditorBackdrop(value: unknown, warnings: string[]): EditorBackdrop | null {
+  if (value === undefined) {
+    return null;
+  }
+  if (!isFields(value)) {
+    warnings.push("background.editor is not an object; using the default");
+    return null;
+  }
+  const mode = EDITOR_MODES.find((candidate) => candidate === value.mode);
+  return {
+    mode: mode ?? DEFAULT_EDITOR_BACKDROP.mode,
+    dim: numberIn(value.dim, 0, 1, DEFAULT_EDITOR_BACKDROP.dim),
+    blur: numberIn(value.blur, 0, 40, DEFAULT_EDITOR_BACKDROP.blur),
+  };
+}
+
 export function readBackground(value: unknown, ui: ThemeUi, warnings: string[]): ThemeBackground {
   const fallback: ThemeBackground = { type: "solid", color: ui.bg };
   if (value === undefined) {
@@ -112,16 +134,27 @@ export function readBackground(value: unknown, ui: ThemeUi, warnings: string[]):
   }
   if ((value.type === "image" || value.type === "video") && isRelativePath(value.path)) {
     const fit: Fit = value.fit === "contain" ? "contain" : "cover";
+    const editor = readEditorBackdrop(value.editor, warnings);
     return {
       type: value.type,
       path: value.path,
       fit,
       blur: numberIn(value.blur, 0, 40, 0),
       dim: numberIn(value.dim, 0, 1, 0.5),
+      ...(editor ? { editor } : {}),
     };
   }
   warnings.push("background is invalid; using a solid background");
   return fallback;
+}
+
+function readMascotPosition(value: unknown): MascotPosition | null {
+  if (!isFields(value)) {
+    return null;
+  }
+  const inRange = (n: unknown): n is number =>
+    typeof n === "number" && Number.isFinite(n) && n >= 0 && n <= 1;
+  return inRange(value.x) && inRange(value.y) ? { x: value.x, y: value.y } : null;
 }
 
 export function readMascot(value: unknown, warnings: string[]): ThemeMascot | null {
@@ -133,11 +166,15 @@ export function readMascot(value: unknown, warnings: string[]): ThemeMascot | nu
     return null;
   }
   const corner = CORNERS.find((candidate) => candidate === value.corner) ?? "bottom-right";
+  const layer = value.layer === "front" || value.layer === "behind" ? value.layer : null;
+  const position = readMascotPosition(value.position);
   return {
     path: value.path,
     corner,
     opacity: numberIn(value.opacity, 0, 1, 0.35),
     size: numberIn(value.size, 32, 1024, 280),
+    ...(layer ? { layer } : {}),
+    ...(position ? { position } : {}),
   };
 }
 
