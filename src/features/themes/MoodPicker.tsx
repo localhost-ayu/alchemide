@@ -83,7 +83,7 @@ export function MoodPicker() {
     }
     setOpen(false);
   };
-  useDismiss(isOpen, close);
+  const panelRef = useDismiss(isOpen, close);
 
   if (!isOpen) {
     return null;
@@ -119,7 +119,7 @@ export function MoodPicker() {
 
   return (
     <div className="mood-picker__overlay">
-      <div className="mood-picker panel" role="dialog" aria-label="Choose a mood">
+      <div ref={panelRef} className="mood-picker panel" role="dialog" aria-label="Choose a mood">
         <input
           className="mood-picker__search"
           role="combobox"

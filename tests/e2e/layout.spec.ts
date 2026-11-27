@@ -146,10 +146,16 @@ test("changes theme and effects from the settings screen", async ({ page }) => {
   await page.keyboard.press("Control+,");
   const settings = page.getByRole("dialog", { name: "Settings" });
   await settings.getByRole("combobox", { name: "Theme" }).selectOption("Aço");
-  await settings.getByRole("checkbox", { name: "Glass panels" }).uncheck();
-
   await expect(page.locator("html")).toHaveAttribute("data-theme", "Aço");
+  await page.keyboard.press("Escape");
+
+  await page.keyboard.press("Control+k");
+  await page.keyboard.press("e");
+  const editor = page.getByRole("complementary", { name: "Theme editor" });
+  await editor.getByRole("checkbox", { name: "Glass panels" }).uncheck();
   await expect(explorer).toHaveCSS("backdrop-filter", "none");
+  await editor.getByRole("button", { name: "Save as new theme" }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-surface", "solid");
 });
 
 test("switches side bar views from the activity bar and hides bars", async ({ page }) => {
@@ -336,6 +342,25 @@ test("searches the settings", async ({ page }) => {
   ).toBeHidden();
 });
 
+test("clicking outside closes the settings only when turned on", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("complementary").first()).toBeVisible();
+  const settings = page.getByRole("dialog", { name: "Settings" });
+  const clickOutside = async () => {
+    const box = await settings.boundingBox();
+    expect(box).not.toBeNull();
+    await page.mouse.click(4, (box?.y ?? 0) + 4);
+  };
+
+  await page.keyboard.press("Control+,");
+  await clickOutside();
+  await expect(settings).toBeVisible();
+
+  await settings.getByRole("checkbox", { name: "Close panels when clicking outside them" }).check();
+  await clickOutside();
+  await expect(settings).toBeHidden();
+});
+
 test("settings switches follow the theme accent", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("complementary").first()).toBeVisible();
@@ -365,4 +390,34 @@ test("the status bar button opens and hides the terminal", async ({ page }) => {
   await expect(panel).toBeVisible();
   await toggle.click();
   await expect(panel).toBeHidden();
+});
+
+test("unlocks the mascot and drags it anywhere", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("complementary").first()).toBeVisible();
+  await page.keyboard.press("Control+k");
+  await page.keyboard.press("m");
+  const search = page.getByRole("combobox", { name: "Search themes and effects" });
+  await search.fill("choose mascot");
+  await search.press("Enter");
+  const mascot = page.locator(".mascot");
+  await expect(mascot).toBeVisible();
+  await expect(mascot).toHaveCSS("pointer-events", "none");
+
+  await page.keyboard.press("Control+Shift+P");
+  await page.getByRole("combobox", { name: "Run a command" }).fill("unlock the mascot");
+  await page.keyboard.press("Enter");
+  await expect(mascot).toHaveCSS("pointer-events", "auto");
+
+  const box = await mascot.boundingBox();
+  expect(box).not.toBeNull();
+  const start = { x: (box?.x ?? 0) + 5, y: (box?.y ?? 0) + 5 };
+  await page.mouse.move(start.x, start.y);
+  await page.mouse.down();
+  await page.mouse.move(start.x - 300, start.y - 200, { steps: 5 });
+  await page.mouse.up();
+
+  await expect(page.locator("html")).toHaveAttribute("data-mascot-corner", "free");
+  const moved = await mascot.boundingBox();
+  expect(moved?.x ?? 0).toBeLessThan((box?.x ?? 0) - 100);
 });

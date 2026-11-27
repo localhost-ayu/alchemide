@@ -132,3 +132,15 @@ test("opens a single file with Ctrl+O and a folder with Ctrl+K Ctrl+O", async ({
   await page.keyboard.press("Control+o");
   await expect(page.getByRole("heading", { name: "sample-project" })).toBeVisible();
 });
+
+test("opens the Markdown preview from the button on the tab bar", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Open folder" }).click();
+  await page.getByRole("button", { name: "README.md" }).click();
+
+  const toggle = page.getByRole("button", { name: "Toggle Markdown preview" });
+  await expect(toggle).toBeVisible();
+  await toggle.click();
+  await expect(page.getByRole("region", { name: "Markdown preview" })).toBeVisible();
+  await expect(toggle).toHaveAttribute("aria-pressed", "true");
+});

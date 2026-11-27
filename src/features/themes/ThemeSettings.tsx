@@ -75,14 +75,9 @@ export function ThemeSettings() {
           Delete
         </button>
       </div>
-      <label className="settings__field">
-        <span>Glass panels</span>
-        <input
-          type="checkbox"
-          checked={effects.surface === "glass"}
-          onChange={(event) => setEffect({ surface: event.target.checked ? "glass" : "solid" })}
-        />
-      </label>
+      <p className="settings__hint">
+        Glass panels, colors and the wallpaper are in the theme editor.
+      </p>
       {FLAGS.map((flag) => (
         <label key={flag.key} className="settings__field">
           <span>{flag.label}</span>
