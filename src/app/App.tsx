@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { DockerPanel } from "../features/docker/DockerPanel";
 import { Editor } from "../features/editor/Editor";
 import { Explorer } from "../features/explorer/Explorer";
@@ -17,65 +17,104 @@ import { ThemeWarnings } from "../features/themes/ThemeWarnings";
 import { UpdateNotice } from "../features/updater/UpdateNotice";
 import { UpdateSettings } from "../features/updater/UpdateSettings";
 import { registerCommands } from "../lib/commands";
+import { useLayoutStore } from "../lib/layoutStore";
+import { ActivityBar } from "./ActivityBar";
 import "./App.css";
+import { LayoutSettings } from "./LayoutSettings";
 
 const SIDEBAR_LABELS = { explorer: "Explorer", search: "Search", docker: "Docker" };
 
-export function App() {
-  const [isExplorerOpen, setExplorerOpen] = useState(true);
-  const [sidebar, setSidebar] = useState<"explorer" | "search" | "docker">("explorer");
-
-  useEffect(
-    () =>
-      registerCommands([
-        {
-          id: "view.toggleExplorer",
-          title: "Toggle explorer",
-          keys: "Ctrl+B",
-          run: () => setExplorerOpen((open) => !open),
-        },
-        {
-          id: "view.showExplorer",
-          title: "Show explorer",
-          keys: "Ctrl+Shift+E",
-          run: () => {
-            setSidebar("explorer");
-            setExplorerOpen(true);
-          },
-        },
-        {
-          id: "search.show",
-          title: "Search in files",
-          keys: "Ctrl+Shift+F",
-          run: () => {
-            setSidebar("search");
-            setExplorerOpen(true);
-            requestAnimationFrame(() =>
-              document.querySelector<HTMLInputElement>('[aria-label="Search in files"]')?.focus(),
-            );
-          },
-        },
-        {
-          id: "docker.show",
-          title: "Show Docker containers",
-          keys: "Ctrl+Shift+D",
-          run: () => {
-            setSidebar("docker");
-            setExplorerOpen(true);
-          },
-        },
-      ]),
-    [],
+function focusSearch(): void {
+  requestAnimationFrame(() =>
+    document.querySelector<HTMLInputElement>('[aria-label="Search in files"]')?.focus(),
   );
+}
+
+export function App() {
+  const sidebar = useLayoutStore((state) => state.sidebar);
+  const sidebarOpen = useLayoutStore((state) => state.sidebarOpen);
+  const activityBar = useLayoutStore((state) => state.activityBar);
+  const statusBar = useLayoutStore((state) => state.statusBar);
+  const tabs = useLayoutStore((state) => state.tabs);
+  const zen = useLayoutStore((state) => state.zen);
+  const isSidebarOpen = sidebarOpen && !zen;
+
+  useEffect(() => {
+    const layout = () => useLayoutStore.getState();
+    return registerCommands([
+      {
+        id: "view.toggleExplorer",
+        title: "Toggle side bar",
+        keys: "Ctrl+B",
+        run: () => {
+          const { sidebarOpen, zen, update } = layout();
+          useLayoutStore.setState({ zen: false });
+          return update({ sidebarOpen: zen || !sidebarOpen });
+        },
+      },
+      {
+        id: "view.showExplorer",
+        title: "Show explorer",
+        keys: "Ctrl+Shift+E",
+        run: () => layout().showView("explorer"),
+      },
+      {
+        id: "search.show",
+        title: "Search in files",
+        keys: "Ctrl+Shift+F",
+        run: async () => {
+          await layout().showView("search");
+          focusSearch();
+        },
+      },
+      {
+        id: "docker.show",
+        title: "Show Docker containers",
+        keys: "Ctrl+Shift+D",
+        run: () => layout().showView("docker"),
+      },
+      {
+        id: "view.toggleActivityBar",
+        title: "Toggle activity bar",
+        run: () => layout().update({ activityBar: !layout().activityBar }),
+      },
+      {
+        id: "view.toggleStatusBar",
+        title: "Toggle status bar",
+        run: () => layout().update({ statusBar: !layout().statusBar }),
+      },
+      {
+        id: "view.toggleTabs",
+        title: "Toggle editor tabs",
+        run: () => layout().update({ tabs: !layout().tabs }),
+      },
+      {
+        id: "view.toggleZen",
+        title: "Toggle zen mode",
+        keys: "Ctrl+K Z",
+        run: () => layout().toggleZen(),
+      },
+    ]);
+  }, []);
 
   return (
     <>
       <Backdrop />
-      <div className="app" data-explorer={isExplorerOpen ? "open" : "closed"}>
+      <div
+        className="app"
+        data-explorer={isSidebarOpen ? "open" : "closed"}
+        data-activity-bar={activityBar && !zen ? "shown" : "hidden"}
+        data-statusbar={statusBar && !zen ? "shown" : "hidden"}
+        data-tabs={tabs && !zen ? "shown" : "hidden"}
+        data-zen={zen}
+      >
+        <div className="app__activity" hidden={!activityBar || zen}>
+          <ActivityBar />
+        </div>
         <aside
           className="app__explorer"
           aria-label={SIDEBAR_LABELS[sidebar]}
-          hidden={!isExplorerOpen}
+          hidden={!isSidebarOpen}
         >
           <div className="app__sidebar-view" hidden={sidebar !== "explorer"}>
             <Explorer />
@@ -84,7 +123,7 @@ export function App() {
             <SearchPanel />
           </div>
           <div className="app__sidebar-view" hidden={sidebar !== "docker"}>
-            <DockerPanel visible={isExplorerOpen && sidebar === "docker"} />
+            <DockerPanel visible={isSidebarOpen && sidebar === "docker"} />
           </div>
         </aside>
         <main className="app__editor" aria-label="Editor">
@@ -97,7 +136,7 @@ export function App() {
         <div className="app__terminal">
           <TerminalPanel />
         </div>
-        <footer className="app__statusbar">
+        <footer className="app__statusbar" hidden={!statusBar || zen}>
           <StatusBar />
         </footer>
       </div>
@@ -106,6 +145,7 @@ export function App() {
       <QuickOpen />
       <SettingsScreen>
         <ThemeSettings />
+        <LayoutSettings />
         <UpdateSettings />
       </SettingsScreen>
       <UpdateNotice />
