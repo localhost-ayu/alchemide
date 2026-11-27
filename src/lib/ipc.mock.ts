@@ -16,6 +16,7 @@ import type {
   TerminalOutput,
   TerminalProfile,
   UpdateInfo,
+  UserThemeFile,
 } from "./types";
 
 const root = "/home/user/sample-project";
@@ -155,6 +156,71 @@ export function loadSettings(): Promise<Settings> {
 export function saveSettings(next: Settings): Promise<void> {
   settings = structuredClone(next);
   return Promise.resolve();
+}
+
+let userThemes = new Map<string, unknown>();
+
+export function setMockUserThemes(themes: Record<string, unknown>): void {
+  userThemes = new Map(Object.entries(themes));
+}
+
+export function mockUserThemes(): Record<string, unknown> {
+  return Object.fromEntries(userThemes);
+}
+
+export function listUserThemes(): Promise<UserThemeFile[]> {
+  const files = [...userThemes.keys()].sort();
+  return Promise.resolve(
+    files.map((file) => ({ file, theme: structuredClone(userThemes.get(file)) ?? null })),
+  );
+}
+
+function themeFileName(name: string): string {
+  const stem =
+    name
+      .toLowerCase()
+      .replace(/[^a-z0-9_-]+/g, "-")
+      .replace(/^-+|-+$/g, "") || "theme";
+  let file = `${stem}.json`;
+  for (let counter = 2; userThemes.has(file); counter++) {
+    file = `${stem}-${counter}.json`;
+  }
+  return file;
+}
+
+export function saveUserTheme(file: string | null, theme: unknown): Promise<string> {
+  const name = (theme as { name?: unknown } | null)?.name;
+  if (typeof name !== "string" || name.trim() === "") {
+    return Promise.reject(new Error("a theme must be a JSON object with a name"));
+  }
+  const target = file ?? themeFileName(name);
+  userThemes.set(target, structuredClone(theme));
+  return Promise.resolve(target);
+}
+
+export function deleteUserTheme(file: string): Promise<void> {
+  userThemes.delete(file);
+  return Promise.resolve();
+}
+
+let themeToImport: unknown | null = null;
+const exportedThemes: unknown[] = [];
+
+export function setMockThemeToImport(theme: unknown | null): void {
+  themeToImport = theme;
+}
+
+export function mockExportedThemes(): unknown[] {
+  return structuredClone(exportedThemes);
+}
+
+export function importTheme(): Promise<unknown | null> {
+  return Promise.resolve(structuredClone(themeToImport));
+}
+
+export function exportTheme(theme: unknown): Promise<boolean> {
+  exportedThemes.push(structuredClone(theme));
+  return Promise.resolve(true);
 }
 
 const sampleAssets: Record<AssetKind, { path: string; svg: string }> = {

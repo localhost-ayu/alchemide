@@ -89,9 +89,16 @@ regular browser without compiling Rust, and the end-to-end tests run against tha
 
 ## User content
 
-Wallpapers, mascots and settings live in the user's config folder (`%APPDATA%` on Windows,
+Wallpapers, mascots, user themes and settings live in the user's config folder (`%APPDATA%` on Windows,
 `~/.config` on Linux). The app stores only paths relative to that folder; none of that
 content ships with the app or enters the repository.
+
+User themes are JSON files in `themes/` in the same folder. Importing and exporting a theme opens
+the native dialog from Rust (`import_theme`, `export_theme`), like choosing a folder or an asset, so
+the webview still has no dialog or file system permission. Rust only lists, writes and deletes
+them, accepting plain `*.json` names inside that folder; the frontend validates each one with the
+built-in theme rules and skips invalid files with a warning
+([decision 0004](decisions/0004-user-themes.md)).
 
 Settings live in `settings.json` in the same folder (`config.rs`). Rust treats the file as an
 opaque JSON object, written atomically, and falls back to `{}` when it is missing or broken; the

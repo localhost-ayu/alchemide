@@ -80,3 +80,26 @@
 .settings__field input[type="checkbox"] {
   accent-color: var(--color-accent);
 }
+
+.settings__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.settings__actions button {
+  padding: 3px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background: var(--color-hover);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.settings__actions button:disabled {
+  color: var(--color-muted);
+  cursor: default;
+}

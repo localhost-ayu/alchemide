@@ -19,6 +19,7 @@ import type {
   TerminalOutput,
   TerminalProfile,
   UpdateInfo,
+  UserThemeFile,
 } from "./types";
 
 export function getEnvironment(): Promise<Environment> {
@@ -147,6 +148,26 @@ export function onLspMessage(handler: (message: LspMessage) => void): Promise<()
 
 export function onLspExit(handler: (id: number) => void): Promise<() => void> {
   return listen<number>("lsp-exit", (event) => handler(event.payload));
+}
+
+export function listUserThemes(): Promise<UserThemeFile[]> {
+  return invoke<UserThemeFile[]>("list_user_themes");
+}
+
+export function saveUserTheme(file: string | null, theme: unknown): Promise<string> {
+  return invoke<string>("save_user_theme", { file, theme });
+}
+
+export function deleteUserTheme(file: string): Promise<void> {
+  return invoke<void>("delete_user_theme", { file });
+}
+
+export function importTheme(): Promise<unknown | null> {
+  return invoke<unknown | null>("import_theme");
+}
+
+export function exportTheme(theme: unknown): Promise<boolean> {
+  return invoke<boolean>("export_theme", { theme });
 }
 
 export function checkUpdate(): Promise<UpdateInfo | null> {

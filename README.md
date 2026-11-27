@@ -18,7 +18,16 @@ A lightweight, mood-themed code editor built with Tauri, React and CodeMirror.
 
 Download the installer for your system from [Releases](../../releases).
 
-Windows builds are not code-signed yet, so SmartScreen may show a warning on first install.
+On Windows there are two installers:
+
+- `Alchemide_<version>_x64_en-US.msi` installs for every user in `Program Files` and needs
+  administrator rights. Prefer it on work machines with endpoint protection, which tends to
+  flag unsigned programs running from a user folder.
+- `Alchemide_<version>_x64-setup.exe` installs only for you in `%LOCALAPPDATA%`, without
+  administrator rights.
+
+Windows builds are not code-signed yet, so SmartScreen may show a warning on first install, and
+endpoint protection such as SentinelOne may block the app until it is allowed by your IT team.
 
 ## Development
 

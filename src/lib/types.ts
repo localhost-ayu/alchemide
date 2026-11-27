@@ -83,6 +83,11 @@ export type LspMessage = {
   message: string;
 };
 
+export type UserThemeFile = {
+  file: string;
+  theme: unknown;
+};
+
 export type UpdateInfo = {
   version: string;
   notes: string | null;

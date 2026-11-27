@@ -139,11 +139,13 @@ export function readEffects(value: unknown): Effects {
   };
 }
 
-export function parseTheme(input: unknown, fallback: Theme): ParsedTheme {
-  const reject = (reason: string): ParsedTheme => ({
-    theme: fallback,
-    warnings: [`${reason}; using ${fallback.name}`],
-  });
+export type ReadTheme = {
+  theme: Theme | null;
+  warnings: string[];
+};
+
+export function readTheme(input: unknown): ReadTheme {
+  const reject = (reason: string): ReadTheme => ({ theme: null, warnings: [reason] });
   if (!isFields(input)) {
     return reject("the theme is not a JSON object");
   }
@@ -176,4 +178,15 @@ export function parseTheme(input: unknown, fallback: Theme): ParsedTheme {
     },
     warnings,
   };
+}
+
+export function parseTheme(input: unknown, fallback: Theme): ParsedTheme {
+  const { theme, warnings } = readTheme(input);
+  if (!theme) {
+    return {
+      theme: fallback,
+      warnings: warnings.map((reason) => `${reason}; using ${fallback.name}`),
+    };
+  }
+  return { theme, warnings };
 }

@@ -25,7 +25,7 @@ function blurOf(theme: Theme): number {
 }
 
 export function toCssVariables(theme: Theme): Record<string, string> {
-  const { ui, syntax, glass, background } = theme;
+  const { ui, syntax, glass, background, mascot } = theme;
   return {
     "--color-bg": ui.bg,
     "--color-panel": ui.panel,
@@ -45,5 +45,7 @@ export function toCssVariables(theme: Theme): Record<string, string> {
     "--backdrop-image": backgroundImage(theme),
     "--backdrop-dim": hasMedia(theme) ? `${Math.round(dimOf(theme) * 100)}%` : "0%",
     "--backdrop-blur": hasMedia(theme) ? `${blurOf(theme)}px` : "0px",
+    "--mascot-size": `${mascot?.size ?? 0}px`,
+    "--mascot-opacity": String(mascot?.opacity ?? 0),
   };
 }
