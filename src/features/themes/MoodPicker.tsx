@@ -6,6 +6,7 @@ import {
   useState,
 } from "react";
 import { registerCommands } from "../../lib/commands";
+import { useDismiss } from "../../lib/dismiss";
 import { useKeepInView } from "../../lib/useKeepInView";
 import { filterOptions, type MoodOption, moodOptions } from "./moodOptions";
 import { runLookAction } from "./runLookAction";
@@ -75,10 +76,6 @@ export function MoodPicker() {
     useThemeStore.getState().preview(theme, effects);
   }, [isOpen, highlighted]);
 
-  if (!isOpen) {
-    return null;
-  }
-
   const close = () => {
     const original = originalRef.current;
     if (original) {
@@ -86,6 +83,11 @@ export function MoodPicker() {
     }
     setOpen(false);
   };
+  useDismiss(isOpen, close);
+
+  if (!isOpen) {
+    return null;
+  }
 
   const choose = (option: MoodOption | undefined) => {
     const original = originalRef.current;
@@ -112,9 +114,6 @@ export function MoodPicker() {
     } else if (event.key === "Enter") {
       event.preventDefault();
       choose(highlighted);
-    } else if (event.key === "Escape") {
-      event.preventDefault();
-      close();
     }
   };
 

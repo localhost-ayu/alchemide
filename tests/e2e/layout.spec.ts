@@ -250,3 +250,18 @@ test("resizes the sidebar and the terminal by dragging their edges", async ({ pa
   await terminalHandle.dblclick();
   await expect.poll(async () => Math.round((await terminal.boundingBox())?.height ?? 0)).toBe(260);
 });
+
+test("Esc closes the settings even when the focus is not inside them", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("complementary").first()).toBeVisible();
+
+  await page.keyboard.press("Control+,");
+  const settings = page.getByRole("dialog", { name: "Settings" });
+  await expect(settings).toBeVisible();
+  await settings.getByRole("heading", { name: "Settings" }).click();
+  await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+
+  await page.keyboard.press("Escape");
+
+  await expect(settings).toBeHidden();
+});
