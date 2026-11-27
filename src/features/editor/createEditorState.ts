@@ -23,6 +23,7 @@ import { highlightStyle } from "./highlightStyle";
 import { languageSupport } from "./languageSupport";
 
 export const indentation = new Compartment();
+export const languageServer = new Compartment();
 
 export function indentationFor(tabSize: number): Extension {
   return [EditorState.tabSize.of(tabSize), indentUnit.of(" ".repeat(tabSize))];
@@ -46,6 +47,7 @@ export function createEditorState(file: Tab, onUpdate: Extension, tabSize: numbe
       keymap.of([...defaultKeymap, ...historyKeymap, ...foldKeymap, indentWithTab]),
       languageSupport(file.language),
       indentation.of(indentationFor(tabSize)),
+      languageServer.of([]),
       editorTheme,
       EditorView.contentAttributes.of({ "aria-label": `Editing ${file.name}` }),
       onUpdate,

@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Language servers: autocomplete, hover, inline errors and go to definition (`F12`, also across
+  files) for PHP (Intelephense), JavaScript/TypeScript/JSX/TSX (`typescript-language-server`)
+  and SQL (`sqls`). Servers are found on `PATH`; when one is missing, the status bar shows how to
+  install it instead of an error
+- "Restart language servers" in the command palette
+
 ## [0.2.0] - 2026-11-26
 
 Productivity release. From this version on, Alchemide updates itself; users of 0.1.0 install 0.2.0 by hand once.
