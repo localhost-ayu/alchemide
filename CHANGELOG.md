@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Theme editor (`Ctrl+K E`): color pickers for every interface and syntax color with a live preview, contrast hints against the background, and saving built-in themes as a new theme of yours
 - Sliders in the theme editor for panel opacity and glass blur, background dim, blur and fit, and mascot opacity, size and corner, all previewed live
 - Duplicate, import, export and delete themes from the command palette or the settings; imported themes are validated and get a numbered name when theirs is taken
+- Theme editor: starting points from the built-in themes, corner roundness with presets, an interface font (System, Rounded, Editorial or Terminal), and a suggested panel opacity when a background image makes the text hard to read
 - Import VS Code color themes: pick one of the themes installed in VS Code or any VS Code theme file, and it becomes a theme of yours with the closest interface and syntax colors
 
 ## [0.2.0] - 2026-11-26

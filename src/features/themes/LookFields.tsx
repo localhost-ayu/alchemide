@@ -1,3 +1,4 @@
+import { minimumPanelOpacity } from "./colors";
 import {
   changeBackground,
   changeMascot,
@@ -33,6 +34,14 @@ export function LookFields({ look, onChange }: LookFieldsProps) {
   const mascot = shownMascot(look);
   const setGlass = (changes: Partial<typeof glass>) =>
     onChange({ ...look, theme: { ...look.theme, glass: { ...glass, ...changes } } });
+  const suggested =
+    background &&
+    minimumPanelOpacity(
+      look.theme.ui.panel,
+      look.theme.ui.text,
+      glass.panelOpacity,
+      background.dim,
+    );
 
   return (
     <>
@@ -55,6 +64,21 @@ export function LookFields({ look, onChange }: LookFieldsProps) {
         format={pixels}
         onChange={(blur) => setGlass({ blur })}
       />
+      {suggested && (
+        <div className="theme-editor__suggestion" role="status">
+          <span>
+            Text on the panels may be hard to read over light parts of the background. Use at least{" "}
+            {percent(suggested)}.
+          </span>
+          <button
+            type="button"
+            className="theme-editor__apply"
+            onClick={() => setGlass({ panelOpacity: suggested })}
+          >
+            Use {percent(suggested)}
+          </button>
+        </div>
+      )}
       <h3>Background</h3>
       {background ? (
         <>

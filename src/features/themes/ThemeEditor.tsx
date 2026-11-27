@@ -3,6 +3,9 @@ import { registerCommands } from "../../lib/commands";
 import { ColorField } from "./ColorField";
 import type { Look } from "./customLook";
 import { LookFields } from "./LookFields";
+import { ShapeFields } from "./ShapeFields";
+import { StartingPoints } from "./StartingPoints";
+import { applyStartingPoint } from "./startingPoint";
 import type { Theme, ThemeSyntax, ThemeUi } from "./theme";
 import { currentUserTheme, saveEditedTheme } from "./themeLibrary";
 import { nameKey, nameProblem, uniqueName } from "./userThemes";
@@ -126,6 +129,9 @@ export function ThemeEditor() {
             {problem}
           </p>
         )}
+        <StartingPoints
+          onPick={(start) => setLook({ ...look, theme: applyStartingPoint(draft, start) })}
+        />
         <h3>Interface</h3>
         {UI_FIELDS.map(([key, label]) => (
           <ColorField
@@ -146,6 +152,7 @@ export function ThemeEditor() {
             onChange={(value) => update({ syntax: { ...draft.syntax, [key]: value } })}
           />
         ))}
+        <ShapeFields shape={draft.shape} onChange={(shape) => update({ shape })} />
         <LookFields look={look} onChange={setLook} />
       </div>
       <footer className="theme-editor__footer">

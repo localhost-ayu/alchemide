@@ -5,8 +5,10 @@ import type {
   Theme,
   ThemeBackground,
   ThemeMascot,
+  ThemeShape,
   ThemeSyntax,
   ThemeUi,
+  UiFont,
 } from "./theme";
 
 export type ParsedTheme = {
@@ -21,6 +23,20 @@ const GRADIENT = /^(?:repeating-)?(?:linear|radial|conic)-gradient\([^;{}]*\)$/i
 const UI_KEYS = ["bg", "panel", "accent", "accent2", "text"] as const;
 const SYNTAX_KEYS = ["keyword", "string", "function", "comment", "variable"] as const;
 const CORNERS: readonly Corner[] = ["top-left", "top-right", "bottom-left", "bottom-right"];
+
+export const UI_FONTS: readonly UiFont[] = ["system", "rounded", "serif", "mono"];
+
+export const DEFAULT_SHAPE: ThemeShape = { radius: 8, font: "system" };
+
+export const MAX_RADIUS = 16;
+
+function readShape(input: unknown): ThemeShape {
+  const shape = isFields(input) ? input : {};
+  return {
+    radius: Math.round(numberIn(shape.radius, 0, MAX_RADIUS, DEFAULT_SHAPE.radius)),
+    font: UI_FONTS.find((font) => font === shape.font) ?? DEFAULT_SHAPE.font,
+  };
+}
 
 export const DEFAULT_EFFECTS: Effects = {
   surface: "glass",
@@ -173,6 +189,7 @@ export function readTheme(input: unknown): ReadTheme {
         panelOpacity: numberIn(glass.panelOpacity, 0.2, 1, 0.78),
         blur: numberIn(glass.blur, 0, 40, 12),
       },
+      shape: readShape(input.shape),
       mascot: readMascot(input.mascot, warnings),
       effects: readEffects(input.effects),
     },

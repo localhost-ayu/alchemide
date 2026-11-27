@@ -200,3 +200,48 @@ test("cancel also restores your background and mascot", async () => {
   expect(root.style.getPropertyValue("--mascot-size")).toBe("280px");
   expect(useThemeStore.getState().custom.mascot?.size).toBe(280);
 });
+
+test("starts from a built-in theme's colors without losing the name", () => {
+  render(<ThemeEditor />);
+  openEditor();
+
+  fireEvent.click(screen.getByRole("button", { name: "Aço" }));
+
+  expect(root.style.getPropertyValue("--color-bg")).toBe("#11151a");
+  expect(screen.getByRole("textbox", { name: "Name" })).toHaveProperty("value", "Catalisador copy");
+});
+
+test("changes corners and the interface font live and saves them", async () => {
+  render(<ThemeEditor />);
+  openEditor();
+
+  fireEvent.click(screen.getByRole("button", { name: "Round" }));
+  fireEvent.click(screen.getByRole("radio", { name: /Editorial/ }));
+  expect(root.style.getPropertyValue("--radius")).toBe("14px");
+  expect(root.style.getPropertyValue("--font-ui")).toMatch(/serif/);
+
+  await act(async () => {
+    fireEvent.click(screen.getByRole("button", { name: "Save as new theme" }));
+  });
+  expect(mockUserThemes()["catalisador-copy.json"]).toMatchObject({
+    shape: { radius: 14, font: "serif" },
+  });
+});
+
+test("suggests a panel opacity that keeps text readable over a background image", async () => {
+  await saveSettings({ background: { type: "image", path: "backgrounds/sample-lab.svg", dim: 0 } });
+  await initThemes();
+  render(<ThemeEditor />);
+  openEditor();
+  slide("Panel opacity", 0.3);
+
+  const suggestion = screen.getByText(/hard to read/);
+  const apply = screen.getByRole("button", { name: /^Use \d+%$/ });
+  const percent = Number(apply.textContent?.match(/\d+/)?.[0]);
+  expect(suggestion.textContent).toContain(`${percent}%`);
+
+  fireEvent.click(apply);
+
+  expect(root.style.getPropertyValue("--glass-opacity")).toBe(`${percent}%`);
+  expect(screen.queryByText(/hard to read/)).toBeNull();
+});

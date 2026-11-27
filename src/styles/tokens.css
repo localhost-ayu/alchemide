@@ -19,6 +19,8 @@
   --backdrop-blur: 0px;
   --mascot-size: 280px;
   --mascot-opacity: 0.35;
+  --radius: 8px;
+  --radius-sm: 4px;
 
   --color-muted: color-mix(in srgb, var(--color-text) 55%, var(--color-bg));
   --color-faint: color-mix(in srgb, var(--color-text) 35%, var(--color-bg));
