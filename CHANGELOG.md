@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Tabs of files that share a name show the folder that tells them apart (`conexao.php · beer`)
+
 ## [0.7.0] - 2026-11-27
 
 Workspace, terminal and Git: resizable panels, a customizable terminal, open file and folder shortcuts, Esc closes panels, settings search and general section, editable keyboard shortcuts, and a Git dock with diffs, history, stage and commit.
