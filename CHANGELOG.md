@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-11-27
+
+Workspace, terminal and Git: resizable panels, a customizable terminal, open file and folder shortcuts, Esc closes panels, settings search and general section, editable keyboard shortcuts, and a Git dock with diffs, history, stage and commit.
+
 ### Added
 
 - Keyboard shortcuts in the settings: record a new shortcut (one key or a two-step chord), remove it or reset it; shortcuts used by more than one command are flagged
@@ -169,7 +173,8 @@ First release: a lightweight editor for Windows and Linux (including WSL) with m
 
 - Browser mode with a mocked backend (`pnpm dev:web`) and a Linux dev container
 
-[Unreleased]: https://github.com/localhost-ayu/alchemide/compare/v0.6.2...HEAD
+[Unreleased]: https://github.com/localhost-ayu/alchemide/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/localhost-ayu/alchemide/compare/v0.6.2...v0.7.0
 [0.6.2]: https://github.com/localhost-ayu/alchemide/compare/v0.6.1...v0.6.2
 [0.6.1]: https://github.com/localhost-ayu/alchemide/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/localhost-ayu/alchemide/compare/v0.5.0...v0.6.0
