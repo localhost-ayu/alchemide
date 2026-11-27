@@ -211,6 +211,34 @@ test("turns glass panels off with a live preview, undone by cancel and kept by s
   });
 });
 
+test("chooses what sits behind open files and tunes the layer", async () => {
+  await saveSettings({
+    background: { type: "image", path: "backgrounds/sample-lab.svg", dim: 0.55 },
+  });
+  await initThemes();
+  render(<ThemeEditor />);
+  openEditor();
+
+  const mode = screen.getByRole("combobox", { name: "Behind open files" });
+  expect((mode as HTMLSelectElement).value).toBe("layer");
+  expect(root.dataset.editorBackdrop).toBe("layer");
+  slide("Layer dim", 0.4);
+  slide("Layer blur", 18);
+  expect(root.style.getPropertyValue("--layer-dim")).toBe("40%");
+  expect(root.style.getPropertyValue("--layer-blur")).toBe("18px");
+
+  fireEvent.change(mode, { target: { value: "sharp" } });
+  expect(root.dataset.editorBackdrop).toBe("sharp");
+  expect(screen.queryByRole("slider", { name: "Layer dim" })).toBeNull();
+
+  await act(async () => {
+    fireEvent.click(screen.getByRole("button", { name: "Save as new theme" }));
+  });
+  expect(await loadSettings()).toMatchObject({
+    background: { editor: { mode: "sharp", dim: 0.4, blur: 18 } },
+  });
+});
+
 test("cancel also restores your background and mascot", async () => {
   await saveSettings({ mascot: { path: "mascots/sample-flask.svg", size: 280 } });
   await initThemes();

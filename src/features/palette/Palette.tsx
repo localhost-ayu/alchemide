@@ -31,7 +31,7 @@ export function Palette({
   onClose,
 }: PaletteProps) {
   const [index, setIndex] = useState(0);
-  useDismiss(true, onClose);
+  const panelRef = useDismiss(true, onClose);
   const highlighted = items[Math.min(index, items.length - 1)];
   useKeepInView(highlighted && `palette-${highlighted.id}`);
 
@@ -53,7 +53,7 @@ export function Palette({
 
   return (
     <div className="palette__overlay">
-      <div className="palette panel" role="dialog" aria-label={label}>
+      <div ref={panelRef} className="palette panel" role="dialog" aria-label={label}>
         <input
           className="palette__search"
           role="combobox"

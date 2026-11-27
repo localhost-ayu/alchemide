@@ -88,7 +88,7 @@ export function ThemeEditor() {
     }
     setSession(null);
   };
-  useDismiss(session !== null, cancel);
+  const panelRef = useDismiss<HTMLElement>(session !== null, cancel);
 
   if (!session) {
     return null;
@@ -123,7 +123,7 @@ export function ThemeEditor() {
   };
 
   return (
-    <aside className="theme-editor panel" aria-label="Theme editor">
+    <aside ref={panelRef} className="theme-editor panel" aria-label="Theme editor">
       <header className="theme-editor__header">
         <h2>{file ? "Edit theme" : `New theme from ${original.theme.name}`}</h2>
       </header>
