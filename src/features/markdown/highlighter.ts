@@ -4,6 +4,7 @@ import { createJavaScriptRegexEngine } from "shiki/engine/javascript";
 import type { CodeLanguage } from "./codeLanguage";
 
 const THEME = "alchemide";
+export const TOKENIZE_TIME_LIMIT_MS = 5000;
 
 const LOADERS: Record<CodeLanguage, () => Promise<unknown>> = {
   typescript: () => import("shiki/langs/typescript.mjs"),
@@ -39,5 +40,9 @@ export async function tokenize(code: string, language: CodeLanguage): Promise<Th
   if (!instance.getLoadedLanguages().includes(language)) {
     await instance.loadLanguage((await LOADERS[language]()) as never);
   }
-  return instance.codeToTokens(code, { lang: language, theme: THEME }).tokens;
+  return instance.codeToTokens(code, {
+    lang: language,
+    theme: THEME,
+    tokenizeTimeLimit: TOKENIZE_TIME_LIMIT_MS,
+  }).tokens;
 }

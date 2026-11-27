@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- The first line of a code block in the Markdown preview no longer stays without colors on a slow or busy machine
+
 ## [0.6.0] - 2026-11-27
 
 Layout and Docker: a containers panel, an activity bar, hideable bars and zen mode.
