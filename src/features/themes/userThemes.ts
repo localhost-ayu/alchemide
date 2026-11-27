@@ -50,3 +50,13 @@ export function uniqueName(name: string, taken: string[]): string {
   }
   return `${base} ${counter}`;
 }
+
+export function nameProblem(name: string, taken: string[]): string | null {
+  if (name.trim() === "") {
+    return "Give the theme a name";
+  }
+  if (taken.some((other) => nameKey(other) === nameKey(name))) {
+    return "Another theme already has this name";
+  }
+  return null;
+}
