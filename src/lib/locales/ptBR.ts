@@ -412,4 +412,12 @@ export const ptBR: Messages = {
   "git.stage": "Preparar",
   "git.unstage": "Tirar da preparação",
   "changes.openFileNamed": "Abrir {path}",
+  "git.branchPicker": "Branches",
+  "git.localBranches": "Branches locais",
+  "git.remoteBranches": "Branches remotas",
+  "git.branchSearch": "Trocar ou digitar para criar uma branch…",
+  "git.createBranch": "Criar a branch “{name}”",
+  "git.branchMeta": "{author} · {age} · {subject}",
+  "git.noBranches": "Nenhuma branch encontrada",
+  "git.createdBranch": "Branch {name} criada",
 };

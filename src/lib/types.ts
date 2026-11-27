@@ -164,5 +164,8 @@ export type Blame = {
 export type Branch = {
   name: string;
   current: boolean;
-  remoteOnly: boolean;
+  remote: boolean;
+  author: string;
+  time: number;
+  subject: string;
 };

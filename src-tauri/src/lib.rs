@@ -47,6 +47,7 @@ pub fn run() {
             git::git_blame,
             git::git_branches,
             git::git_commit,
+            git::git_create_branch,
             git::git_diff,
             git::git_file_versions,
             git::git_log,

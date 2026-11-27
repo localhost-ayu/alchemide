@@ -408,4 +408,12 @@ export const en = {
   "git.stage": "Stage",
   "git.unstage": "Unstage",
   "changes.openFileNamed": "Open {path}",
+  "git.branchPicker": "Branches",
+  "git.localBranches": "Local branches",
+  "git.remoteBranches": "Remote branches",
+  "git.branchSearch": "Switch or type to create a branch…",
+  "git.createBranch": "Create branch “{name}”",
+  "git.branchMeta": "{author} · {age} · {subject}",
+  "git.noBranches": "No branch matches",
+  "git.createdBranch": "Created {name}",
 } as const satisfies Record<string, string>;

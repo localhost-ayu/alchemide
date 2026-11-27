@@ -45,6 +45,13 @@ The reference was Zed's Git panel: a dock on the right with the changes and the 
   stage all and commit work from the tab too. The Git dock opens it through the
   `editor.showChanges` command, so neither feature imports the other.
 
+- Branch picker (issue #149): `git_branches` reads `git for-each-ref` over `refs/heads` and
+  `refs/remotes` with the last commit author, date and subject (`parse_branches`, sorted local
+  first, the current one first, then by date). The picker filters by name; a name that is not a
+  local branch can be created with `git_create_branch` (`git switch --create`, same name check as
+  switching). Picking a remote branch switches to its local name, which git creates as a tracking
+  branch.
+
 ## Consequences
 
 - No git library is bundled; Alchemide needs `git` on the `PATH`, as for the terminal.

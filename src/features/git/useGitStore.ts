@@ -4,6 +4,7 @@ import { t } from "../../lib/i18n";
 import {
   gitBranches,
   gitCommit,
+  gitCreateBranch,
   gitDiff,
   gitLog,
   gitShow,
@@ -42,6 +43,7 @@ type GitState = {
   stageAll: () => Promise<void>;
   commit: () => Promise<void>;
   switchBranch: (name: string) => Promise<void>;
+  createBranch: (name: string) => Promise<void>;
 };
 
 function errorText(error: unknown): string {
@@ -109,6 +111,13 @@ export const useGitStore = create<GitState>((set, get) => {
     stage: (file) => act(() => gitStage([file.path])),
     unstage: (file) => act(() => gitUnstage([file.path])),
     stageAll: () => act(() => gitStageAll()),
+    createBranch: async (name) => {
+      set({ selection: null, diff: null });
+      await act(async () => {
+        await gitCreateBranch(name);
+        useActivityStore.getState().notify(t("git.createdBranch", { name }));
+      });
+    },
     switchBranch: async (name) => {
       if (name === get().status?.branch) {
         return;

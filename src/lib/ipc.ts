@@ -287,3 +287,7 @@ export function deleteEntry(path: string): Promise<void> {
 export function gitFileVersions(path: string): Promise<FileVersions> {
   return invoke<FileVersions>("git_file_versions", { path });
 }
+
+export function gitCreateBranch(name: string): Promise<void> {
+  return invoke<void>("git_create_branch", { name });
+}

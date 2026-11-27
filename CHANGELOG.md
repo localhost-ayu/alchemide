@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Branch picker in the Git dock: local and remote branches with the last commit author, how long ago and its subject, a search field, and creating a branch from the typed name
+
+### Added
+
 - Uncommitted changes tab: every changed file with its diff side by side or unified, syntax highlighting, collapsed unchanged lines, scrolling both ways, `+N −M` per file, Open file, Stage/Unstage, Stage all and Commit. The Git dock shows `+N −M` per file and a "View changes" button
 
 ### Changed
