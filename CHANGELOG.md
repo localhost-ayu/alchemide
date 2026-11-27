@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-11-27
+
+Patch release: palettes follow the highlighted item, and the README explains the two Windows installers.
+
 ### Changed
 
 - The README explains the two Windows installers and recommends the MSI (per machine, in
@@ -71,6 +75,7 @@ First release: a lightweight editor for Windows and Linux (including WSL) with m
 
 - Browser mode with a mocked backend (`pnpm dev:web`) and a Linux dev container
 
-[Unreleased]: https://github.com/localhost-ayu/alchemide/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/localhost-ayu/alchemide/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/localhost-ayu/alchemide/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/localhost-ayu/alchemide/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/localhost-ayu/alchemide/releases/tag/v0.1.0
