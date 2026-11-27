@@ -87,3 +87,17 @@
     transform: translateY(4px);
   }
 }
+
+.statusbar__lsp {
+  color: var(--color-muted);
+  cursor: default;
+}
+
+.statusbar__lsp[data-status="ready"] {
+  color: var(--color-accent);
+}
+
+.statusbar__lsp[data-status="stopped"],
+.statusbar__lsp[data-status="error"] {
+  color: var(--color-warning);
+}

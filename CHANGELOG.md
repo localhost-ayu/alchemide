@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-27
+
+Language servers: autocomplete, hover, inline errors and go to definition for PHP, JavaScript/TypeScript and SQL, when the servers are installed.
+
+### Added
+
+- Language servers: autocomplete, hover, inline errors and go to definition (`F12`, also across
+  files) for PHP (Intelephense), JavaScript/TypeScript/JSX/TSX (`typescript-language-server`)
+  and SQL (`sqls`). Servers are found on `PATH`; when one is missing, the status bar shows how to
+  install it instead of an error
+- "Restart language servers" in the command palette
+
+## [0.3.0] - 2026-11-27
+
+Theme editor release: your own themes, a theme library, a visual theme editor with live preview and sliders for glass, background and mascot.
+
 ### Added
 
 - Your own themes: JSON theme files in the `themes` folder of the config folder appear in the mood picker and in the settings next to the built-in themes; broken files are skipped with a warning, and "Reload your themes" picks up new files
@@ -16,6 +32,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Theme editor: starting points from the built-in themes, corner roundness with presets, an interface font (System, Rounded, Editorial or Terminal), and a suggested panel opacity when a background image makes the text hard to read
 - Theme editor: "Undo changes" and "Defaults" buttons, and your last saved colors offered in every color picker
 - Import VS Code color themes: pick one of the themes installed in VS Code or any VS Code theme file, and it becomes a theme of yours with the closest interface and syntax colors
+
+## [0.2.1] - 2026-11-27
+
+Patch release: palettes follow the highlighted item, and the README explains the two Windows installers.
+
+### Changed
+
+- The README explains the two Windows installers and recommends the MSI (per machine, in
+  `Program Files`) on work machines with endpoint protection
+
+### Fixed
+
+- Quick open, the command palette and the mood picker scroll with the highlighted item when you move past the visible list with the arrow keys
 
 ## [0.2.0] - 2026-11-26
 
@@ -72,6 +101,9 @@ First release: a lightweight editor for Windows and Linux (including WSL) with m
 
 - Browser mode with a mocked backend (`pnpm dev:web`) and a Linux dev container
 
-[Unreleased]: https://github.com/localhost-ayu/alchemide/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/localhost-ayu/alchemide/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/localhost-ayu/alchemide/compare/v0.3.0...v0.4.0
+[0.3.0]: https://github.com/localhost-ayu/alchemide/compare/v0.2.1...v0.3.0
+[0.2.1]: https://github.com/localhost-ayu/alchemide/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/localhost-ayu/alchemide/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/localhost-ayu/alchemide/releases/tag/v0.1.0
