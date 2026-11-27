@@ -12,6 +12,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Your own themes: JSON theme files in the `themes` folder of the config folder appear in the mood picker and in the settings next to the built-in themes; broken files are skipped with a warning, and "Reload your themes" picks up new files
 - Duplicate, import, export and delete themes from the command palette or the settings; imported themes are validated and get a numbered name when theirs is taken
 
+## [0.2.1] - 2026-11-27
+
+Patch release: palettes follow the highlighted item, and the README explains the two Windows installers.
+
+### Changed
+
+- The README explains the two Windows installers and recommends the MSI (per machine, in
+  `Program Files`) on work machines with endpoint protection
+
+### Fixed
+
+- Quick open, the command palette and the mood picker scroll with the highlighted item when you move past the visible list with the arrow keys
+
 ## [0.2.0] - 2026-11-26
 
 Productivity release. From this version on, Alchemide updates itself; users of 0.1.0 install 0.2.0 by hand once.
@@ -67,6 +80,7 @@ First release: a lightweight editor for Windows and Linux (including WSL) with m
 
 - Browser mode with a mocked backend (`pnpm dev:web`) and a Linux dev container
 
-[Unreleased]: https://github.com/localhost-ayu/alchemide/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/localhost-ayu/alchemide/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/localhost-ayu/alchemide/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/localhost-ayu/alchemide/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/localhost-ayu/alchemide/releases/tag/v0.1.0
