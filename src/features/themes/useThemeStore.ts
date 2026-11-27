@@ -13,7 +13,7 @@ type ThemeState = {
   custom: CustomLook;
   userThemes: UserTheme[];
   warnings: string[];
-  preview: (theme: Theme, effects?: Effects) => void;
+  preview: (theme: Theme, effects?: Effects, custom?: CustomLook) => void;
   commit: (theme: Theme, effects: Effects) => Promise<void>;
   setCustom: (custom: Partial<CustomLook>) => Promise<void>;
   dismissWarnings: () => void;
@@ -49,7 +49,8 @@ export const useThemeStore = create<ThemeState>((set, get) => {
     custom: NO_CUSTOM_LOOK,
     userThemes: [],
     warnings: [],
-    preview: (theme, effects = theme.effects) => show(theme, effects, get().custom),
+    preview: (theme, effects = theme.effects, custom = get().custom) =>
+      show(theme, effects, custom),
     commit: async (theme, effects) => {
       show(theme, effects, get().custom);
       set({ theme, effects });

@@ -87,6 +87,10 @@ Each effect is an attribute on `<html>`, switched independently:
 | `data-mascot`     | `true`, `false`  | Shows the mascot in a corner of the editor                                           |
 | `data-animations` | `true`, `false`  | Transitions and micro-animations; `prefers-reduced-motion` also turns them off       |
 
+The mascot and the background fit are also plain CSS, so previews change them without a re-render:
+`--mascot-size` and `--mascot-opacity` on `<html>`, plus the `data-mascot-corner` and
+`data-backdrop-fit` attributes.
+
 ## Your own background and mascot
 
 The mood picker (`Ctrl+K M`) has actions to choose a background image or video and a mascot
@@ -125,6 +129,10 @@ as you make it; Cancel or `Esc` brings back the theme as it was.
 - Text and syntax colors show their contrast on the background, highlighted when below the WCAG
   AA ratio of 4.5:1 (the bar every built-in theme meets).
 - A color with transparency (`#rrggbbaa`) keeps its alpha when you pick a new color.
+- Sliders adjust the glass (panel opacity and blur), the background (dim, blur and fit) and the
+  mascot (opacity, size and corner). Background and mascot sliders change what is on screen: your
+  own background or mascot when you chose one (saved in the settings, kept across themes), otherwise
+  the theme's. They appear once there is an image or video background or a mascot.
 
 ### Duplicate, import, export and delete
 

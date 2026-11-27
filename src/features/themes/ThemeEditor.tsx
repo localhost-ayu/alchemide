@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
 import { registerCommands } from "../../lib/commands";
 import { ColorField } from "./ColorField";
+import type { Look } from "./customLook";
+import { LookFields } from "./LookFields";
 import type { Theme, ThemeSyntax, ThemeUi } from "./theme";
 import { currentUserTheme, saveEditedTheme } from "./themeLibrary";
 import { nameKey, nameProblem, uniqueName } from "./userThemes";
 import { allThemes, useThemeStore } from "./useThemeStore";
 
 type Session = {
-  draft: Theme;
-  original: Theme;
+  look: Look;
+  original: Look;
   file: string | null;
   taken: string[];
 };
@@ -32,18 +34,23 @@ const SYNTAX_FIELDS: [keyof ThemeSyntax, string][] = [
 ];
 
 function startSession(): Session {
-  const { theme, userThemes } = useThemeStore.getState();
+  const { theme, custom, userThemes } = useThemeStore.getState();
   const userTheme = currentUserTheme();
   const taken = allThemes(userThemes)
     .map(({ name }) => name)
     .filter((name) => !userTheme || nameKey(name) !== nameKey(userTheme.theme.name));
   const name = userTheme ? theme.name : uniqueName(`${theme.name} copy`, taken);
-  return { draft: { ...theme, name }, original: theme, file: userTheme?.file ?? null, taken };
+  return {
+    look: { theme: { ...theme, name }, custom },
+    original: { theme, custom },
+    file: userTheme?.file ?? null,
+    taken,
+  };
 }
 
-function preview(theme: Theme): void {
+function preview({ theme, custom }: Look): void {
   const { effects } = useThemeStore.getState();
-  useThemeStore.getState().preview(theme, effects);
+  useThemeStore.getState().preview(theme, effects, custom);
 }
 
 export function ThemeEditor() {
@@ -66,14 +73,15 @@ export function ThemeEditor() {
     return null;
   }
 
-  const { draft, original, file, taken } = session;
+  const { look, original, file, taken } = session;
+  const draft = look.theme;
   const problem = nameProblem(draft.name, taken);
 
-  const update = (changes: Partial<Theme>) => {
-    const next = { ...draft, ...changes };
-    setSession({ ...session, draft: next });
+  const setLook = (next: Look) => {
+    setSession({ ...session, look: next });
     preview(next);
   };
+  const update = (changes: Partial<Theme>) => setLook({ ...look, theme: { ...draft, ...changes } });
   const cancel = () => {
     preview(original);
     setSession(null);
@@ -84,6 +92,9 @@ export function ThemeEditor() {
     }
     setSession(null);
     await saveEditedTheme({ ...draft, name: draft.name.trim() }, file);
+    if (look.custom !== original.custom) {
+      await useThemeStore.getState().setCustom(look.custom);
+    }
   };
 
   return (
@@ -97,7 +108,7 @@ export function ThemeEditor() {
       }}
     >
       <header className="theme-editor__header">
-        <h2>{file ? "Edit theme" : `New theme from ${original.name}`}</h2>
+        <h2>{file ? "Edit theme" : `New theme from ${original.theme.name}`}</h2>
       </header>
       <div className="theme-editor__body">
         <label className="theme-editor__name">
@@ -135,6 +146,7 @@ export function ThemeEditor() {
             onChange={(value) => update({ syntax: { ...draft.syntax, [key]: value } })}
           />
         ))}
+        <LookFields look={look} onChange={setLook} />
       </div>
       <footer className="theme-editor__footer">
         <button type="button" onClick={cancel}>

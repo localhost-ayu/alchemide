@@ -23,6 +23,8 @@ export type ThemeBackground =
   | { type: "gradient"; css: string }
   | { type: "image" | "video"; path: string; fit: Fit; blur: number; dim: number };
 
+export type MediaBackground = Extract<ThemeBackground, { type: "image" | "video" }>;
+
 export type Corner = "top-left" | "top-right" | "bottom-left" | "bottom-right";
 
 export type ThemeMascot = {

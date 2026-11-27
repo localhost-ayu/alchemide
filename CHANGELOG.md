@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Your own themes: JSON theme files in the `themes` folder of the config folder appear in the mood picker and in the settings next to the built-in themes; broken files are skipped with a warning, and "Reload your themes" picks up new files
 - Theme editor (`Ctrl+K E`): color pickers for every interface and syntax color with a live preview, contrast hints against the background, and saving built-in themes as a new theme of yours
+- Sliders in the theme editor for panel opacity and glass blur, background dim, blur and fit, and mascot opacity, size and corner, all previewed live
 - Duplicate, import, export and delete themes from the command palette or the settings; imported themes are validated and get a numbered name when theirs is taken
 
 ## [0.2.1] - 2026-11-27
