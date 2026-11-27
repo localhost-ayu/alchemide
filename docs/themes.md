@@ -114,6 +114,18 @@ in the mood picker and under "Your themes" in the settings, next to the built-in
   earlier file (files are read in alphabetical order), is skipped with a warning.
 - Built-in themes are read-only.
 
+### Theme editor
+
+`Ctrl+K E` ("Edit current theme" in the command palette, or Edit… in the settings) opens a panel on
+the right with a color picker for every `ui` and `syntax` color. The whole app previews each change
+as you make it; Cancel or `Esc` brings back the theme as it was.
+
+- Editing a built-in theme saves a new theme of yours, named `<name> copy` unless you rename it.
+- Editing one of your themes saves its file in place, including a new name.
+- Text and syntax colors show their contrast on the background, highlighted when below the WCAG
+  AA ratio of 4.5:1 (the bar every built-in theme meets).
+- A color with transparency (`#rrggbbaa`) keeps its alpha when you pick a new color.
+
 ### Duplicate, import, export and delete
 
 These actions are in the command palette (`Ctrl+Shift+P`) and next to the theme in the settings

@@ -1,3 +1,4 @@
+import { runCommand } from "../../lib/commands";
 import { BUILTIN_THEMES } from "./builtinThemes";
 import type { Effects } from "./theme";
 import {
@@ -55,6 +56,9 @@ export function ThemeSettings() {
         </select>
       </label>
       <div className="settings__actions">
+        <button type="button" onClick={() => runCommand("themes.edit")}>
+          Edit…
+        </button>
         <button type="button" onClick={duplicateCurrentTheme}>
           Duplicate
         </button>

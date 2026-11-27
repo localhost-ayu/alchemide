@@ -31,6 +31,18 @@ async function addUserTheme(theme: Theme): Promise<string> {
   return named.name;
 }
 
+export function saveEditedTheme(theme: Theme, file: string | null): Promise<void> {
+  return attempt(async () => {
+    if (!file) {
+      await addUserTheme(theme);
+      return;
+    }
+    await saveUserTheme(file, theme);
+    await reloadUserThemes();
+    await choose(findTheme(theme.name) ?? theme);
+  });
+}
+
 export function currentUserTheme(): UserTheme | null {
   const { theme, userThemes } = useThemeStore.getState();
   return (

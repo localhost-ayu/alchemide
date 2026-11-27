@@ -1,7 +1,7 @@
 import { expect, test } from "vitest";
 import { userThemeSource } from "../../test/themes";
 import { BUILTIN_THEMES } from "./builtinThemes";
-import { readUserThemes, uniqueName } from "./userThemes";
+import { nameProblem, readUserThemes, uniqueName } from "./userThemes";
 
 const { ui, syntax } = userThemeSource("unused");
 const colors = { ui, syntax };
@@ -70,4 +70,10 @@ test("numbers a name until it is free, ignoring case", () => {
   expect(uniqueName("Noite", ["Dia"])).toBe("Noite");
   expect(uniqueName(" Noite ", ["noite"])).toBe("Noite 2");
   expect(uniqueName("Noite", ["Noite", "noite 2", "Noite 3"])).toBe("Noite 4");
+});
+
+test("explains why a name cannot be used", () => {
+  expect(nameProblem("Noite", ["Dia"])).toBeNull();
+  expect(nameProblem("  ", [])).toBe("Give the theme a name");
+  expect(nameProblem(" maré", ["Maré"])).toBe("Another theme already has this name");
 });

@@ -12,6 +12,7 @@ import { Backdrop } from "../features/themes/Backdrop";
 import { Mascot } from "../features/themes/Mascot";
 import { MoodPicker } from "../features/themes/MoodPicker";
 import { ThemeCommands } from "../features/themes/ThemeCommands";
+import { ThemeEditor } from "../features/themes/ThemeEditor";
 import { ThemeSettings } from "../features/themes/ThemeSettings";
 import { ThemeWarnings } from "../features/themes/ThemeWarnings";
 import { UpdateNotice } from "../features/updater/UpdateNotice";
@@ -89,6 +90,7 @@ export function App() {
       </div>
       <MoodPicker />
       <ThemeCommands />
+      <ThemeEditor />
       <CommandPalette />
       <QuickOpen />
       <SettingsScreen>
