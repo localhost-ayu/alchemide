@@ -280,3 +280,20 @@ test("customizes the terminal colors and cursor from the settings", async ({ pag
   const view = page.locator(".terminal-view").first();
   await expect(view).toHaveCSS("background-color", "rgb(250, 247, 240)");
 });
+
+test("searches the settings", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("complementary").first()).toBeVisible();
+
+  await page.keyboard.press("Control+,");
+  const settings = page.getByRole("dialog", { name: "Settings" });
+  const search = settings.getByRole("searchbox", { name: "Search settings" });
+  await expect(search).toBeFocused();
+  await search.fill("tab size");
+
+  await expect(settings.getByRole("combobox", { name: "Tab size" })).toBeVisible();
+  await expect(settings.getByRole("combobox", { name: "Theme" })).toBeHidden();
+  await expect(
+    settings.getByRole("checkbox", { name: "Reopen the last folder on start" }),
+  ).toBeHidden();
+});

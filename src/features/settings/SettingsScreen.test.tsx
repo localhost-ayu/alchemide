@@ -91,3 +91,26 @@ test("Ctrl+= and Ctrl+0 zoom the interface", async () => {
   });
   expect(useEditorSettings.getState().zoom).toBe(1);
 });
+
+test("searching filters the settings and says when nothing matches", () => {
+  render(
+    <SettingsScreen>
+      <section className="settings__section">
+        <h3>Terminal</h3>
+        <label className="settings__field">
+          <span>Cursor</span>
+          <input type="checkbox" />
+        </label>
+      </section>
+    </SettingsScreen>,
+  );
+  openSettings();
+  const search = screen.getByRole("searchbox", { name: "Search settings" });
+
+  fireEvent.change(search, { target: { value: "cursor" } });
+  expect(screen.getByRole("checkbox", { name: "Cursor" })).toBeTruthy();
+  expect(screen.queryByRole("combobox", { name: "Tab size" })).toBeNull();
+
+  fireEvent.change(search, { target: { value: "nothing like this" } });
+  expect(screen.getByText(/No setting matches/)).toBeTruthy();
+});

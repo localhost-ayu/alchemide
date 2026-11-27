@@ -34,6 +34,24 @@ pub fn read_settings(dir: &Path) -> Value {
     parse_settings(std::fs::read_to_string(dir.join(FILE_NAME)).ok().as_deref())
 }
 
+const STATE_FILE: &str = "state.json";
+
+pub fn remember_last_folder(dir: &Path, folder: &Path) -> Result<()> {
+    std::fs::create_dir_all(dir)?;
+    let state = serde_json::json!({ "lastFolder": folder.to_string_lossy() });
+    let temporary = dir.join(format!("{STATE_FILE}.tmp"));
+    std::fs::write(&temporary, state.to_string())?;
+    std::fs::rename(&temporary, dir.join(STATE_FILE))?;
+    Ok(())
+}
+
+pub fn last_folder(dir: &Path) -> Option<PathBuf> {
+    let text = std::fs::read_to_string(dir.join(STATE_FILE)).ok()?;
+    let state: Value = serde_json::from_str(&text).ok()?;
+    let folder = PathBuf::from(state.get("lastFolder")?.as_str()?);
+    folder.is_dir().then_some(folder)
+}
+
 #[tauri::command]
 pub async fn load_settings() -> Result<Value> {
     Ok(read_settings(&config_dir()?))
@@ -49,6 +67,28 @@ mod tests {
     use super::*;
     use serde_json::json;
     use tempfile::TempDir;
+
+    #[test]
+    fn remembers_the_last_folder_outside_the_settings_file() {
+        let dir = TempDir::new().expect("temp dir");
+        let config = dir.path().join("alchemide");
+        let project = dir.path().join("project");
+        std::fs::create_dir(&project).expect("project");
+
+        remember_last_folder(&config, &project).expect("remember");
+
+        assert_eq!(last_folder(&config), Some(project));
+        assert_eq!(read_settings(&config), json!({}));
+    }
+
+    #[test]
+    fn forgets_a_last_folder_that_no_longer_exists() {
+        let dir = TempDir::new().expect("temp dir");
+        let gone = dir.path().join("gone");
+        remember_last_folder(dir.path(), &gone).expect("remember");
+        assert_eq!(last_folder(dir.path()), None);
+        assert_eq!(last_folder(&dir.path().join("missing")), None);
+    }
 
     #[test]
     fn starts_empty_without_a_file() {

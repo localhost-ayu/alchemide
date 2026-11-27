@@ -1,6 +1,6 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, expect, test } from "vitest";
-import { emitMockFsChange, setMockDir } from "../../lib/ipc.mock";
+import { emitMockFsChange, setMockDir, setMockLastFolder } from "../../lib/ipc.mock";
 import { Explorer } from "./Explorer";
 import { useWorkspaceStore } from "./useWorkspaceStore";
 
@@ -51,4 +51,22 @@ test("reloads an open folder when the disk changes", async () => {
 
   expect(await screen.findByRole("button", { name: "NOTES.md" })).toBeTruthy();
   expect(screen.queryByRole("button", { name: "README.md" })).toBeNull();
+});
+
+test("reopens the last folder when one is remembered", async () => {
+  setMockLastFolder(true);
+  render(<Explorer />);
+
+  await act(() => useWorkspaceStore.getState().restoreLastFolder());
+
+  expect(screen.getByRole("heading", { name: "sample-project" })).toBeTruthy();
+  setMockLastFolder(false);
+});
+
+test("stays on the open button when no folder is remembered", async () => {
+  render(<Explorer />);
+
+  await act(() => useWorkspaceStore.getState().restoreLastFolder());
+
+  expect(screen.getByRole("button", { name: "Open folder" })).toBeTruthy();
 });
