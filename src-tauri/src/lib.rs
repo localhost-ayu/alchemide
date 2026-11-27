@@ -5,6 +5,7 @@ mod error;
 mod fs;
 mod links;
 mod lsp;
+mod snippets;
 mod terminal;
 mod themes;
 mod updater;
@@ -27,9 +28,9 @@ pub fn run() {
             config::load_settings,
             config::save_settings,
             env::get_environment,
-            fs::open_folder,
             fs::list_dir,
             fs::list_files,
+            fs::open_folder,
             fs::read_file,
             fs::replace_matches,
             fs::search_start,
@@ -38,11 +39,13 @@ pub fn run() {
             lsp::lsp_send,
             lsp::lsp_start,
             lsp::lsp_stop,
+            snippets::import_vscode_snippets,
+            snippets::list_user_snippets,
+            terminal::terminal_close,
             terminal::terminal_open,
             terminal::terminal_profiles,
-            terminal::terminal_write,
             terminal::terminal_resize,
-            terminal::terminal_close,
+            terminal::terminal_write,
             themes::delete_user_theme,
             themes::export_theme,
             themes::import_theme,

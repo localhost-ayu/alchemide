@@ -21,6 +21,7 @@ import type { Tab } from "../../lib/editorStore";
 import { editorTheme } from "./editorTheme";
 import { highlightStyle } from "./highlightStyle";
 import { languageSupport } from "./languageSupport";
+import { snippetCompletion } from "./snippetCompletion";
 
 export const indentation = new Compartment();
 export const languageServer = new Compartment();
@@ -46,6 +47,7 @@ export function createEditorState(file: Tab, onUpdate: Extension, tabSize: numbe
       syntaxHighlighting(highlightStyle),
       keymap.of([...defaultKeymap, ...historyKeymap, ...foldKeymap, indentWithTab]),
       languageSupport(file.language),
+      snippetCompletion(file.path, file.language),
       indentation.of(indentationFor(tabSize)),
       languageServer.of([]),
       editorTheme,

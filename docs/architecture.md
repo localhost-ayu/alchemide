@@ -110,4 +110,8 @@ applied to the whole webview by the `set_zoom` command ([decision 0006](decision
 The settings screen belongs to `features/settings`, but the look section comes from
 `features/themes`: `App` passes it in as a child, so the two features never import each other.
 
+Snippets: user files in `<config>/snippets/` (read by `snippets.rs`), built-in packs in
+`src/lib/snippetPacks/`, enabled packs in `settings.json` (`snippets.packs`). See
+[snippets.md](snippets.md) and [decision 0007](decisions/0007-snippets.md).
+
 Decisions and their reasons are recorded in [`decisions/`](decisions/).

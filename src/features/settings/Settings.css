@@ -81,6 +81,12 @@
   accent-color: var(--color-accent);
 }
 
+.settings__problem {
+  margin: 0;
+  font-size: 12px;
+  color: var(--color-warning);
+}
+
 .settings__sample {
   margin: 0;
   padding: 8px 10px;

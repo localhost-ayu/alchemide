@@ -1,0 +1,113 @@
+{
+  "name": "Laravel",
+  "languages": ["php"],
+  "snippets": {
+    "Controller": {
+      "prefix": "lr-controller",
+      "body": [
+        "<?php",
+        "",
+        "namespace App\\Http\\Controllers;",
+        "",
+        "use Illuminate\\Http\\Request;",
+        "",
+        "class ${1:$TM_FILENAME_BASE} extends Controller",
+        "{",
+        "\tpublic function index()",
+        "\t{",
+        "\t\t$0",
+        "\t}",
+        "}"
+      ],
+      "description": "Controller named after the file"
+    },
+    "Route": {
+      "prefix": "lr-route",
+      "body": "Route::${1|get,post,put,patch,delete|}('${2:/path}', [${3:Controller}::class, '${4:index}'])->name('${5:name}');",
+      "description": "Route to a controller action"
+    },
+    "Resource route": {
+      "prefix": "lr-resource",
+      "body": "Route::resource('${1:photos}', ${2:PhotoController}::class);",
+      "description": "Resource route"
+    },
+    "Model": {
+      "prefix": "lr-model",
+      "body": [
+        "<?php",
+        "",
+        "namespace App\\Models;",
+        "",
+        "use Illuminate\\Database\\Eloquent\\Model;",
+        "",
+        "class ${1:$TM_FILENAME_BASE} extends Model",
+        "{",
+        "\tprotected \\$fillable = [${2:'name'}];",
+        "}"
+      ],
+      "description": "Eloquent model"
+    },
+    "Relationship": {
+      "prefix": "lr-relation",
+      "body": [
+        "public function ${1:posts}()",
+        "{",
+        "\treturn \\$this->${2|hasMany,hasOne,belongsTo,belongsToMany|}(${3:Post}::class);",
+        "}"
+      ],
+      "description": "Eloquent relationship"
+    },
+    "Create table migration": {
+      "prefix": "lr-create",
+      "body": [
+        "Schema::create('${1:table}', function (Blueprint \\$table) {",
+        "\t\\$table->id();",
+        "\t$0",
+        "\t\\$table->timestamps();",
+        "});"
+      ],
+      "description": "Schema::create"
+    },
+    "Column": {
+      "prefix": "lr-col",
+      "body": "\\$table->${1|string,integer,boolean,text,timestamp,foreignId,decimal,json|}('${2:name}');",
+      "description": "Migration column"
+    },
+    "Validate request": {
+      "prefix": "lr-validate",
+      "body": [
+        "\\$validated = \\$request->validate([",
+        "\t'${1:field}' => ['${2:required}'],",
+        "]);"
+      ],
+      "description": "Validate the request"
+    },
+    "Dump and die": {
+      "prefix": "lr-dd",
+      "body": "dd(\\$${1:var});",
+      "description": "dd()"
+    },
+    "Blade foreach": {
+      "prefix": "lr-foreach",
+      "body": ["@foreach (\\$${1:items} as \\$${2:item})", "\t$0", "@endforeach"],
+      "description": "Blade @foreach"
+    },
+    "Blade if": {
+      "prefix": "lr-if",
+      "body": ["@if (${1:condition})", "\t$0", "@endif"],
+      "description": "Blade @if"
+    },
+    "Feature test": {
+      "prefix": "lr-test",
+      "body": [
+        "public function test_${1:something}(): void",
+        "{",
+        "\t\\$response = \\$this->get('${2:/}');",
+        "",
+        "\t\\$response->assertStatus(${3:200});",
+        "}"
+      ],
+      "description": "Feature test"
+    }
+  }
+}

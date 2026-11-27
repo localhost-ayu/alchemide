@@ -1,0 +1,73 @@
+{
+  "name": "Go",
+  "languages": ["go"],
+  "snippets": {
+    "Main": {
+      "prefix": "main",
+      "body": ["package main", "", "func main() {", "\t$0", "}"],
+      "description": "main package and function"
+    },
+    "Function": {
+      "prefix": "fn",
+      "body": ["func ${1:name}(${2}) ${3:error} {", "\t$0", "}"],
+      "description": "Function"
+    },
+    "Method": {
+      "prefix": "meth",
+      "body": ["func (${1:r} *${2:Type}) ${3:Name}(${4}) ${5:error} {", "\t$0", "}"],
+      "description": "Method with a pointer receiver"
+    },
+    "If error": {
+      "prefix": "iferr",
+      "body": ["if err != nil {", "\treturn ${1:err}", "}"],
+      "description": "Return on error"
+    },
+    "Wrap error": {
+      "prefix": "errorf",
+      "body": "fmt.Errorf(\"${1:doing something}: %w\", err)",
+      "description": "Wrap an error"
+    },
+    "Struct": {
+      "prefix": "struct",
+      "body": ["type ${1:Name} struct {", "\t${2:Field} ${3:string}", "}"],
+      "description": "Struct type"
+    },
+    "Interface": {
+      "prefix": "interface",
+      "body": ["type ${1:Name} interface {", "\t${2:Method}(${3}) ${4:error}", "}"],
+      "description": "Interface type"
+    },
+    "For range": {
+      "prefix": "forr",
+      "body": ["for ${1:_}, ${2:item} := range ${3:items} {", "\t$0", "}"],
+      "description": "for range loop"
+    },
+    "Goroutine": {
+      "prefix": "gofunc",
+      "body": ["go func() {", "\t$0", "}()"],
+      "description": "Goroutine"
+    },
+    "Select": {
+      "prefix": "select",
+      "body": [
+        "select {",
+        "case ${1:value} := <-${2:channel}:",
+        "\t$0",
+        "case <-ctx.Done():",
+        "\treturn ctx.Err()",
+        "}"
+      ],
+      "description": "select with context"
+    },
+    "HTTP handler": {
+      "prefix": "handler",
+      "body": ["func ${1:handle}(w http.ResponseWriter, r *http.Request) {", "\t$0", "}"],
+      "description": "net/http handler"
+    },
+    "Test": {
+      "prefix": "test",
+      "body": ["func Test${1:Something}(t *testing.T) {", "\t$0", "}"],
+      "description": "Test function"
+    }
+  }
+}

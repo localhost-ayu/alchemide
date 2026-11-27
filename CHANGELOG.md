@@ -15,6 +15,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Terminal font size, line height, ligatures on or off and interface zoom in the settings, with a
   live font sample
 - Zoom in, zoom out and reset zoom: `Ctrl+=`, `Ctrl+-`, `Ctrl+0`
+- Snippets in the VS Code format in the autocomplete, with tab stops, choices, variables and
+  transforms. Your files go in the `snippets` config folder; "Import snippets from VS Code" copies
+  VS Code's user snippets without overwriting anything
+- Built-in snippet packs for PHP, JavaScript/TypeScript, Rust, Python and Go (on by default) and
+  Node.js, React, Next.js, Laravel, CodeIgniter 3 and CodeIgniter 4 (turned on in the settings)
 - Rust, Python and Go: syntax highlighting in the editor (`.rs`, `.py`, `.pyw`, `.pyi`, `.go`) and
   in Markdown code blocks
 

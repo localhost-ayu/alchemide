@@ -1,0 +1,100 @@
+{
+  "name": "Next.js",
+  "languages": ["jsx", "tsx", "javascript", "typescript"],
+  "snippets": {
+    "Page": {
+      "prefix": "npage",
+      "body": ["export default function ${1:Page}() {", "\treturn <main>$0</main>;", "}"],
+      "description": "App Router page"
+    },
+    "Async page with params": {
+      "prefix": "npagep",
+      "body": [
+        "export default async function ${1:Page}({",
+        "\tparams,",
+        "}: {",
+        "\tparams: Promise<{ ${2:slug}: string }>;",
+        "}) {",
+        "\tconst { ${2:slug} } = await params;",
+        "\treturn <main>$0</main>;",
+        "}"
+      ],
+      "description": "Page reading route params"
+    },
+    "Layout": {
+      "prefix": "nlayout",
+      "body": [
+        "export default function ${1:Layout}({ children }: { children: React.ReactNode }) {",
+        "\treturn <section>{children}</section>;",
+        "}"
+      ],
+      "description": "App Router layout"
+    },
+    "Metadata": {
+      "prefix": "nmeta",
+      "body": [
+        "export const metadata: Metadata = {",
+        "\ttitle: \"${1:Title}\",",
+        "\tdescription: \"${2:Description}\",",
+        "};"
+      ],
+      "description": "Static metadata"
+    },
+    "Route handler": {
+      "prefix": "nroute",
+      "body": [
+        "export async function ${1|GET,POST,PUT,PATCH,DELETE|}(request: Request) {",
+        "\treturn Response.json({ $0 });",
+        "}"
+      ],
+      "description": "Route handler"
+    },
+    "Use client": {
+      "prefix": "nuc",
+      "body": ["\"use client\";", "", "$0"],
+      "description": "Client component directive"
+    },
+    "Server action": {
+      "prefix": "nsa",
+      "body": [
+        "\"use server\";",
+        "",
+        "export async function ${1:action}(formData: FormData) {",
+        "\t$0",
+        "}"
+      ],
+      "description": "Server action"
+    },
+    "Link": {
+      "prefix": "nlink",
+      "body": "<Link href=\"${1:/}\">${0}</Link>",
+      "description": "next/link"
+    },
+    "Image": {
+      "prefix": "nimg",
+      "body": "<Image src=\"${1:/image.png}\" alt=\"${2}\" width={${3:640}} height={${4:480}} />",
+      "description": "next/image"
+    },
+    "Loading": {
+      "prefix": "nloading",
+      "body": ["export default function Loading() {", "\treturn <p>${1:Loading…}</p>;", "}"],
+      "description": "loading.tsx"
+    },
+    "Error boundary": {
+      "prefix": "nerror",
+      "body": [
+        "\"use client\";",
+        "",
+        "export default function Error({ error, reset }: { error: Error; reset: () => void }) {",
+        "\treturn (",
+        "\t\t<div>",
+        "\t\t\t<p>{error.message}</p>",
+        "\t\t\t<button type=\"button\" onClick={reset}>${1:Try again}</button>",
+        "\t\t</div>",
+        "\t);",
+        "}"
+      ],
+      "description": "error.tsx"
+    }
+  }
+}
