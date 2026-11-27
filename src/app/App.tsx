@@ -24,6 +24,7 @@ import { VscodeThemePicker } from "../features/themes/VscodeThemePicker";
 import { UpdateNotice } from "../features/updater/UpdateNotice";
 import { UpdateSettings } from "../features/updater/UpdateSettings";
 import { registerCommands } from "../lib/commands";
+import { useEditorStore } from "../lib/editorStore";
 import { clampSize, SIDEBAR_WIDTH, TERMINAL_HEIGHT, useLayoutStore } from "../lib/layoutStore";
 import { ActivityBar } from "./ActivityBar";
 import "./App.css";
@@ -39,6 +40,7 @@ function focusSearch(): void {
 }
 
 export function App() {
+  const fileOpen = useEditorStore((state) => state.activePath !== null);
   const sidebar = useLayoutStore((state) => state.sidebar);
   const sidebarOpen = useLayoutStore((state) => state.sidebarOpen);
   const activityBar = useLayoutStore((state) => state.activityBar);
@@ -158,7 +160,7 @@ export function App() {
             {...resize("sidebarWidth", SIDEBAR_WIDTH)}
           />
         </aside>
-        <main className="app__editor" aria-label="Editor">
+        <main className="app__editor" aria-label="Editor" data-file-open={fileOpen}>
           <div className="app__workspace">
             <Editor />
             <MarkdownPane />

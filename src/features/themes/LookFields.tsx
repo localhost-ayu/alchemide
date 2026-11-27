@@ -7,7 +7,13 @@ import {
   shownMascot,
 } from "./customLook";
 import { RangeField } from "./RangeField";
-import type { Corner, Fit } from "./theme";
+import {
+  type Corner,
+  DEFAULT_EDITOR_BACKDROP,
+  type EditorBackdrop,
+  type EditorBackdropMode,
+  type Fit,
+} from "./theme";
 
 type LookFieldsProps = {
   look: Look;
@@ -21,6 +27,15 @@ const CORNERS: [Corner, string][] = [
   ["bottom-right", "Bottom right"],
 ];
 
+const EDITOR_MODES: [EditorBackdropMode, string][] = [
+  ["layer", "A blurred layer"],
+  ["sharp", "The window background"],
+  ["solid", "The theme color"],
+];
+
+const toEditorMode = (value: string): EditorBackdropMode =>
+  EDITOR_MODES.find(([mode]) => mode === value)?.[0] ?? DEFAULT_EDITOR_BACKDROP.mode;
+
 const toFit = (value: string): Fit => (value === "contain" ? "contain" : "cover");
 const toCorner = (value: string): Corner =>
   CORNERS.find(([corner]) => corner === value)?.[0] ?? "bottom-right";
@@ -32,6 +47,9 @@ export function LookFields({ look, onChange }: LookFieldsProps) {
   const { glass } = look.theme;
   const background = shownBackground(look);
   const mascot = shownMascot(look);
+  const editorBackdrop = background?.editor ?? DEFAULT_EDITOR_BACKDROP;
+  const setEditorBackdrop = (changes: Partial<EditorBackdrop>) =>
+    onChange(changeBackground(look, { editor: { ...editorBackdrop, ...changes } }));
   const setGlass = (changes: Partial<typeof glass>) =>
     onChange({ ...look, theme: { ...look.theme, glass: { ...glass, ...changes } } });
   const suggested =
@@ -112,6 +130,41 @@ export function LookFields({ look, onChange }: LookFieldsProps) {
               <option value="contain">Show it whole</option>
             </select>
           </label>
+          <label className="theme-editor__select">
+            <span>Behind open files</span>
+            <select
+              value={editorBackdrop.mode}
+              onChange={(event) => setEditorBackdrop({ mode: toEditorMode(event.target.value) })}
+            >
+              {EDITOR_MODES.map(([mode, label]) => (
+                <option key={mode} value={mode}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </label>
+          {editorBackdrop.mode === "layer" && (
+            <>
+              <RangeField
+                label="Layer dim"
+                value={editorBackdrop.dim}
+                min={0}
+                max={1}
+                step={0.01}
+                format={percent}
+                onChange={(dim) => setEditorBackdrop({ dim })}
+              />
+              <RangeField
+                label="Layer blur"
+                value={editorBackdrop.blur}
+                min={0}
+                max={40}
+                step={1}
+                format={pixels}
+                onChange={(blur) => setEditorBackdrop({ blur })}
+              />
+            </>
+          )}
         </>
       ) : (
         <p className="theme-editor__hint">Choose a background image with Ctrl+K M to adjust it.</p>

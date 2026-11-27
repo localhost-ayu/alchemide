@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- What sits behind open files over a wallpaper: a dimmed, blurred layer (new default, the wallpaper stays sharp with no file open), the wallpaper as it is, or the theme color. Adjustable in the theme editor under Background
+
+### Changed
+
+- The "Open a file" hint stays readable over a wallpaper
+
+### Added
+
 - Tabs of files that share a name show the folder that tells them apart (`conexao.php · beer`)
 
 ## [0.7.0] - 2026-11-27

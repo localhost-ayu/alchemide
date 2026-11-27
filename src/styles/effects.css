@@ -57,3 +57,18 @@
     --motion: 0ms;
   }
 }
+
+.app__editor {
+  transition:
+    background-color var(--motion) ease,
+    backdrop-filter var(--motion) ease;
+}
+
+[data-background="true"][data-editor-backdrop="layer"] .app__editor[data-file-open="true"] {
+  --editor-bg: color-mix(in srgb, var(--color-bg) var(--layer-dim), transparent);
+  backdrop-filter: blur(var(--layer-blur));
+}
+
+[data-background="true"][data-editor-backdrop="solid"] .app__editor[data-file-open="true"] {
+  --editor-bg: var(--color-bg);
+}

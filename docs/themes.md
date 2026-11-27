@@ -60,6 +60,21 @@ live in the `themes/` folder of the app config folder (see [Your own themes](#yo
 | `gradient`       | `css`: a single `linear-`, `radial-` or `conic-gradient(...)`; `url()` is rejected |
 | `image`, `video` | `path`, `fit` (`cover` or `contain`), `blur` 0–40 px, `dim` 0–1                    |
 
+An image or video background can also say what sits behind open files, in `editor`:
+
+```json
+"editor": { "mode": "layer", "dim": 0.7, "blur": 10 }
+```
+
+| `mode`  | Behind open files                                                                                                                                                     |
+| ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `layer` | Default. A layer over the wallpaper, dimmed by `dim` (0–1) and blurred by `blur` (0–40 px). With no file open, the wallpaper shows with its own `dim` and `blur` only |
+| `sharp` | The window background as it is, with no extra layer                                                                                                                   |
+| `solid` | The theme `ui.bg` color                                                                                                                                               |
+
+The theme editor sets it under Background → "Behind open files". The layer uses
+`backdrop-filter`, so it behaves like the glass panels.
+
 Image, video and mascot paths are relative to the app config folder (`%APPDATA%\alchemide` on
 Windows, `~/.config/alchemide` on Linux). Absolute paths and `..` are rejected, and those files
 never ship with the app.
