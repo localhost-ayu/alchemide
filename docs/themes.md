@@ -77,6 +77,13 @@ derived tokens in `src/styles/tokens.css` mix them for borders, hover and select
 CodeMirror highlight style points at the `--syntax-*` variables, so switching themes changes
 only CSS: no editor reconfiguration and no React re-render.
 
+Form controls get their own tokens, computed from `ui` like the save-state appearance menu does:
+`--control-bg` is an opaque mix of `bg` and `panel`, and `--control-text` is the theme text when
+it reaches 4.5:1 on it, otherwise black or white. `--color-scheme` (`dark` or `light`) sets the
+CSS `color-scheme`, so native parts such as option lists, number spinners and scrollbars match the
+theme. Selects are drawn by the app (`appearance: none`), because WebKitGTK paints a native light
+field under a translucent background.
+
 ## Effects
 
 Each effect is an attribute on `<html>`, switched independently:

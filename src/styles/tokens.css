@@ -11,6 +11,9 @@
   --syntax-variable: #c9b8ff;
   --syntax-type: #7ad7ff;
   --syntax-number: #ffa36c;
+  --control-bg: #171421;
+  --control-text: #e9e4f5;
+  --color-scheme: dark;
   --glass-opacity: 78%;
   --glass-blur: 12px;
   --backdrop-color: var(--color-bg);
