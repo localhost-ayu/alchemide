@@ -44,13 +44,50 @@ test("changes and saves the editor settings", async () => {
       target: { value: "16" },
     });
   });
-  const font = screen.getByRole("textbox", { name: "Font" });
-  fireEvent.change(font, { target: { value: "Fira Code" } });
+  await act(async () => {
+    fireEvent.change(screen.getByRole("combobox", { name: "Font" }), {
+      target: { value: "JetBrains Mono" },
+    });
+  });
+  await act(async () => {
+    fireEvent.click(screen.getByRole("checkbox", { name: "Ligatures" }));
+  });
+
+  expect((await loadSettings()).editor).toEqual({
+    ...DEFAULT_EDITOR_SETTINGS,
+    fontFamily: "JetBrains Mono",
+    fontSize: 16,
+    ligatures: false,
+    tabSize: 4,
+  });
+});
+
+test("accepts a font installed on the system", async () => {
+  render(<SettingsScreen />);
+  openSettings();
+
+  fireEvent.change(screen.getByRole("combobox", { name: "Font" }), {
+    target: { value: "installed" },
+  });
+  const font = screen.getByRole("textbox", { name: "Installed font name" });
+  fireEvent.change(font, { target: { value: "Consolas" } });
   await act(async () => {
     fireEvent.blur(font);
   });
 
-  expect(await loadSettings()).toEqual({
-    editor: { fontFamily: "Fira Code", fontSize: 16, tabSize: 4 },
+  expect(useEditorSettings.getState().fontFamily).toBe("Consolas");
+});
+
+test("Ctrl+= and Ctrl+0 zoom the interface", async () => {
+  render(<SettingsScreen />);
+
+  await act(async () => {
+    fireEvent.keyDown(window, { key: "=", ctrlKey: true });
   });
+  expect(useEditorSettings.getState().zoom).toBe(1.1);
+
+  await act(async () => {
+    fireEvent.keyDown(window, { key: "0", ctrlKey: true });
+  });
+  expect(useEditorSettings.getState().zoom).toBe(1);
 });

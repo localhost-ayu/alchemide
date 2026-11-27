@@ -42,17 +42,24 @@ pub fn asset_file_name(
         .map(|ext| ext.to_string_lossy().to_lowercase())
         .filter(|ext| kind.extensions().contains(&ext.as_str()))
         .ok_or(Error::UnsupportedAsset)?;
-    let stem = sanitize(&original.file_stem().unwrap_or_default().to_string_lossy());
+    let stem = sanitize(
+        &original.file_stem().unwrap_or_default().to_string_lossy(),
+        "asset",
+    );
+    Ok(unique_file_name(&stem, &extension, exists))
+}
+
+pub fn unique_file_name(stem: &str, extension: &str, exists: impl Fn(&str) -> bool) -> String {
     let mut name = format!("{stem}.{extension}");
     let mut counter = 2;
     while exists(&name) {
         name = format!("{stem}-{counter}.{extension}");
         counter += 1;
     }
-    Ok(name)
+    name
 }
 
-fn sanitize(stem: &str) -> String {
+pub fn sanitize(stem: &str, fallback: &str) -> String {
     let cleaned: String = stem
         .chars()
         .map(|c| {
@@ -69,7 +76,7 @@ fn sanitize(stem: &str) -> String {
         .collect::<Vec<_>>()
         .join("-");
     if trimmed.is_empty() {
-        "asset".into()
+        fallback.into()
     } else {
         trimmed
     }

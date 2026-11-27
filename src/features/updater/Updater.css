@@ -5,7 +5,7 @@
   width: min(340px, 90vw);
   padding: 12px 14px;
   border: 1px solid var(--color-accent);
-  border-radius: 8px;
+  border-radius: var(--radius);
   font-size: 13px;
   z-index: 5;
 }
@@ -33,7 +33,7 @@
 .update-notice__actions button {
   padding: 4px 10px;
   border: 1px solid var(--color-border);
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   background: var(--color-hover);
   color: var(--color-text);
   font: inherit;
