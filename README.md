@@ -11,6 +11,9 @@ A lightweight, mood-themed code editor built with Tauri, React and CodeMirror.
 - Collapsible file explorer that respects `.gitignore`
 - Built-in terminal with automatic Windows, Linux and WSL profiles
 - Markdown preview
+- Snippets in the VS Code format: your own files, an import from VS Code and built-in packs for
+  PHP, Laravel, CodeIgniter 3 and 4, JS/TS, Node.js, React, Next.js, Rust, Python and Go
+  ([docs/snippets.md](docs/snippets.md))
 - Themes by mood, custom backgrounds and independent visual effects
 
 ## Install

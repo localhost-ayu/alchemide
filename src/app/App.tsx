@@ -6,6 +6,8 @@ import { CommandPalette } from "../features/palette/CommandPalette";
 import { QuickOpen } from "../features/palette/QuickOpen";
 import { SearchPanel } from "../features/search/SearchPanel";
 import { SettingsScreen } from "../features/settings/SettingsScreen";
+import { SnippetCommands } from "../features/snippets/SnippetCommands";
+import { SnippetSettings } from "../features/snippets/SnippetSettings";
 import { StatusBar } from "../features/statusbar/StatusBar";
 import { TerminalPanel } from "../features/terminal/TerminalPanel";
 import { Backdrop } from "../features/themes/Backdrop";
@@ -91,8 +93,10 @@ export function App() {
       <QuickOpen />
       <SettingsScreen>
         <ThemeSettings />
+        <SnippetSettings />
         <UpdateSettings />
       </SettingsScreen>
+      <SnippetCommands />
       <UpdateNotice />
       <ThemeWarnings />
     </>

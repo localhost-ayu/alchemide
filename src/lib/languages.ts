@@ -60,6 +60,10 @@ export function languageForPath(path: string): LanguageId {
   return byExtension[name.slice(dot + 1).toLowerCase()] ?? "plaintext";
 }
 
+export function isLanguageId(value: string): value is LanguageId {
+  return value in labels;
+}
+
 export function languageLabel(language: LanguageId): string {
   return labels[language];
 }

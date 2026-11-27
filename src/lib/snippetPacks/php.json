@@ -1,0 +1,113 @@
+{
+  "name": "PHP",
+  "languages": ["php"],
+  "snippets": {
+    "PHP file": {
+      "prefix": "php",
+      "body": ["<?php", "", "declare(strict_types=1);", "", "$0"],
+      "description": "Opening tag with strict types"
+    },
+    "Class": {
+      "prefix": "class",
+      "body": [
+        "<?php",
+        "",
+        "declare(strict_types=1);",
+        "",
+        "namespace ${1:App};",
+        "",
+        "final class ${2:$TM_FILENAME_BASE}",
+        "{",
+        "\t$0",
+        "}"
+      ],
+      "description": "Final class named after the file"
+    },
+    "Interface": {
+      "prefix": "interface",
+      "body": [
+        "interface ${1:$TM_FILENAME_BASE}",
+        "{",
+        "\tpublic function ${2:name}(${3}): ${4:void};",
+        "}"
+      ],
+      "description": "Interface"
+    },
+    "Enum": {
+      "prefix": "enum",
+      "body": [
+        "enum ${1:Status}: ${2:string}",
+        "{",
+        "\tcase ${3:Active} = '${4:active}';",
+        "\t$0",
+        "}"
+      ],
+      "description": "Backed enum"
+    },
+    "Function": {
+      "prefix": "fn",
+      "body": ["function ${1:name}(${2}): ${3:void}", "{", "\t$0", "}"],
+      "description": "Function with return type"
+    },
+    "Public method": {
+      "prefix": "pubf",
+      "body": ["public function ${1:name}(${2}): ${3:void}", "{", "\t$0", "}"],
+      "description": "Public method"
+    },
+    "Private method": {
+      "prefix": "prif",
+      "body": ["private function ${1:name}(${2}): ${3:void}", "{", "\t$0", "}"],
+      "description": "Private method"
+    },
+    "Constructor with promoted properties": {
+      "prefix": "ctor",
+      "body": [
+        "public function __construct(",
+        "\tprivate readonly ${1:Type} \\$${2:name},",
+        ") {",
+        "}"
+      ],
+      "description": "Constructor property promotion"
+    },
+    "Arrow function": {
+      "prefix": "afn",
+      "body": "fn (${1}) => ${0}",
+      "description": "Arrow function"
+    },
+    "Foreach": {
+      "prefix": "foreach",
+      "body": ["foreach (\\$${1:items} as \\$${2:item}) {", "\t$0", "}"],
+      "description": "Foreach loop"
+    },
+    "Foreach with key": {
+      "prefix": "foreachk",
+      "body": ["foreach (\\$${1:items} as \\$${2:key} => \\$${3:value}) {", "\t$0", "}"],
+      "description": "Foreach loop with keys"
+    },
+    "Match": {
+      "prefix": "match",
+      "body": [
+        "match (\\$${1:value}) {",
+        "\t${2:pattern} => ${3:result},",
+        "\tdefault => ${0:null},",
+        "}"
+      ],
+      "description": "Match expression"
+    },
+    "Try catch": {
+      "prefix": "try",
+      "body": ["try {", "\t$1", "} catch (${2:\\Throwable} \\$${3:e}) {", "\t$0", "}"],
+      "description": "Try and catch"
+    },
+    "Var dump": {
+      "prefix": "vd",
+      "body": "var_dump(\\$${1:var});",
+      "description": "var_dump"
+    },
+    "PHPUnit test": {
+      "prefix": "test",
+      "body": ["public function test${1:Something}(): void", "{", "\t$0", "}"],
+      "description": "PHPUnit test method"
+    }
+  }
+}

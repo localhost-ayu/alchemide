@@ -1,0 +1,88 @@
+{
+  "name": "CodeIgniter 3",
+  "languages": ["php"],
+  "snippets": {
+    "Controller": {
+      "prefix": "ci3-controller",
+      "body": [
+        "<?php",
+        "defined('BASEPATH') OR exit('No direct script access allowed');",
+        "",
+        "class ${1:$TM_FILENAME_BASE} extends CI_Controller",
+        "{",
+        "\tpublic function __construct()",
+        "\t{",
+        "\t\tparent::__construct();",
+        "\t\t$2",
+        "\t}",
+        "",
+        "\tpublic function index()",
+        "\t{",
+        "\t\t$0",
+        "\t}",
+        "}"
+      ],
+      "description": "Controller"
+    },
+    "Model": {
+      "prefix": "ci3-model",
+      "body": [
+        "<?php",
+        "defined('BASEPATH') OR exit('No direct script access allowed');",
+        "",
+        "class ${1:$TM_FILENAME_BASE} extends CI_Model",
+        "{",
+        "\tprotected \\$table = '${2:table}';",
+        "",
+        "\tpublic function find(\\$id)",
+        "\t{",
+        "\t\treturn \\$this->db->get_where(\\$this->table, ['id' => \\$id])->row_array();",
+        "\t}",
+        "}"
+      ],
+      "description": "Model"
+    },
+    "Load view": {
+      "prefix": "ci3-view",
+      "body": "\\$this->load->view('${1:view}', \\$${2:data});",
+      "description": "Load a view"
+    },
+    "Load model": {
+      "prefix": "ci3-load-model",
+      "body": "\\$this->load->model('${1:Model_name}');",
+      "description": "Load a model"
+    },
+    "Query": {
+      "prefix": "ci3-get",
+      "body": "\\$${1:rows} = \\$this->db->get_where('${2:table}', ['${3:id}' => \\$${4:id}])->${5|result_array,row_array|}();",
+      "description": "Query Builder get_where"
+    },
+    "Insert": {
+      "prefix": "ci3-insert",
+      "body": "\\$this->db->insert('${1:table}', \\$${2:data});",
+      "description": "Query Builder insert"
+    },
+    "Post input": {
+      "prefix": "ci3-post",
+      "body": "\\$this->input->post('${1:field}', TRUE)",
+      "description": "Read a POST field with XSS filtering"
+    },
+    "Form validation": {
+      "prefix": "ci3-validate",
+      "body": [
+        "\\$this->load->library('form_validation');",
+        "\\$this->form_validation->set_rules('${1:field}', '${2:Label}', '${3:required}');",
+        "",
+        "if (\\$this->form_validation->run() === FALSE) {",
+        "\t$0",
+        "}"
+      ],
+      "description": "Form validation"
+    },
+    "Session data": {
+      "prefix": "ci3-session",
+      "body": "\\$this->session->${1|userdata,set_userdata,set_flashdata,flashdata|}('${2:key}');",
+      "description": "Session"
+    }
+  }
+}

@@ -14,6 +14,8 @@ import type {
   SearchDone,
   SearchQuery,
   Settings,
+  SnippetFile,
+  SnippetImport,
   TerminalOutput,
   TerminalProfile,
   UpdateInfo,
@@ -97,6 +99,14 @@ export function onTerminalOutput(handler: (output: TerminalOutput) => void): Pro
 
 export function onTerminalExit(handler: (id: number) => void): Promise<() => void> {
   return listen<number>("terminal-exit", (event) => handler(event.payload));
+}
+
+export function listUserSnippets(): Promise<SnippetFile[]> {
+  return invoke<SnippetFile[]>("list_user_snippets");
+}
+
+export function importVscodeSnippets(): Promise<SnippetImport> {
+  return invoke<SnippetImport>("import_vscode_snippets");
 }
 
 export function openExternal(url: string): Promise<void> {

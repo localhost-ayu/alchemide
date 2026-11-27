@@ -4,6 +4,7 @@ mod env;
 mod error;
 mod fs;
 mod links;
+mod snippets;
 mod terminal;
 mod updater;
 
@@ -36,6 +37,8 @@ pub fn run() {
             terminal::terminal_resize,
             terminal::terminal_close,
             updater::check_update,
+            snippets::import_vscode_snippets,
+            snippets::list_user_snippets,
             updater::install_update
         ])
         .run(tauri::generate_context!());

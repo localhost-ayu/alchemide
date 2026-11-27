@@ -11,6 +11,8 @@ import type {
   SearchDone,
   SearchQuery,
   Settings,
+  SnippetFile,
+  SnippetImport,
   TerminalOutput,
   TerminalProfile,
   UpdateInfo,
@@ -257,6 +259,36 @@ export function onTerminalExit(handler: (id: number) => void): Promise<() => voi
 }
 
 const openedLinks: string[] = [];
+
+let userSnippetFiles: SnippetFile[] = [];
+let vscodeSnippetFiles: SnippetFile[] | null = [
+  {
+    file: "php.json",
+    content: JSON.stringify({
+      Hello: { prefix: "hello", body: 'echo "Hello from VS Code";$0' },
+    }),
+  },
+];
+
+export function setMockSnippets(user: SnippetFile[], vscode: SnippetFile[] | null): void {
+  userSnippetFiles = user;
+  vscodeSnippetFiles = vscode;
+}
+
+export function listUserSnippets(): Promise<SnippetFile[]> {
+  return Promise.resolve([...userSnippetFiles]);
+}
+
+export function importVscodeSnippets(): Promise<SnippetImport> {
+  if (!vscodeSnippetFiles) {
+    return Promise.resolve({ copied: 0, found: false });
+  }
+  const fresh = vscodeSnippetFiles.filter(
+    (source) => !userSnippetFiles.some((file) => file.content === source.content),
+  );
+  userSnippetFiles = [...userSnippetFiles, ...fresh];
+  return Promise.resolve({ copied: fresh.length, found: true });
+}
 
 export function openExternal(url: string): Promise<void> {
   if (!/^(?:https?:\/\/|mailto:)./i.test(url.trim())) {

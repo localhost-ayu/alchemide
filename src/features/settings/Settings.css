@@ -80,3 +80,9 @@
 .settings__field input[type="checkbox"] {
   accent-color: var(--color-accent);
 }
+
+.settings__problem {
+  margin: 0;
+  font-size: 12px;
+  color: var(--color-warning);
+}

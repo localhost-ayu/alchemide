@@ -77,3 +77,13 @@ export type UpdateInfo = {
   version: string;
   notes: string | null;
 };
+
+export type SnippetFile = {
+  file: string;
+  content: string;
+};
+
+export type SnippetImport = {
+  copied: number;
+  found: boolean;
+};
