@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.1] - 2026-11-27
+
+Patch release: code blocks in the Markdown preview get their colors on slow or busy machines too.
+
 ### Fixed
 
 - The first line of a code block in the Markdown preview no longer stays without colors on a slow or busy machine
@@ -136,7 +140,8 @@ First release: a lightweight editor for Windows and Linux (including WSL) with m
 
 - Browser mode with a mocked backend (`pnpm dev:web`) and a Linux dev container
 
-[Unreleased]: https://github.com/localhost-ayu/alchemide/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/localhost-ayu/alchemide/compare/v0.6.1...HEAD
+[0.6.1]: https://github.com/localhost-ayu/alchemide/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/localhost-ayu/alchemide/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/localhost-ayu/alchemide/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/localhost-ayu/alchemide/compare/v0.3.0...v0.4.0
