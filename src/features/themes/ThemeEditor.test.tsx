@@ -250,8 +250,10 @@ test("offers recent colors in every color picker and remembers the ones you save
   await saveSettings({ recentColors: ["#123456"] });
   render(<ThemeEditor />);
   await act(async () => {
-    openEditor();
+    fireEvent.keyDown(window, { key: "k", ctrlKey: true });
+    fireEvent.keyDown(window, { key: "e" });
   });
+  expect(screen.getByRole("complementary", { name: "Theme editor" })).toBeTruthy();
 
   const suggestions = [...document.querySelectorAll("#theme-editor-colors option")].map(
     (option) => (option as HTMLOptionElement).value,

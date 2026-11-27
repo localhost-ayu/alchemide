@@ -142,6 +142,10 @@ as you make it; Cancel or `Esc` brings back the theme as it was.
 - With an image or video background, the editor checks the panel text against the darkest and
   brightest parts the image could have (after its dim). When the panel opacity is too low for 4.5:1,
   it suggests the lowest opacity that passes, with a button to use it.
+- **Undo changes** brings back the theme as it was when the editor opened, without closing it.
+  **Defaults** applies the default theme's look (colors, glass and shape) to the one you are editing.
+- Every color picker offers the last eight colors you saved in any theme (stored as `recentColors`
+  in `settings.json`), shown as swatches by the system color picker.
 
 ### Duplicate, import, export and delete
 
