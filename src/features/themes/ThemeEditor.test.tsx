@@ -123,3 +123,80 @@ test("flags syntax colors below the AA contrast on the background", () => {
     screen.getByLabelText("Strings").closest("label")?.querySelector("[data-low='true']"),
   ).toBeNull();
 });
+
+function slide(label: string, value: number) {
+  fireEvent.change(screen.getByRole("slider", { name: label }), { target: { value } });
+}
+
+test("previews glass changes and saves them with the theme", async () => {
+  render(<ThemeEditor />);
+  openEditor();
+
+  slide("Panel opacity", 0.5);
+  slide("Glass blur", 20);
+  expect(root.style.getPropertyValue("--glass-opacity")).toBe("50%");
+  expect(root.style.getPropertyValue("--glass-blur")).toBe("20px");
+
+  await act(async () => {
+    fireEvent.click(screen.getByRole("button", { name: "Save as new theme" }));
+  });
+  expect(mockUserThemes()["catalisador-copy.json"]).toMatchObject({
+    glass: { panelOpacity: 0.5, blur: 20 },
+  });
+});
+
+test("asks for a background and a mascot before offering their sliders", () => {
+  render(<ThemeEditor />);
+  openEditor();
+
+  expect(screen.queryByRole("slider", { name: "Background dim" })).toBeNull();
+  expect(screen.queryByRole("slider", { name: "Mascot size" })).toBeNull();
+  expect(screen.getByText(/Choose a background image/)).toBeTruthy();
+});
+
+test("adjusts your own background and mascot live and keeps them in the settings", async () => {
+  await saveSettings({
+    background: { type: "image", path: "backgrounds/sample-lab.svg", dim: 0.55 },
+    mascot: { path: "mascots/sample-flask.svg" },
+  });
+  await initThemes();
+  render(<ThemeEditor />);
+  openEditor();
+
+  slide("Background dim", 0.2);
+  slide("Mascot size", 120);
+  fireEvent.change(screen.getByRole("combobox", { name: "Corner" }), {
+    target: { value: "top-left" },
+  });
+  fireEvent.change(screen.getByRole("combobox", { name: "Fit" }), {
+    target: { value: "contain" },
+  });
+  expect(root.style.getPropertyValue("--backdrop-dim")).toBe("20%");
+  expect(root.style.getPropertyValue("--mascot-size")).toBe("120px");
+  expect(root.dataset.mascotCorner).toBe("top-left");
+  expect(root.dataset.backdropFit).toBe("contain");
+
+  await act(async () => {
+    fireEvent.click(screen.getByRole("button", { name: "Save as new theme" }));
+  });
+
+  expect(await loadSettings()).toMatchObject({
+    theme: "Catalisador copy",
+    background: { path: "backgrounds/sample-lab.svg", dim: 0.2, fit: "contain" },
+    mascot: { path: "mascots/sample-flask.svg", size: 120, corner: "top-left" },
+  });
+  expect(root.style.getPropertyValue("--mascot-size")).toBe("120px");
+});
+
+test("cancel also restores your background and mascot", async () => {
+  await saveSettings({ mascot: { path: "mascots/sample-flask.svg", size: 280 } });
+  await initThemes();
+  render(<ThemeEditor />);
+  openEditor();
+
+  slide("Mascot size", 64);
+  fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+
+  expect(root.style.getPropertyValue("--mascot-size")).toBe("280px");
+  expect(useThemeStore.getState().custom.mascot?.size).toBe(280);
+});

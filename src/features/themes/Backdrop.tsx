@@ -26,13 +26,12 @@ export function Backdrop() {
     <div className="backdrop" aria-hidden="true">
       <div className="backdrop__layer" />
       {media && url && media.type === "image" && (
-        <img className="backdrop__media" data-fit={media.fit} src={url} alt="" />
+        <img className="backdrop__media" src={url} alt="" />
       )}
       {media && url && media.type === "video" && (
         <video
           ref={videoRef}
           className="backdrop__media"
-          data-fit={media.fit}
           src={url}
           autoPlay={animations}
           loop
