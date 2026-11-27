@@ -70,6 +70,9 @@ regular browser without compiling Rust, and the end-to-end tests run against tha
   access is never granted for convenience. Today the window has `core:default` plus
   `core:window:allow-destroy`, needed to close the window after the unsaved-changes check.
   File access goes through app commands that reject paths outside the open folder.
+  The only exception is a file picked with "Open file…" (`Ctrl+O`, the `pick_file` command):
+  its canonical path is added to an allow list for the session, so that one file can be read and
+  saved; nothing else outside the folder becomes reachable.
 - The asset protocol is enabled only for `backgrounds/*` and `mascots/*` inside the app config
   folder, so the webview can show the user's background and mascot and nothing else on disk.
   `asset_path` also rejects any path outside those two folders.

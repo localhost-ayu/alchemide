@@ -118,3 +118,17 @@ test("finds and replaces across the project", async ({ page }) => {
   await page.keyboard.press("Control+Shift+E");
   await expect(page.getByRole("button", { name: "App.tsx", exact: true })).toBeVisible();
 });
+
+test("opens a single file with Ctrl+O and a folder with Ctrl+K Ctrl+O", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("button", { name: "Open folder" })).toBeVisible();
+
+  await page.keyboard.press("Control+o");
+  await expect(page.getByRole("textbox", { name: "Editing todo.md" })).toContainText(
+    "Water the plants",
+  );
+
+  await page.keyboard.press("Control+k");
+  await page.keyboard.press("Control+o");
+  await expect(page.getByRole("heading", { name: "sample-project" })).toBeVisible();
+});
