@@ -15,6 +15,10 @@ describe("languageForPath", () => {
     ["index.html", "html"],
     ["styles.css", "css"],
     ["package.json", "json"],
+    ["main.rs", "rust"],
+    ["manage.py", "python"],
+    ["stubs.pyi", "python"],
+    ["server.go", "go"],
   ])("maps %s to %s", (path, language) => {
     expect(languageForPath(path)).toBe(language);
   });

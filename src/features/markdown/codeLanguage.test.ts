@@ -7,6 +7,8 @@ test.each([
   ["language-bash", "shellscript"],
   ["language-yml", "yaml"],
   ["hljs language-php", "php"],
+  ["language-py", "python"],
+  ["language-golang", "go"],
 ])("reads %s as %s", (className, language) => {
   expect(codeLanguage(className)).toBe(language);
 });

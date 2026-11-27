@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Rust, Python and Go: syntax highlighting in the editor (`.rs`, `.py`, `.pyw`, `.pyi`, `.go`) and
+  in Markdown code blocks
+
 ## [0.2.0] - 2026-11-26
 
 Productivity release. From this version on, Alchemide updates itself; users of 0.1.0 install 0.2.0 by hand once.
