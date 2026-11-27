@@ -1,9 +1,18 @@
-import { deleteUserTheme, exportTheme, importTheme, saveUserTheme } from "../../lib/ipc";
+import {
+  deleteUserTheme,
+  exportTheme,
+  importTheme,
+  loadVscodeTheme,
+  pickVscodeTheme,
+  saveUserTheme,
+} from "../../lib/ipc";
+import type { VscodeTheme } from "../../lib/types";
 import { DEFAULT_THEME } from "./builtinThemes";
 import { readTheme } from "./parseTheme";
 import type { Theme } from "./theme";
 import { nameKey, type UserTheme, uniqueName } from "./userThemes";
 import { allThemes, findTheme, reloadUserThemes, useThemeStore } from "./useThemeStore";
+import { fromVscodeTheme } from "./vscodeTheme";
 
 function report(message: string): void {
   useThemeStore.setState({ warnings: [message] });
@@ -57,20 +66,39 @@ export function duplicateCurrentTheme(): Promise<void> {
   });
 }
 
+async function addImported(source: unknown): Promise<void> {
+  const { theme, warnings } = readTheme(source);
+  if (!theme) {
+    report(`could not import the theme: ${warnings.join("; ")}`);
+    return;
+  }
+  const name = await addUserTheme(theme);
+  if (name !== theme.name) {
+    report(`"${theme.name}" already exists; imported as "${name}"`);
+  }
+}
+
 export function importThemeFile(): Promise<void> {
   return attempt(async () => {
     const source = await importTheme();
-    if (source === null) {
-      return;
+    if (source !== null) {
+      await addImported(source);
     }
-    const { theme, warnings } = readTheme(source);
-    if (!theme) {
-      report(`could not import the theme: ${warnings.join("; ")}`);
-      return;
-    }
-    const name = await addUserTheme(theme);
-    if (name !== theme.name) {
-      report(`"${theme.name}" already exists; imported as "${name}"`);
+  });
+}
+
+export function importVscodeTheme(entry: VscodeTheme): Promise<void> {
+  return attempt(async () => {
+    const source = await loadVscodeTheme(entry.path);
+    await addImported(fromVscodeTheme(source, entry.label));
+  });
+}
+
+export function importVscodeThemeFile(): Promise<void> {
+  return attempt(async () => {
+    const source = await pickVscodeTheme();
+    if (source !== null) {
+      await addImported(fromVscodeTheme(source, "VS Code theme"));
     }
   });
 }

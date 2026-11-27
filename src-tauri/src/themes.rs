@@ -106,7 +106,7 @@ pub fn write_export(path: &Path, theme: &Value) -> Result<()> {
     Ok(())
 }
 
-async fn run_dialog<T: Send + 'static>(
+pub async fn run_dialog<T: Send + 'static>(
     pick: impl FnOnce() -> Option<T> + Send + 'static,
 ) -> Result<Option<T>> {
     tauri::async_runtime::spawn_blocking(pick)
@@ -114,7 +114,7 @@ async fn run_dialog<T: Send + 'static>(
         .map_err(|_| Error::Dialog)
 }
 
-fn local_path(picked: FilePath) -> Result<std::path::PathBuf> {
+pub fn local_path(picked: FilePath) -> Result<std::path::PathBuf> {
     picked.into_path().map_err(|_| Error::NotLocalFolder)
 }
 

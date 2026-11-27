@@ -147,3 +147,15 @@ These actions are in the command palette (`Ctrl+Shift+P`) and next to the theme 
 | Delete current theme    | After confirming, removes your theme's file and switches to the default theme                          |
 
 Your custom background and mascot are not part of a theme, so they are not exported.
+
+### Import from VS Code
+
+"Import VS Code theme…" (command palette, or "From VS Code…" in the settings) lists the color
+themes installed in VS Code, both the built-in ones and those from your extensions. Pick one and
+it is converted into a theme of yours and selected. "Import VS Code theme file…" converts any
+VS Code theme `.json` file instead, for example one from VSCodium or Cursor.
+
+The conversion keeps the editor background and text, the side bar as the panel color, the focus
+color as the accent, and the closest token colors for each syntax role. It is a starting point:
+open the theme editor (`Ctrl+K E`) to adjust anything that came out different from VS Code.
+`.tmTheme` files are not supported. See [decision 0008](decisions/0008-vscode-themes.md).

@@ -65,6 +65,9 @@ export function ThemeSettings() {
         <button type="button" onClick={importThemeFile}>
           Import…
         </button>
+        <button type="button" onClick={() => runCommand("themes.importVscode")}>
+          From VS Code…
+        </button>
         <button type="button" onClick={exportCurrentTheme}>
           Export…
         </button>

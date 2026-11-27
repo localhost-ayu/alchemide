@@ -20,6 +20,7 @@ import type {
   TerminalProfile,
   UpdateInfo,
   UserThemeFile,
+  VscodeTheme,
 } from "./types";
 
 export function getEnvironment(): Promise<Environment> {
@@ -168,6 +169,18 @@ export function importTheme(): Promise<unknown | null> {
 
 export function exportTheme(theme: unknown): Promise<boolean> {
   return invoke<boolean>("export_theme", { theme });
+}
+
+export function listVscodeThemes(): Promise<VscodeTheme[]> {
+  return invoke<VscodeTheme[]>("list_vscode_themes");
+}
+
+export function loadVscodeTheme(path: string): Promise<unknown> {
+  return invoke<unknown>("load_vscode_theme", { path });
+}
+
+export function pickVscodeTheme(): Promise<unknown | null> {
+  return invoke<unknown | null>("pick_vscode_theme");
 }
 
 export function checkUpdate(): Promise<UpdateInfo | null> {
