@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Create files and folders from the explorer: buttons in its header, or `Ctrl+N` for a new file. The name is typed in the tree, inside the selected folder; `utils/date.ts` also creates the folder. A new file opens in the editor, and an existing name is refused
+
 ## [0.8.0] - 2026-11-27
 
 Appearance and comfort: readable code over wallpapers, a draggable mascot, a menu bar that hides itself, branch switching and inline blame, SQL snippets and smaller touches.

@@ -48,6 +48,10 @@ pub enum Error {
     Update(String),
     #[error("there is no update to install")]
     NoUpdate,
+    #[error("that name cannot be used for a file or folder")]
+    InvalidName,
+    #[error("a file or folder with that name already exists")]
+    AlreadyExists,
     #[error("git is not installed or not on the PATH")]
     GitMissing,
     #[error("the open folder is not a git repository")]

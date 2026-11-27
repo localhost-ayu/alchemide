@@ -949,3 +949,51 @@ export function gitSwitch(branch: string): Promise<void> {
   git.branch = branch;
   return Promise.resolve();
 }
+
+function sortEntries(entries: Entry[]): Entry[] {
+  return [...entries].sort(
+    (a, b) => Number(b.isDir) - Number(a.isDir) || a.name.localeCompare(b.name),
+  );
+}
+
+export function createEntry(parent: string, name: string, isDir: boolean): Promise<string> {
+  const parts = name.trim().split(/[\\/]/);
+  if (parts.some((part) => !part || part === "." || part === ".." || /[<>:"|?*]/.test(part))) {
+    return Promise.reject(new Error("that name cannot be used for a file or folder"));
+  }
+  let dir = parent;
+  for (const [index, part] of parts.entries()) {
+    const path = `${dir}/${part}`;
+    const last = index === parts.length - 1;
+    const entries = tree[dir] ?? [];
+    const existing = entries.find((entry) => entry.name === part);
+    if (last && existing) {
+      return Promise.reject(new Error("a file or folder with that name already exists"));
+    }
+    if (!existing) {
+      const folder = !last || isDir;
+      tree[dir] = sortEntries([...entries, { name: part, path, isDir: folder }]);
+      if (folder) {
+        tree[path] = tree[path] ?? [];
+      } else {
+        files[path] = "";
+      }
+    }
+    dir = path;
+  }
+  return Promise.resolve(dir);
+}
+
+const INITIAL_TREE = structuredClone(tree);
+const INITIAL_FILES = structuredClone(files);
+
+export function resetMockFiles(): void {
+  for (const key of Object.keys(tree)) {
+    delete tree[key];
+  }
+  for (const key of Object.keys(files)) {
+    delete files[key];
+  }
+  Object.assign(tree, structuredClone(INITIAL_TREE));
+  Object.assign(files, structuredClone(INITIAL_FILES));
+}

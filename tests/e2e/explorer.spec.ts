@@ -171,3 +171,20 @@ test("opens the Markdown preview from the button on the tab bar", async ({ page 
   await expect(page.getByRole("region", { name: "Markdown preview" })).toBeVisible();
   await expect(toggle).toHaveAttribute("aria-pressed", "true");
 });
+
+test("creates a new file from the explorer and saves it", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Open folder" }).click();
+  await page.getByRole("button", { name: "src", exact: true }).click();
+
+  await page.keyboard.press("Control+n");
+  await page.getByRole("textbox", { name: "New file name" }).fill("hello.ts");
+  await page.keyboard.press("Enter");
+
+  await expect(page.getByRole("button", { name: "hello.ts", exact: true })).toBeVisible();
+  const editor = page.getByRole("textbox", { name: "Editing hello.ts" });
+  await editor.click();
+  await page.keyboard.type("export const hi = 1;");
+  await page.keyboard.press("Control+s");
+  await expect(page.getByRole("tab", { name: /hello\.ts/ })).not.toContainText("●");
+});
